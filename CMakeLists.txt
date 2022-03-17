@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.8)
 project ("HDRTray")
 
 # Add source to this project's executable.
-add_executable(HDRTray "HDRTray.cpp" "HDRTray.h" "HDRTray.rc")
+add_executable(HDRTray "HDRTray.cpp" "HDRTray.h" "HDRTray.rc" "HDR.cpp" "HDR.h")
 target_compile_definitions(HDRTray PRIVATE UNICODE _UNICODE)
 set_target_properties(HDRTray PROPERTIES WIN32_EXECUTABLE ON)
 

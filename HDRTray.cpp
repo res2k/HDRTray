@@ -3,10 +3,12 @@
 
 #include "framework.h"
 #include "HDRTray.h"
+#include "HDR.h"
 
 #include <shellapi.h>
 
 #include <memory>
+#include <utility>
 
 #define MAX_LOADSTRING 100
 
@@ -29,6 +31,8 @@ public:
 
     bool Add();
     void Remove();
+
+    void SetFromHDRStatus(const hdr::monitor_status_vec& hdr_status);
 
     enum { MESSAGE = WM_USER + 11 };
 };
@@ -71,6 +75,31 @@ void NotifyIcon::Remove()
 {
     auto notify_delete = notify_template;
     Shell_NotifyIconW(NIM_DELETE, &notify_delete);
+}
+
+void NotifyIcon::SetFromHDRStatus(const hdr::monitor_status_vec& hdr_status)
+{
+    // Compute a singular status across all monitors
+    int single_status = static_cast<int>(hdr::Status::Unsupported);
+    for(const auto& display_status : hdr_status) {
+        single_status = std::max(single_status, static_cast<int>(display_status.second));
+    }
+
+    auto notify_mod = notify_template;
+    //notify_add.hIcon = icon_hdr_off;
+    notify_mod.uFlags |= NIF_ICON;
+    switch(static_cast<hdr::Status>(single_status))
+    {
+    default:
+    case hdr::Status::Unsupported:
+    case hdr::Status::Off:
+        notify_mod.hIcon = icon_hdr_off;
+        break;
+    case hdr::Status::On:
+        notify_mod.hIcon = icon_hdr_on;
+        break;
+    }
+    Shell_NotifyIconW(NIM_MODIFY, &notify_mod);
 }
 
 
@@ -193,6 +222,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_CREATE:
         notify_icon.reset(new NotifyIcon(hWnd));
         notify_icon->Add();
+        notify_icon->SetFromHDRStatus(hdr::GetWindowsHDRStatus());
         break;
     case WM_COMMAND:
         {
@@ -218,6 +248,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // TODO: Add any drawing code that uses hdc here...
             EndPaint(hWnd, &ps);
         }
+        break;
+    case WM_DISPLAYCHANGE:
+        notify_icon->SetFromHDRStatus(hdr::GetWindowsHDRStatus());
         break;
     case WM_DESTROY:
         notify_icon->Remove();
