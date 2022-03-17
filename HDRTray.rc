@@ -49,6 +49,13 @@ BEGIN
     END
 END
 
+IDC_TRAYPOPUP MENU
+BEGIN
+    POPUP "Dummy"
+    BEGIN
+        MENUITEM "&Quit",                IDM_EXIT
+    END
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //

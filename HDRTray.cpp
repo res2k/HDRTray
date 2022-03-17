@@ -24,6 +24,7 @@ class NotifyIcon
 
     HICON icon_hdr_on;
     HICON icon_hdr_off;
+    HMENU popup_menu;
 
 public:
     NotifyIcon(HWND hwnd);
@@ -34,7 +35,13 @@ public:
 
     void SetFromHDRStatus(const hdr::monitor_status_vec& hdr_status);
 
+    LRESULT HandleMessage(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
     enum { MESSAGE = WM_USER + 11 };
+
+protected:
+    void PopupIconMenu(HWND hWnd);
+
 };
 // {2D4645CF-59A2-4566-9D8B-86017A629D0A}
 const GUID NotifyIcon::guid = { 0x2d4645cf, 0x59a2, 0x4566, { 0x9d, 0x8b, 0x86, 0x1, 0x7a, 0x62, 0x9d, 0xa } };
@@ -50,12 +57,14 @@ NotifyIcon::NotifyIcon(HWND hwnd)
 
     icon_hdr_on = LoadIconW(hInst, MAKEINTRESOURCEW(IDI_HDR_ON));
     icon_hdr_off = LoadIconW(hInst, MAKEINTRESOURCEW(IDI_HDR_OFF));
+    popup_menu = LoadMenuW(hInst, MAKEINTRESOURCEW(IDC_TRAYPOPUP));
 }
 
 NotifyIcon::~NotifyIcon()
 {
     DestroyIcon(icon_hdr_on);
     DestroyIcon(icon_hdr_off);
+    DestroyMenu(popup_menu);
 }
 
 bool NotifyIcon::Add()
@@ -102,6 +111,32 @@ void NotifyIcon::SetFromHDRStatus(const hdr::monitor_status_vec& hdr_status)
     Shell_NotifyIconW(NIM_MODIFY, &notify_mod);
 }
 
+LRESULT NotifyIcon::HandleMessage(HWND hWnd, WPARAM wParam, LPARAM lParam)
+{
+    auto event = LOWORD(lParam);
+    switch(event)
+    {
+    case WM_CONTEXTMENU:
+    case NIN_KEYSELECT:
+    case NIN_SELECT:
+        PopupIconMenu(hWnd);
+        break;
+    }
+    return 0;
+}
+
+void NotifyIcon::PopupIconMenu(HWND hWnd)
+{
+    NOTIFYICONIDENTIFIER icon_id = { sizeof(NOTIFYICONIDENTIFIER) };
+    icon_id.guidItem = guid;
+    RECT notify_rect;
+    if(FAILED(Shell_NotifyIconGetRect(&icon_id, &notify_rect)))
+        return;
+
+    TPMPARAMS tpmp = { sizeof(TPMPARAMS) };
+    tpmp.rcExclude = notify_rect;
+    TrackPopupMenuEx(GetSubMenu(popup_menu, 0), 0, notify_rect.left, notify_rect.top, hWnd, &tpmp);
+}
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -116,6 +151,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
+
+    SetProcessDPIAware();
 
     // TODO: Place code here.
 
@@ -257,6 +294,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         notify_icon.reset();
         PostQuitMessage(0);
         break;
+    case NotifyIcon::MESSAGE:
+        return notify_icon->HandleMessage(hWnd, wParam, lParam);
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }

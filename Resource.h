@@ -14,6 +14,7 @@
 #define IDI_HDR_OFF             109
 #define IDI_HDR_ON              110
 #define IDC_HDRTRAY			109
+#define IDC_TRAYPOPUP           110
 #define IDC_MYICON				2
 #ifndef IDC_STATIC
 #define IDC_STATIC				-1
