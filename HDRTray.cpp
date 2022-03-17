@@ -4,12 +4,75 @@
 #include "framework.h"
 #include "HDRTray.h"
 
+#include <shellapi.h>
+
+#include <memory>
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
 HINSTANCE hInst;                                // current instance
 WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
+
+class NotifyIcon
+{
+    static const GUID guid;
+    NOTIFYICONDATAW notify_template;
+
+    HICON icon_hdr_on;
+    HICON icon_hdr_off;
+
+public:
+    NotifyIcon(HWND hwnd);
+    ~NotifyIcon();
+
+    bool Add();
+    void Remove();
+
+    enum { MESSAGE = WM_USER + 11 };
+};
+// {2D4645CF-59A2-4566-9D8B-86017A629D0A}
+const GUID NotifyIcon::guid = { 0x2d4645cf, 0x59a2, 0x4566, { 0x9d, 0x8b, 0x86, 0x1, 0x7a, 0x62, 0x9d, 0xa } };
+
+
+NotifyIcon::NotifyIcon(HWND hwnd)
+{
+    notify_template = NOTIFYICONDATAW { sizeof(NOTIFYICONDATAW) };
+    notify_template.hWnd = hwnd;
+    notify_template.uFlags = NIF_MESSAGE | NIF_GUID;
+    notify_template.uCallbackMessage = MESSAGE;
+    notify_template.guidItem = guid;
+
+    icon_hdr_on = LoadIconW(hInst, MAKEINTRESOURCEW(IDI_HDR_ON));
+    icon_hdr_off = LoadIconW(hInst, MAKEINTRESOURCEW(IDI_HDR_OFF));
+}
+
+NotifyIcon::~NotifyIcon()
+{
+    DestroyIcon(icon_hdr_on);
+    DestroyIcon(icon_hdr_off);
+}
+
+bool NotifyIcon::Add()
+{
+    auto notify_add = notify_template;
+    notify_add.hIcon = icon_hdr_off;
+    notify_add.uFlags |= NIF_ICON;
+    if(!Shell_NotifyIconW(NIM_ADD, &notify_add))
+        return false;
+
+    auto notify_setversion = notify_template;
+    notify_setversion.uVersion = NOTIFYICON_VERSION_4;
+    return Shell_NotifyIconW(NIM_SETVERSION, &notify_setversion);
+}
+
+void NotifyIcon::Remove()
+{
+    auto notify_delete = notify_template;
+    Shell_NotifyIconW(NIM_DELETE, &notify_delete);
+}
+
 
 // Forward declarations of functions included in this code module:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -111,6 +174,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    return TRUE;
 }
 
+static std::unique_ptr<NotifyIcon> notify_icon;
+
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -125,6 +190,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+    case WM_CREATE:
+        notify_icon.reset(new NotifyIcon(hWnd));
+        notify_icon->Add();
+        break;
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -151,6 +220,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+        notify_icon->Remove();
+        notify_icon.reset();
         PostQuitMessage(0);
         break;
     default:

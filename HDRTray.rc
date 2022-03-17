@@ -29,6 +29,8 @@ LANGUAGE 9, 1
 
 IDI_HDRTRAY       ICON         "HDRTray.ico"
 IDI_SMALL               ICON         "small.ico"
+IDI_HDR_OFF             ICON         "hdr-off.ico"
+IDI_HDR_ON              ICON         "hdr-on.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

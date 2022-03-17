@@ -11,6 +11,8 @@
 #define IDM_EXIT				105
 #define IDI_HDRTRAY			107
 #define IDI_SMALL				108
+#define IDI_HDR_OFF             109
+#define IDI_HDR_ON              110
 #define IDC_HDRTRAY			109
 #define IDC_MYICON				2
 #ifndef IDC_STATIC
