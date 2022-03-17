@@ -6,6 +6,7 @@
 #include "HDR.h"
 
 #include <shellapi.h>
+#include <windowsx.h>
 
 #include <memory>
 #include <utility>
@@ -40,7 +41,7 @@ public:
     enum { MESSAGE = WM_USER + 11 };
 
 protected:
-    void PopupIconMenu(HWND hWnd);
+    void PopupIconMenu(HWND hWnd, POINT pos);
 
 };
 // {2D4645CF-59A2-4566-9D8B-86017A629D0A}
@@ -124,23 +125,21 @@ LRESULT NotifyIcon::HandleMessage(HWND hWnd, WPARAM wParam, LPARAM lParam)
     case WM_CONTEXTMENU:
     case NIN_KEYSELECT:
     case NIN_SELECT:
-        PopupIconMenu(hWnd);
+        PopupIconMenu(hWnd, POINT { GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam) });
         break;
     }
     return 0;
 }
 
-void NotifyIcon::PopupIconMenu(HWND hWnd)
+void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
 {
-    NOTIFYICONIDENTIFIER icon_id = { sizeof(NOTIFYICONIDENTIFIER) };
-    icon_id.guidItem = guid;
-    RECT notify_rect;
-    if(FAILED(Shell_NotifyIconGetRect(&icon_id, &notify_rect)))
-        return;
+    // needed to clicking "outside" the menu works
+    SetForegroundWindow(hWnd);
 
-    TPMPARAMS tpmp = { sizeof(TPMPARAMS) };
-    tpmp.rcExclude = notify_rect;
-    TrackPopupMenuEx(GetSubMenu(popup_menu, 0), 0, notify_rect.left, notify_rect.top, hWnd, &tpmp);
+    bool menu_right_align = GetSystemMetrics(SM_MENUDROPALIGNMENT) != 0;
+    TrackPopupMenuEx(GetSubMenu(popup_menu, 0),
+                     menu_right_align ? TPM_HORNEGANIMATION | TPM_RIGHTALIGN : TPM_HORPOSANIMATION | TPM_LEFTALIGN,
+                     pos.x, pos.y, hWnd, nullptr);
 }
 
 // Forward declarations of functions included in this code module:
