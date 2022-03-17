@@ -71,7 +71,8 @@ bool NotifyIcon::Add()
 {
     auto notify_add = notify_template;
     notify_add.hIcon = icon_hdr_off;
-    notify_add.uFlags |= NIF_ICON;
+    LoadStringW(hInst, IDS_APP_TITLE, notify_add.szTip, ARRAYSIZE(notify_add.szTip));
+    notify_add.uFlags |= NIF_ICON | NIF_TIP;
     if(!Shell_NotifyIconW(NIM_ADD, &notify_add))
         return false;
 
@@ -95,17 +96,21 @@ void NotifyIcon::SetFromHDRStatus(const hdr::monitor_status_vec& hdr_status)
     }
 
     auto notify_mod = notify_template;
-    //notify_add.hIcon = icon_hdr_off;
-    notify_mod.uFlags |= NIF_ICON;
+    notify_mod.uFlags |= NIF_ICON | NIF_TIP;
     switch(static_cast<hdr::Status>(single_status))
     {
     default:
     case hdr::Status::Unsupported:
+        notify_mod.hIcon = icon_hdr_off;
+        LoadStringW(hInst, IDS_HDR_UNSUPPORTED, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
+        break;
     case hdr::Status::Off:
         notify_mod.hIcon = icon_hdr_off;
+        LoadStringW(hInst, IDS_HDR_OFF, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
         break;
     case hdr::Status::On:
         notify_mod.hIcon = icon_hdr_on;
+        LoadStringW(hInst, IDS_HDR_ON, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
         break;
     }
     Shell_NotifyIconW(NIM_MODIFY, &notify_mod);

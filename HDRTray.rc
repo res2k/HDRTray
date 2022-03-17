@@ -34,5 +34,8 @@ END
 
 STRINGTABLE
 BEGIN
-   IDS_APP_TITLE       "HDRTray"
+   IDS_APP_TITLE        "HDRTray"
+   IDS_HDR_UNSUPPORTED  "HDR not supported"
+   IDS_HDR_OFF          "HDR is off"
+   IDS_HDR_ON           "HDR is on"
 END
