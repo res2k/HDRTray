@@ -6,7 +6,9 @@
 #define IDM_EXIT                101
 
 #define IDI_APP                 1
-#define IDI_HDR_OFF             101
-#define IDI_HDR_ON              102
+#define IDI_HDR_OFF_DARKMODE    101
+#define IDI_HDR_OFF_LIGHTMODE   102
+#define IDI_HDR_ON_DARKMODE     103
+#define IDI_HDR_ON_LIGHTMODE    104
 
 #define IDC_TRAYPOPUP           101

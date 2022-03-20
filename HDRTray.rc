@@ -11,8 +11,10 @@ LANGUAGE 9, 1
 // remains consistent on all systems.
 
 IDI_APP                 ICON         "HDRTray.ico"
-IDI_HDR_OFF             ICON         "hdr-off.ico"
-IDI_HDR_ON              ICON         "hdr-on.ico"
+IDI_HDR_OFF_DARKMODE    ICON         "icons/sdr-darkmode.ico"
+IDI_HDR_OFF_LIGHTMODE   ICON         "icons/sdr-lightmode.ico"
+IDI_HDR_ON_DARKMODE     ICON         "icons/hdr-darkmode.ico"
+IDI_HDR_ON_LIGHTMODE    ICON         "icons/hdr-lightmode.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

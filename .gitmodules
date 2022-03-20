@@ -1,0 +1,3 @@
+[submodule "Windows10Colors"]
+	path = Windows10Colors
+	url = https://github.com/res2k/Windows10Colors.git

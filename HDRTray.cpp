@@ -5,6 +5,8 @@
 #include "HDRTray.h"
 #include "HDR.h"
 
+#include "Windows10Colors.h"
+
 #include <shellapi.h>
 #include <windowsx.h>
 
@@ -23,9 +25,17 @@ class NotifyIcon
     static const GUID guid;
     NOTIFYICONDATAW notify_template;
 
-    HICON icon_hdr_on;
-    HICON icon_hdr_off;
+    enum { iconsetDarkMode = 0, iconsetLightMode, numIconsets };
+    struct Icons
+    {
+        HICON hdr_on;
+        HICON hdr_off;
+    };
+    Icons icons[numIconsets];
     HMENU popup_menu;
+
+    bool dark_mode_icons = false;
+    hdr::Status hdr_status = hdr::Status::Unsupported;
 
 public:
     NotifyIcon(HWND hwnd);
@@ -34,7 +44,8 @@ public:
     bool Add();
     void Remove();
 
-    void SetFromHDRStatus(const hdr::monitor_status_vec& hdr_status);
+    void UpdateHDRStatus();
+    void UpdateDarkMode();
 
     LRESULT HandleMessage(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
@@ -43,6 +54,10 @@ public:
 protected:
     void PopupIconMenu(HWND hWnd, POINT pos);
 
+    const Icons& GetCurrentIconSet() const;
+    void FetchHDRStatus();
+    void FetchDarkMode();
+    void UpdateIcon();
 };
 // {2D4645CF-59A2-4566-9D8B-86017A629D0A}
 const GUID NotifyIcon::guid = { 0x2d4645cf, 0x59a2, 0x4566, { 0x9d, 0x8b, 0x86, 0x1, 0x7a, 0x62, 0x9d, 0xa } };
@@ -56,22 +71,29 @@ NotifyIcon::NotifyIcon(HWND hwnd)
     notify_template.uCallbackMessage = MESSAGE;
     notify_template.guidItem = guid;
 
-    icon_hdr_on = LoadIconW(hInst, MAKEINTRESOURCEW(IDI_HDR_ON));
-    icon_hdr_off = LoadIconW(hInst, MAKEINTRESOURCEW(IDI_HDR_OFF));
+    for (int i = 0; i < numIconsets; i++) {
+        icons[i].hdr_on = LoadIconW(hInst, MAKEINTRESOURCEW(IDI_HDR_ON_DARKMODE + i));
+        icons[i].hdr_off = LoadIconW(hInst, MAKEINTRESOURCEW(IDI_HDR_OFF_DARKMODE + i));
+    }
     popup_menu = LoadMenuW(hInst, MAKEINTRESOURCEW(IDC_TRAYPOPUP));
 }
 
 NotifyIcon::~NotifyIcon()
 {
-    DestroyIcon(icon_hdr_on);
-    DestroyIcon(icon_hdr_off);
+    for (int i = 0; i < numIconsets; i++) {
+        DestroyIcon(icons[i].hdr_on);
+        DestroyIcon(icons[i].hdr_off);
+    }
     DestroyMenu(popup_menu);
 }
 
 bool NotifyIcon::Add()
 {
+    FetchHDRStatus();
+    FetchDarkMode();
+
     auto notify_add = notify_template;
-    notify_add.hIcon = icon_hdr_off;
+    notify_add.hIcon = GetCurrentIconSet().hdr_off;
     LoadStringW(hInst, IDS_APP_TITLE, notify_add.szTip, ARRAYSIZE(notify_add.szTip));
     notify_add.uFlags |= NIF_ICON | NIF_TIP;
     if(!Shell_NotifyIconW(NIM_ADD, &notify_add))
@@ -79,7 +101,10 @@ bool NotifyIcon::Add()
 
     auto notify_setversion = notify_template;
     notify_setversion.uVersion = NOTIFYICON_VERSION_4;
-    return Shell_NotifyIconW(NIM_SETVERSION, &notify_setversion);
+    Shell_NotifyIconW(NIM_SETVERSION, &notify_setversion);
+
+    UpdateIcon();
+    return true;
 }
 
 void NotifyIcon::Remove()
@@ -88,33 +113,16 @@ void NotifyIcon::Remove()
     Shell_NotifyIconW(NIM_DELETE, &notify_delete);
 }
 
-void NotifyIcon::SetFromHDRStatus(const hdr::monitor_status_vec& hdr_status)
+void NotifyIcon::UpdateHDRStatus()
 {
-    // Compute a singular status across all monitors
-    int single_status = static_cast<int>(hdr::Status::Unsupported);
-    for(const auto& display_status : hdr_status) {
-        single_status = std::max(single_status, static_cast<int>(display_status.second));
-    }
+    FetchHDRStatus();
+    UpdateIcon();
+}
 
-    auto notify_mod = notify_template;
-    notify_mod.uFlags |= NIF_ICON | NIF_TIP;
-    switch(static_cast<hdr::Status>(single_status))
-    {
-    default:
-    case hdr::Status::Unsupported:
-        notify_mod.hIcon = icon_hdr_off;
-        LoadStringW(hInst, IDS_HDR_UNSUPPORTED, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
-        break;
-    case hdr::Status::Off:
-        notify_mod.hIcon = icon_hdr_off;
-        LoadStringW(hInst, IDS_HDR_OFF, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
-        break;
-    case hdr::Status::On:
-        notify_mod.hIcon = icon_hdr_on;
-        LoadStringW(hInst, IDS_HDR_ON, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
-        break;
-    }
-    Shell_NotifyIconW(NIM_MODIFY, &notify_mod);
+void NotifyIcon::UpdateDarkMode()
+{
+    FetchDarkMode();
+    UpdateIcon();
 }
 
 LRESULT NotifyIcon::HandleMessage(HWND hWnd, WPARAM wParam, LPARAM lParam)
@@ -140,6 +148,54 @@ void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
     TrackPopupMenuEx(GetSubMenu(popup_menu, 0),
                      menu_right_align ? TPM_HORNEGANIMATION | TPM_RIGHTALIGN : TPM_HORPOSANIMATION | TPM_LEFTALIGN,
                      pos.x, pos.y, hWnd, nullptr);
+}
+const NotifyIcon::Icons& NotifyIcon::GetCurrentIconSet() const
+{
+    return icons[dark_mode_icons ? iconsetDarkMode : iconsetLightMode];
+}
+
+void NotifyIcon::FetchHDRStatus()
+{
+    // Compute a singular status across all monitors
+    int single_status = static_cast<int>(hdr::Status::Unsupported);
+    for(const auto& display_status : hdr::GetWindowsHDRStatus()) {
+        single_status = std::max(single_status, static_cast<int>(display_status.second));
+    }
+    this->hdr_status = static_cast<hdr::Status>(single_status);
+}
+
+void NotifyIcon::FetchDarkMode()
+{
+    windows10colors::SysPartsMode sys_parts_coloring;
+    if(FAILED(GetSysPartsMode(sys_parts_coloring)))
+        return;
+
+    // In both "dark" and "accented" modes the task bar is dark enough to require light text
+    dark_mode_icons = sys_parts_coloring != windows10colors::SysPartsMode::Light;
+}
+
+void NotifyIcon::UpdateIcon()
+{
+    auto notify_mod = notify_template;
+    notify_mod.uFlags |= NIF_ICON | NIF_TIP;
+    switch(hdr_status)
+    {
+    default:
+    case hdr::Status::Unsupported:
+        notify_mod.hIcon = GetCurrentIconSet().hdr_off;
+        LoadStringW(hInst, IDS_HDR_UNSUPPORTED, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
+        break;
+    case hdr::Status::Off:
+        notify_mod.hIcon = GetCurrentIconSet().hdr_off;
+        LoadStringW(hInst, IDS_HDR_OFF, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
+        break;
+    case hdr::Status::On:
+        notify_mod.hIcon = GetCurrentIconSet().hdr_on;
+        LoadStringW(hInst, IDS_HDR_ON, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
+        break;
+    }
+    Shell_NotifyIconW(NIM_MODIFY, &notify_mod);
+
 }
 
 // Forward declarations of functions included in this code module:
@@ -249,7 +305,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_CREATE:
         notify_icon.reset(new NotifyIcon(hWnd));
         notify_icon->Add();
-        notify_icon->SetFromHDRStatus(hdr::GetWindowsHDRStatus());
         break;
     case WM_COMMAND:
         {
@@ -266,7 +321,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DISPLAYCHANGE:
-        notify_icon->SetFromHDRStatus(hdr::GetWindowsHDRStatus());
+        notify_icon->UpdateHDRStatus();
+        break;
+    case WM_SETTINGCHANGE:
+        notify_icon->UpdateDarkMode();
         break;
     case WM_DESTROY:
         notify_icon->Remove();
