@@ -22,6 +22,7 @@
 
 #include "Windows10Colors.h"
 
+#include <CommCtrl.h>
 #include <windowsx.h>
 
 NotifyIcon::NotifyIcon(HWND hwnd)
@@ -33,8 +34,8 @@ NotifyIcon::NotifyIcon(HWND hwnd)
     notify_template.uCallbackMessage = MESSAGE;
 
     for (int i = 0; i < numIconsets; i++) {
-        icons[i].hdr_on = LoadIconW(hInst, MAKEINTRESOURCEW(IDI_HDR_ON_DARKMODE + i));
-        icons[i].hdr_off = LoadIconW(hInst, MAKEINTRESOURCEW(IDI_HDR_OFF_DARKMODE + i));
+        LoadIconMetric(hInst, MAKEINTRESOURCEW(IDI_HDR_ON_DARKMODE + i), LIM_SMALL, &icons[i].hdr_on);
+        LoadIconMetric(hInst, MAKEINTRESOURCEW(IDI_HDR_OFF_DARKMODE + i), LIM_SMALL, &icons[i].hdr_off);
     }
     popup_menu = LoadMenuW(hInst, MAKEINTRESOURCEW(IDC_TRAYPOPUP));
 }

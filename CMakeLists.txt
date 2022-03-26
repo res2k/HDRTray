@@ -17,11 +17,12 @@ target_sources(HDRTray PRIVATE
                "NotifyIcon.hpp"
                "HDR.cpp"
                "HDRTray.cpp"
+               "HDRTray.manifest"
                "HDRTray.rc"
                "NotifyIcon.cpp"
                )
 target_compile_definitions(HDRTray PRIVATE UNICODE _UNICODE)
-target_link_libraries(HDRTray PRIVATE Windows10Colors)
+target_link_libraries(HDRTray PRIVATE Windows10Colors comctl32)
 set_target_properties(HDRTray PROPERTIES WIN32_EXECUTABLE ON)
 
 # TODO: Add tests and install targets if needed.
