@@ -24,16 +24,13 @@
 
 #include <windowsx.h>
 
-// {2D4645CF-59A2-4566-9D8B-86017A629D0A}
-const GUID NotifyIcon::guid = { 0x2d4645cf, 0x59a2, 0x4566, { 0x9d, 0x8b, 0x86, 0x1, 0x7a, 0x62, 0x9d, 0xa } };
-
 NotifyIcon::NotifyIcon(HWND hwnd)
 {
     notify_template = NOTIFYICONDATAW { sizeof(NOTIFYICONDATAW) };
     notify_template.hWnd = hwnd;
-    notify_template.uFlags = NIF_MESSAGE | NIF_GUID;
+    notify_template.uID = 0;
+    notify_template.uFlags = NIF_MESSAGE | NIF_GUID | NIF_SHOWTIP;
     notify_template.uCallbackMessage = MESSAGE;
-    notify_template.guidItem = guid;
 
     for (int i = 0; i < numIconsets; i++) {
         icons[i].hdr_on = LoadIconW(hInst, MAKEINTRESOURCEW(IDI_HDR_ON_DARKMODE + i));

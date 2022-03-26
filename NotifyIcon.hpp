@@ -26,7 +26,6 @@
 
 class NotifyIcon
 {
-    static const GUID guid;
     NOTIFYICONDATAW notify_template;
 
     enum { iconsetDarkMode = 0, iconsetLightMode, numIconsets };
