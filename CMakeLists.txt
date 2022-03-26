@@ -10,7 +10,16 @@ target_sources(Windows10Colors PRIVATE Windows10Colors/Windows10Colors/Windows10
 target_include_directories(Windows10Colors PUBLIC Windows10Colors/Windows10Colors/)
 
 # Add source to this project's executable.
-add_executable(HDRTray "HDRTray.cpp" "HDRTray.h" "HDRTray.rc" "HDR.cpp" "HDR.h")
+add_executable(HDRTray)
+target_sources(HDRTray PRIVATE
+               "HDR.h"
+               "HDRTray.h"
+               "NotifyIcon.hpp"
+               "HDR.cpp"
+               "HDRTray.cpp"
+               "HDRTray.rc"
+               "NotifyIcon.cpp"
+               )
 target_compile_definitions(HDRTray PRIVATE UNICODE _UNICODE)
 target_link_libraries(HDRTray PRIVATE Windows10Colors)
 set_target_properties(HDRTray PROPERTIES WIN32_EXECUTABLE ON)
