@@ -54,6 +54,8 @@ public:
 
     enum { MESSAGE = WM_USER + 11 };
 
+    void ToggleAutostartEnabled();
+
 protected:
     void PopupIconMenu(HWND hWnd, POINT pos);
 
@@ -61,6 +63,8 @@ protected:
     void FetchHDRStatus();
     void FetchDarkMode();
     void UpdateIcon();
+
+    bool IsAutostartEnabled() const;
 };
 
 #endif // NOTIFYICON_H_

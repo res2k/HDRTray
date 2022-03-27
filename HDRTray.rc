@@ -25,6 +25,7 @@ IDC_TRAYPOPUP MENU
 BEGIN
     POPUP "Dummy"
     BEGIN
+        MENUITEM "&Start when logging in", IDM_AUTOSTART
         MENUITEM "&Quit",                IDM_EXIT
     END
 END

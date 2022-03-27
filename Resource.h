@@ -23,6 +23,7 @@
 #define IDS_WINDOWS_TOO_OLD     105
 
 #define IDM_EXIT                101
+#define IDM_AUTOSTART           102
 
 #define IDI_APP                 1
 #define IDI_HDR_OFF_DARKMODE    101
