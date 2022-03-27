@@ -1,0 +1,24 @@
+1 VERSIONINFO
+FILEVERSION     @VERSION_MAJOR@,@VERSION_MINOR@,@VERSION_REVISION@,@VERSION_BUILD@
+PRODUCTVERSION  @VERSION_MAJOR@,@VERSION_MINOR@,@VERSION_REVISION@,@VERSION_BUILD@
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "FileDescription",  "HDRTray"
+            VALUE "FileVersion",      "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_REVISION@.@VERSION_BUILD@"
+            VALUE "InternalName",     "HDRTray.exe"
+            VALUE "LegalCopyright",   "Copyright (c) 2022 Frank Richter"
+            VALUE "ProductName",      "HDRTray"
+            VALUE "ProductVersion",   "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_REVISION@.@VERSION_BUILD@"
+            VALUE "Licence", "GNU General Public License, version 3"
+            //VALUE "Info", "https://res2k.github.io" // TODO link
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END

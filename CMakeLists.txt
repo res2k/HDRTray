@@ -4,6 +4,12 @@
 cmake_minimum_required (VERSION 3.8)
 
 project ("HDRTray")
+set(VERSION_MAJOR 0)
+set(VERSION_MINOR 0)
+set(VERSION_REVISION 0)
+set(VERSION_BUILD 0)
+
+configure_file(version.rc.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc")
 
 add_library(Windows10Colors STATIC)
 target_sources(Windows10Colors PRIVATE Windows10Colors/Windows10Colors/Windows10Colors.cpp Windows10Colors/Windows10Colors/Windows10Colors.h)
@@ -22,6 +28,7 @@ target_sources(HDRTray PRIVATE
                "NotifyIcon.cpp"
                )
 target_compile_definitions(HDRTray PRIVATE UNICODE _UNICODE)
+target_include_directories(HDRTray PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
 target_link_libraries(HDRTray PRIVATE Windows10Colors comctl32)
 set_target_properties(HDRTray PROPERTIES WIN32_EXECUTABLE ON)
 
