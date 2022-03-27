@@ -80,20 +80,20 @@ static Status GetMonitorHDRStatus(HMONITOR monitor, MONITORINFOEXW& monitor_info
 
 static BOOL monitor_enum_proc(HMONITOR monitor, HDC /*dc*/, LPRECT /*rect*/, LPARAM param)
 {
-    auto& status = *(reinterpret_cast<monitor_status_vec*>(param));
+    auto& status = *(reinterpret_cast<Status*>(param));
 
     MONITORINFOEXW monitor_info = {};
     monitor_info.cbSize = sizeof(monitor_info);
     auto hdr = GetMonitorHDRStatus(monitor, monitor_info);
 
-    status.emplace_back(monitor_info.szDevice, hdr);
+    status = static_cast<Status>(std::max(static_cast<int>(status), static_cast<int>(hdr)));
 
     return true;
 }
 
-monitor_status_vec GetWindowsHDRStatus()
+Status GetWindowsHDRStatus()
 {
-    monitor_status_vec status;
+    Status status = Status::Unsupported;
     EnumDisplayMonitors(NULL, NULL, &monitor_enum_proc, reinterpret_cast<LPARAM>(&status));
     return status;
 }

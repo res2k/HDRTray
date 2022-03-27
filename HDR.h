@@ -18,10 +18,7 @@ namespace hdr {
 
 enum class Status { Unsupported = 0, Off = 1, On = 2 };
 
-using monitor_status = std::pair<std::wstring, Status>;
-using monitor_status_vec = std::vector<monitor_status>;
-
-monitor_status_vec GetWindowsHDRStatus();
+Status GetWindowsHDRStatus();
 
 } // namespace hdr
 

@@ -190,12 +190,7 @@ const NotifyIcon::Icons& NotifyIcon::GetCurrentIconSet() const
 
 void NotifyIcon::FetchHDRStatus()
 {
-    // Compute a singular status across all monitors
-    int single_status = static_cast<int>(hdr::Status::Unsupported);
-    for(const auto& display_status : hdr::GetWindowsHDRStatus()) {
-        single_status = std::max(single_status, static_cast<int>(display_status.second));
-    }
-    this->hdr_status = static_cast<hdr::Status>(single_status);
+    this->hdr_status = hdr::GetWindowsHDRStatus();
 }
 
 void NotifyIcon::FetchDarkMode()
