@@ -24,6 +24,8 @@
 #include <memory>
 #include <utility>
 
+#include "VersionHelpers.h"
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -36,6 +38,33 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 
+static bool IsWindows10BuildOrGreater(DWORD dwBuildNumber)
+{
+    OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
+    DWORDLONG        const dwlConditionMask = VerSetConditionMask(
+        VerSetConditionMask(
+        VerSetConditionMask(
+            0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+               VER_MINORVERSION, VER_GREATER_EQUAL),
+               VER_BUILDNUMBER, VER_GREATER_EQUAL);
+
+    osvi.dwMajorVersion = 10;
+    osvi.dwMinorVersion = 0;
+    osvi.dwBuildNumber = dwBuildNumber;
+
+    return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_BUILDNUMBER, dwlConditionMask) != FALSE;
+}
+
+static bool IsWindows10_1709OrGreater ()
+{
+    return IsWindows10BuildOrGreater(16299);
+}
+
+static bool IsWindows10_1803OrGreater ()
+{
+    return IsWindows10BuildOrGreater(17134);
+}
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -44,10 +73,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    if(IsWindows10_1709OrGreater())
+        SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    else
+        SetProcessDPIAware();
 
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+
+    // if Windows 10 < version 1803 refuse to start
+    if (!IsWindows10_1803OrGreater()) {
+        const wchar_t* string_data = nullptr;
+        int message_len = LoadStringW(hInst, IDS_WINDOWS_TOO_OLD, (LPWSTR)&string_data, 0);
+        auto message = std::wstring(string_data, message_len);
+        MessageBoxW(nullptr, message.c_str(), szTitle, MB_OK | MB_ICONERROR);
+        return 1;
+    }
+
     MyRegisterClass(hInstance);
 
     // Perform application initialization:

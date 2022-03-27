@@ -40,4 +40,5 @@ BEGIN
    IDS_HDR_UNSUPPORTED  "HDR not supported"
    IDS_HDR_OFF          "HDR is off"
    IDS_HDR_ON           "HDR is on"
+   IDS_WINDOWS_TOO_OLD  "Sorry, HDRTray only works on Windows 10, version 1803 and above"
 END
