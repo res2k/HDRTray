@@ -61,7 +61,7 @@ bool NotifyIcon::Add()
     auto notify_add = notify_template;
     notify_add.hIcon = GetCurrentIconSet().hdr_off;
     LoadStringW(hInst, IDS_APP_TITLE, notify_add.szTip, ARRAYSIZE(notify_add.szTip));
-    notify_add.uFlags |= NIF_ICON | NIF_TIP;
+    notify_add.uFlags |= NIF_ICON | NIF_TIP | NIF_SHOWTIP;
     if(!Shell_NotifyIconW(NIM_ADD, &notify_add))
         return false;
 
