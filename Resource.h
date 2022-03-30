@@ -21,9 +21,11 @@
 #define IDS_HDR_ON              103
 #define IDS_HDR_OFF             104
 #define IDS_WINDOWS_TOO_OLD     105
+#define IDS_TOGGLE_HDR_ERROR    106
 
 #define IDM_EXIT                101
 #define IDM_AUTOSTART           102
+#define IDM_ENABLE_HDR          103
 
 #define IDI_APP                 1
 #define IDI_HDR_OFF_DARKMODE    101

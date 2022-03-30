@@ -168,6 +168,23 @@ void NotifyIcon::ToggleAutostartEnabled()
     RegCloseKey(key_autostart);
 }
 
+void NotifyIcon::ToggleHDR()
+{
+    auto new_status = hdr::ToggleHDRStatus();
+
+    if(new_status) {
+        hdr_status = *new_status;
+        UpdateIcon();
+    } else {
+        // Pop up error balloon if toggle failed
+        auto notify_balloon_tip = notify_template;
+        notify_balloon_tip.uFlags |= NIF_INFO | NIF_REALTIME;
+        LoadStringW(hInst, IDS_TOGGLE_HDR_ERROR, notify_balloon_tip.szInfo, ARRAYSIZE(notify_balloon_tip.szInfo));
+        notify_balloon_tip.dwInfoFlags = NIIF_ERROR;
+        Shell_NotifyIconW(NIM_MODIFY, &notify_balloon_tip);
+    }
+}
+
 void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
 {
     // needed to clicking "outside" the menu works
@@ -177,6 +194,20 @@ void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
     mii.fMask = MIIM_STATE;
     mii.fState = IsAutostartEnabled() ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfoW(popup_menu, IDM_AUTOSTART, false, &mii);
+
+    wchar_t str_hdr_unsupported[256];
+    mii = { sizeof(MENUITEMINFOW) };
+    if(hdr_status == hdr::Status::Unsupported) {
+        LoadStringW(hInst, IDS_HDR_UNSUPPORTED, str_hdr_unsupported, ARRAYSIZE(str_hdr_unsupported));
+        mii.fMask = MIIM_STATE | MIIM_TYPE ;
+        mii.fState = MFS_DISABLED;
+        mii.fType = MFT_STRING;
+        mii.dwTypeData = str_hdr_unsupported;
+    } else {
+        mii.fMask = MIIM_STATE;
+        mii.fState = hdr_status == hdr::Status::On ? MFS_CHECKED : MFS_UNCHECKED;
+    }
+    SetMenuItemInfoW(popup_menu, IDM_ENABLE_HDR, false, &mii);
 
     bool menu_right_align = GetSystemMetrics(SM_MENUDROPALIGNMENT) != 0;
     TrackPopupMenuEx(GetSubMenu(popup_menu, 0),

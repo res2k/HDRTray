@@ -10,6 +10,7 @@
 #ifndef HDR_H_
 #define HDR_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,6 +20,7 @@ namespace hdr {
 enum class Status { Unsupported = 0, Off = 1, On = 2 };
 
 Status GetWindowsHDRStatus();
+std::optional<Status> ToggleHDRStatus();
 
 } // namespace hdr
 

@@ -186,6 +186,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // Parse the menu selections:
             switch (wmId)
             {
+            case IDM_ENABLE_HDR:
+                notify_icon->ToggleHDR();
+                break;
             case IDM_AUTOSTART:
                 notify_icon->ToggleAutostartEnabled();
                 break;

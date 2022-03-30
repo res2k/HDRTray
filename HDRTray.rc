@@ -25,6 +25,7 @@ IDC_TRAYPOPUP MENU
 BEGIN
     POPUP "Dummy"
     BEGIN
+        MENUITEM "Enable &HDR", IDM_ENABLE_HDR
         MENUITEM "&Start when logging in", IDM_AUTOSTART
         MENUITEM "&Quit",                IDM_EXIT
     END
@@ -42,6 +43,7 @@ BEGIN
    IDS_HDR_OFF          "HDR is off"
    IDS_HDR_ON           "HDR is on"
    IDS_WINDOWS_TOO_OLD  "Sorry, HDRTray only works on Windows 10, version 1803 and above"
+   IDS_TOGGLE_HDR_ERROR "Failed to switch HDR mode"
 END
 
 

@@ -55,6 +55,7 @@ public:
     enum { MESSAGE = WM_USER + 11 };
 
     void ToggleAutostartEnabled();
+    void ToggleHDR();
 
 protected:
     void PopupIconMenu(HWND hWnd, POINT pos);
