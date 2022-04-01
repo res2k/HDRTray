@@ -172,6 +172,11 @@ void NotifyIcon::ToggleAutostartEnabled()
 
 void NotifyIcon::ToggleHDR()
 {
+    /* Toggling HDR moves the mouse cursor to the screen center,
+     * so save & restore it's position */
+    POINT mouse_pos;
+    bool has_mouse_pos = GetCursorPos(&mouse_pos);
+
     auto new_status = hdr::ToggleHDRStatus();
 
     if(new_status) {
@@ -185,6 +190,9 @@ void NotifyIcon::ToggleHDR()
         notify_balloon_tip.dwInfoFlags = NIIF_ERROR;
         Shell_NotifyIconW(NIM_MODIFY, &notify_balloon_tip);
     }
+
+    if(has_mouse_pos)
+        SetCursorPos(mouse_pos.x, mouse_pos.y);
 }
 
 void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
