@@ -40,8 +40,8 @@ STRINGTABLE
 BEGIN
    IDS_APP_TITLE        "HDRTray"
    IDS_HDR_UNSUPPORTED  "HDR not supported"
-   IDS_HDR_OFF          "HDR is off"
-   IDS_HDR_ON           "HDR is on"
+   IDS_HDR_OFF          "HDR is off\nClick to turn on HDR"
+   IDS_HDR_ON           "HDR is on\nClick to turn off HDR"
    IDS_WINDOWS_TOO_OLD  "Sorry, HDRTray only works on Windows 10, version 1803 and above"
    IDS_TOGGLE_HDR_ERROR "Failed to switch HDR mode"
 END

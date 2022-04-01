@@ -97,9 +97,11 @@ LRESULT NotifyIcon::HandleMessage(HWND hWnd, WPARAM wParam, LPARAM lParam)
     switch(event)
     {
     case WM_CONTEXTMENU:
+        PopupIconMenu(hWnd, POINT { GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam) });
+        break;
     case NIN_KEYSELECT:
     case NIN_SELECT:
-        PopupIconMenu(hWnd, POINT { GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam) });
+        ToggleHDR();
         break;
     }
     return 0;
@@ -205,14 +207,14 @@ void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
         mii.dwTypeData = str_hdr_unsupported;
     } else {
         mii.fMask = MIIM_STATE;
-        mii.fState = hdr_status == hdr::Status::On ? MFS_CHECKED : MFS_UNCHECKED;
+        mii.fState = (hdr_status == hdr::Status::On ? MFS_CHECKED : MFS_UNCHECKED) | MFS_DEFAULT;
     }
     SetMenuItemInfoW(popup_menu, IDM_ENABLE_HDR, false, &mii);
 
     bool menu_right_align = GetSystemMetrics(SM_MENUDROPALIGNMENT) != 0;
-    TrackPopupMenuEx(GetSubMenu(popup_menu, 0),
-                     menu_right_align ? TPM_HORNEGANIMATION | TPM_RIGHTALIGN : TPM_HORPOSANIMATION | TPM_LEFTALIGN,
-                     pos.x, pos.y, hWnd, nullptr);
+    DWORD flags = TPM_RIGHTBUTTON
+        | (menu_right_align ? TPM_HORNEGANIMATION | TPM_RIGHTALIGN : TPM_HORPOSANIMATION | TPM_LEFTALIGN);
+    TrackPopupMenuEx(GetSubMenu(popup_menu, 0), flags, pos.x, pos.y, hWnd, nullptr);
 }
 const NotifyIcon::Icons& NotifyIcon::GetCurrentIconSet() const
 {
