@@ -10,7 +10,7 @@ LANGUAGE 9, 1
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 
-IDI_APP                 ICON         "HDRTray.ico"
+IDI_APP                 ICON         "icons/app.ico"
 IDI_HDR_OFF_DARKMODE    ICON         "icons/sdr-darkmode.ico"
 IDI_HDR_OFF_LIGHTMODE   ICON         "icons/sdr-lightmode.ico"
 IDI_HDR_ON_DARKMODE     ICON         "icons/hdr-darkmode.ico"

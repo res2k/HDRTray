@@ -17,7 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-# Generate the icon files from SVGs
+# Generate the notification area icon files from SVGs
 # This was written for use with WSL and requires inkscape, icoutils and imagemagick installed
 
 icon_from_svg()
