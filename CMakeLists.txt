@@ -92,3 +92,9 @@ endif()
 install(TARGETS HDRTray
         RUNTIME
         DESTINATION ".")
+if(MARKDOWN_AVAILABLE)
+    foreach(md_file LICENSE README)
+        install(FILES "${MD_OUTPUT_DIR}/${md_file}.html"
+                DESTINATION ".")
+    endforeach()
+endif()
