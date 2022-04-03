@@ -38,6 +38,9 @@ jobs:
       run: |
         RELEASE_ARCHIVE=HDRTray-${GITHUB_REF/refs\/tags\//}.zip
         echo ::set-output name=RELEASE_ARCHIVE::$RELEASE_ARCHIVE
+      id: release_archive_name
+    - run: |
+        RELEASE_ARCHIVE=${{ steps.release_archive_name.outputs.RELEASE_ARCHIVE }}
         7z a $RELEASE_ARCHIVE ${{github.workspace}}/install/*
       name: Make release archive
       id: release_archive
@@ -46,4 +49,4 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-          files: ${{ steps.release_archive.outputs.RELEASE_ARCHIVE }}
+          files: ${{ steps.release_archive_name.outputs.RELEASE_ARCHIVE }}
