@@ -31,4 +31,4 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: ${{github.workspace}}/install/x64-release
+        path: ${{github.workspace}}/install
