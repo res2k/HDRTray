@@ -58,4 +58,6 @@ set_target_properties(HDRTray PROPERTIES
                       WIN32_EXECUTABLE ON
                       MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-# TODO: Add tests and install targets if needed.
+install(TARGETS HDRTray
+        RUNTIME
+        DESTINATION ".")
