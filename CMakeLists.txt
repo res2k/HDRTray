@@ -14,6 +14,7 @@ configure_file(version.rc.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(Python3_FIND_REGISTRY LAST)
 find_package (Python3 COMPONENTS Interpreter)
 if(Python3_Interpreter_FOUND)
     set(MARKDOWN_AVAILABLE NO)
