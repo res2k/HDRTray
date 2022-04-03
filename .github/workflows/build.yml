@@ -27,3 +27,8 @@ jobs:
 
     - name: Install
       run: cmake --install ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: ${{github.workspace}}/install/x64-release
