@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 3.15)
 
 project ("HDRTray")
 set(VERSION_MAJOR 0)
-set(VERSION_MINOR 0)
+set(VERSION_MINOR 1)
 set(VERSION_REVISION 0)
 set(VERSION_BUILD 0)
 
