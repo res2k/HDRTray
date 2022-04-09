@@ -17,15 +17,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(Python3_FIND_REGISTRY LAST)
 find_package (Python3 COMPONENTS Interpreter)
 if(Python3_Interpreter_FOUND)
-    set(MARKDOWN_AVAILABLE NO)
-    execute_process(COMMAND "${Python3_EXECUTABLE}" -m markdown
+    set(MARKO_AVAILABLE NO)
+    execute_process(COMMAND "${Python3_EXECUTABLE}" -m marko
                     INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
                     OUTPUT_QUIET
-                    RESULT_VARIABLE MARKDOWN_RESULT)
-    if(MARKDOWN_RESULT EQUAL 0)
-        set(MARKDOWN_AVAILABLE YES)
+                    RESULT_VARIABLE MARKO_RESULT)
+    if(MARKO_RESULT EQUAL 0)
+        set(MARKO_AVAILABLE YES)
     endif()
-    message(STATUS "Python markdown module available: ${MARKDOWN_AVAILABLE}")
+    message(STATUS "Python marko module available: ${MARKO_AVAILABLE}")
 else()
     message(STATUS "No Python 3 interpreter found!")
 endif()
@@ -74,7 +74,8 @@ set_target_properties(HDRTray PROPERTIES
                       WIN32_EXECUTABLE ON
                       MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-if(MARKDOWN_AVAILABLE)
+if(MARKO_AVAILABLE)
+    set(MD2HTML "${CMAKE_CURRENT_SOURCE_DIR}/build/md2html.py")
     set(MD_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/md")
     make_directory("${MD_OUTPUT_DIR}")
     set(GENERATED_HTML_FILES)
@@ -83,7 +84,8 @@ if(MARKDOWN_AVAILABLE)
         set(MD_OUTPUT "${MD_OUTPUT_DIR}/${md_file}.html")
         add_custom_command(OUTPUT "${MD_OUTPUT_DIR}/${md_file}.html"
                            MAIN_DEPENDENCY "${MD_INPUT}"
-                           COMMAND "${Python3_EXECUTABLE}" -m markdown ${MD_INPUT} -f ${MD_OUTPUT}
+                           DEPENDS "${MD2HTML}"
+                           COMMAND "${Python3_EXECUTABLE}" "${MD2HTML}" "${MD_INPUT}" "${MD_OUTPUT}"
                            COMMENT "Generating ${md_file}.html")
         list(APPEND GENERATED_HTML_FILES "${MD_OUTPUT}")
     endforeach()
@@ -93,7 +95,7 @@ endif()
 install(TARGETS HDRTray
         RUNTIME
         DESTINATION ".")
-if(MARKDOWN_AVAILABLE)
+if(MARKO_AVAILABLE)
     foreach(md_file LICENSE README)
         install(FILES "${MD_OUTPUT_DIR}/${md_file}.html"
                 DESTINATION ".")
