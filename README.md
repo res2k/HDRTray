@@ -1,6 +1,8 @@
 HDRTray
 =======
 Windows Notification Area icon to show and change HDR status.
+Useful if you quickly want to check the current setting, maybe because it might been changed automatically by some applications, or maybe just because you're forgetful.
+Also allows quick toggling.
 
 Usage
 -----
