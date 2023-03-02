@@ -55,6 +55,11 @@ target_include_directories(Windows10Colors PUBLIC Windows10Colors/Windows10Color
 set_target_properties(Windows10Colors PROPERTIES
                       MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+option(FMT_INSTALL OFF)
+add_subdirectory(fmt)
+set_target_properties(fmt PROPERTIES
+                      MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 # Add source to this project's executable.
 add_executable(HDRTray)
 target_sources(HDRTray PRIVATE

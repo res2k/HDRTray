@@ -1,3 +1,6 @@
 [submodule "Windows10Colors"]
 	path = Windows10Colors
 	url = ../Windows10Colors.git
+[submodule "fmt"]
+	path = fmt
+	url = ../../fmtlib/fmt
