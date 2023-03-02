@@ -20,6 +20,8 @@
 
 #include "Resource.h"
 
+#include "fmt/format.h"
+#include "fmt/xchar.h"
 #include "Windows10Colors.h"
 
 #include <CommCtrl.h>
@@ -28,6 +30,42 @@
 
 static const wchar_t autostart_registry_path[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 static const wchar_t autostart_registry_key[] = L"HDRTray";
+
+// Wraps Shell_NotifyIconW(), prints to debug output in case of a failure
+static BOOL wrap_Shell_NotifyIconW(DWORD message, NOTIFYICONDATAW* data)
+{
+    auto result = Shell_NotifyIconW(message, data);
+    if (result)
+        return result;
+
+    const wchar_t* msg_str = nullptr;
+    switch (message) {
+    case NIM_ADD:
+        msg_str = L"NIM_ADD";
+        break;
+    case NIM_MODIFY:
+        msg_str = L"NIM_MODIFY";
+        break;
+    case NIM_DELETE:
+        msg_str = L"NIM_DELETE";
+        break;
+    case NIM_SETFOCUS:
+        msg_str = L"NIM_SETFOCUS";
+        break;
+    case NIM_SETVERSION:
+        msg_str = L"NIM_SETVERSION";
+        break;
+    }
+
+    std::wstring debug_message;
+    if (msg_str) {
+        debug_message = fmt::format(L"Shell_NotifyIconW({}) failed :(\n", msg_str);
+    } else {
+        debug_message = fmt::format(L"Shell_NotifyIconW({}) failed :(\n", message);
+    }
+    OutputDebugStringW(debug_message.c_str());
+    return result;
+}
 
 NotifyIcon::NotifyIcon(HWND hwnd)
 {
@@ -62,12 +100,12 @@ bool NotifyIcon::Add()
     notify_add.hIcon = GetCurrentIconSet().hdr_off;
     LoadStringW(hInst, IDS_APP_TITLE, notify_add.szTip, ARRAYSIZE(notify_add.szTip));
     notify_add.uFlags |= NIF_ICON | NIF_TIP | NIF_SHOWTIP;
-    if(!Shell_NotifyIconW(NIM_ADD, &notify_add))
+    if(!wrap_Shell_NotifyIconW(NIM_ADD, &notify_add))
         return false;
 
     auto notify_setversion = notify_template;
     notify_setversion.uVersion = NOTIFYICON_VERSION_4;
-    Shell_NotifyIconW(NIM_SETVERSION, &notify_setversion);
+    wrap_Shell_NotifyIconW(NIM_SETVERSION, &notify_setversion);
 
     UpdateIcon();
     return true;
@@ -76,7 +114,7 @@ bool NotifyIcon::Add()
 void NotifyIcon::Remove()
 {
     auto notify_delete = notify_template;
-    Shell_NotifyIconW(NIM_DELETE, &notify_delete);
+    wrap_Shell_NotifyIconW(NIM_DELETE, &notify_delete);
 }
 
 void NotifyIcon::UpdateHDRStatus()
