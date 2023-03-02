@@ -74,7 +74,7 @@ target_sources(HDRTray PRIVATE
                )
 target_compile_definitions(HDRTray PRIVATE UNICODE _UNICODE)
 target_include_directories(HDRTray PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
-target_link_libraries(HDRTray PRIVATE fmt::fmt Windows10Colors comctl32)
+target_link_libraries(HDRTray PRIVATE Windows10Colors comctl32)
 set_target_properties(HDRTray PROPERTIES
                       WIN32_EXECUTABLE ON
                       MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")

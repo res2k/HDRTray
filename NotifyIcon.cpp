@@ -20,8 +20,6 @@
 
 #include "Resource.h"
 
-#include "fmt/format.h"
-#include "fmt/xchar.h"
 #include "Windows10Colors.h"
 
 #include <CommCtrl.h>
@@ -57,13 +55,13 @@ static BOOL wrap_Shell_NotifyIconW(DWORD message, NOTIFYICONDATAW* data)
         break;
     }
 
-    std::wstring debug_message;
+    wchar_t debug_message[256];
     if (msg_str) {
-        debug_message = fmt::format(L"Shell_NotifyIconW({}) failed :(\n", msg_str);
+        swprintf_s(debug_message, L"Shell_NotifyIconW(%ls) failed :(\n", msg_str);
     } else {
-        debug_message = fmt::format(L"Shell_NotifyIconW({}) failed :(\n", message);
+        swprintf_s(debug_message, L"Shell_NotifyIconW(%d) failed :(\n", message);
     }
-    OutputDebugStringW(debug_message.c_str());
+    OutputDebugStringW(debug_message);
     return result;
 }
 
