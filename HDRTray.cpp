@@ -95,7 +95,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Perform application initialization:
     if (!InitInstance (hInstance, nCmdShow))
     {
-        return FALSE;
+        return 2;
     }
 
     MSG msg;
@@ -178,7 +178,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_CREATE:
         notify_icon.reset(new NotifyIcon(hWnd));
-        notify_icon->Add();
+        if (!notify_icon->Add())
+            return -1;
         break;
     case WM_COMMAND:
         {
