@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for HDRTray, include source and define
 # project specific logic here.
 #
-cmake_minimum_required (VERSION 3.15)
+cmake_minimum_required (VERSION 3.15...3.25)
 
 project ("HDRTray")
 set(VERSION_MAJOR 0)
