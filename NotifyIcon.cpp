@@ -72,7 +72,7 @@ NotifyIcon::NotifyIcon(HWND hwnd)
     notify_template = NOTIFYICONDATAW { sizeof(NOTIFYICONDATAW) };
     notify_template.hWnd = hwnd;
     notify_template.uID = 0;
-    notify_template.uFlags = NIF_MESSAGE | NIF_GUID | NIF_SHOWTIP;
+    notify_template.uFlags = NIF_MESSAGE | NIF_SHOWTIP;
     notify_template.uCallbackMessage = MESSAGE;
 
     for (int i = 0; i < numIconsets; i++) {
