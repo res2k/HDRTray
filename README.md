@@ -7,7 +7,7 @@ Also allows quick toggling.
 Usage
 -----
 After starting the program you can see a new notification area icon, displaying
-either "SDR" or "HDR" depending on whether HDR is off or on.
+either “SDR” or “HDR” depending on whether HDR is off or on.
 
 HDR can be toggled on or off with a left-click on the icon.
 
@@ -24,7 +24,7 @@ Please use the [“Issues” tab of the GitHub project page](https://github.com/
 
 License
 -------
-HDRTray, a notification icon for the "Use HDR" option
+HDRTray, a notification icon for the “Use HDR” option
 
 Copyright (C) 2022-2023 Frank Richter
 
