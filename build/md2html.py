@@ -20,6 +20,7 @@
 
 import argparse
 import marko
+import urllib.parse
 
 arguments = argparse.ArgumentParser()
 arguments.add_argument('infile', metavar='MDFILE', help='input Markdown file name')
@@ -39,6 +40,19 @@ def first_child_of_type(element, types):
                 if isinstance(c, t):
                     return c
     return None
+
+# Look for relative links, make sure they have the proper file extension
+def fixup_links(element):
+    for c in getattr(element, "children", []):
+        if isinstance(c, marko.inline.Link):
+            dest = urllib.parse.urlsplit(c.dest)
+            if len(dest.netloc) == 0 and not dest.path.startswith("/"):
+                new_dest = [dest.scheme, dest.netloc, dest.path + ".html", dest.query, dest.fragment]
+                c.dest = urllib.parse.urlunsplit(new_dest)
+        else:
+            fixup_links(c)
+
+fixup_links(parsed)
 
 # Try to extract the title by looking for a heading
 heading_block = first_child_of_type(parsed, [marko.block.SetextHeading, marko.block.Heading])
