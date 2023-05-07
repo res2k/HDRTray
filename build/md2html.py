@@ -27,7 +27,7 @@ arguments.add_argument('outfile', metavar='HTMLFILE', help='output HTML file nam
 arg_values = arguments.parse_args()
 
 md = marko.Markdown()
-parsed = md.parse(open(arg_values.infile, "r").read())
+parsed = md.parse(open(arg_values.infile, "r", encoding="utf-8").read())
 
 # Helper: Get first child of a parsed MD document of the given type
 def first_child_of_type(element, types):
