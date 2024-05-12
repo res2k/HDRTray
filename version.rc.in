@@ -11,7 +11,7 @@ BEGIN
             VALUE "InternalName",     "HDRTray.exe"
             VALUE "LegalCopyright",   "Copyright (c) 2022 Frank Richter"
             VALUE "ProductName",      "HDRTray"
-            VALUE "ProductVersion",   "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_REVISION@.@VERSION_BUILD@"
+            VALUE "ProductVersion",   "@VERSION_FULL@"
             VALUE "Licence", "GNU General Public License, version 3"
             //VALUE "Info", "https://res2k.github.io" // TODO link
         END
