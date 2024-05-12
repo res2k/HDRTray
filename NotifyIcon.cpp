@@ -89,6 +89,11 @@ NotifyIcon::~NotifyIcon()
     DestroyMenu(popup_menu);
 }
 
+bool NotifyIcon::WasAdded() const
+{
+    return added;
+}
+
 bool NotifyIcon::Add()
 {
     FetchHDRStatus();
@@ -106,6 +111,7 @@ bool NotifyIcon::Add()
     wrap_Shell_NotifyIconW(NIM_SETVERSION, &notify_setversion);
 
     UpdateIcon();
+    added = true;
     return true;
 }
 
@@ -113,6 +119,7 @@ void NotifyIcon::Remove()
 {
     auto notify_delete = notify_template;
     wrap_Shell_NotifyIconW(NIM_DELETE, &notify_delete);
+    added = false;
 }
 
 void NotifyIcon::UpdateHDRStatus()

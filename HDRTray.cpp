@@ -161,6 +161,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 }
 
 static std::unique_ptr<NotifyIcon> notify_icon;
+static UINT msg_TaskbarCreated;
 
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
@@ -177,9 +178,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
     case WM_CREATE:
+        msg_TaskbarCreated = RegisterWindowMessage(L"TaskbarCreated");
         notify_icon.reset(new NotifyIcon(hWnd));
         if (!notify_icon->Add())
-            return -1;
+        {
+            // Set up a timer, this is the amount of time we wait for TaskbarCreated
+            SetTimer(hWnd, 1, 30000, nullptr);
+        }
         break;
     case WM_COMMAND:
         {
@@ -216,7 +221,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case NotifyIcon::MESSAGE:
         return notify_icon->HandleMessage(hWnd, wParam, lParam);
+    case WM_TIMER:
+        KillTimer(hWnd, 1);
+        // No TaskbarCreated was received, exit
+        if (!notify_icon->WasAdded())
+            DestroyWindow(hWnd);
+        break;
     default:
+        if (message == msg_TaskbarCreated)
+        {
+            // Taskbar was created (Explorer restart, DPI change), so re-create notify icon
+            notify_icon->Remove();
+            if (!notify_icon->Add())
+                DestroyWindow(hWnd);
+        }
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;

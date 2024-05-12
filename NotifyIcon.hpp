@@ -26,6 +26,7 @@
 
 class NotifyIcon
 {
+    bool added = false;
     NOTIFYICONDATAW notify_template;
 
     enum { iconsetDarkMode = 0, iconsetLightMode, numIconsets };
@@ -44,6 +45,7 @@ public:
     NotifyIcon(HWND hwnd);
     ~NotifyIcon();
 
+    bool WasAdded() const;
     bool Add();
     void Remove();
 
