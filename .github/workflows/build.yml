@@ -40,7 +40,7 @@ jobs:
     - shell: bash
       run: |
         RELEASE_ARCHIVE=HDRTray-${GITHUB_REF/refs\/tags\//}.zip
-        echo "name=RELEASE_ARCHIVE::$RELEASE_ARCHIVE" >> $GITHUB_OUTPUT
+        echo "RELEASE_ARCHIVE=$RELEASE_ARCHIVE" >> $GITHUB_OUTPUT
       id: release_archive_name
     - run: |
         7z a ${{ steps.release_archive_name.outputs.RELEASE_ARCHIVE }} ${{github.workspace}}/install/*
