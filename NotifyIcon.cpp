@@ -19,12 +19,43 @@
 #include "NotifyIcon.hpp"
 
 #include "Resource.h"
+#include "WinVerCheck.hpp"
 
 #include "Windows10Colors.h"
 
 #include <CommCtrl.h>
 #include <windowsx.h>
 #include <winreg.h>
+
+/*
+    Enabling dark mode based on this information:
+    https://gist.github.com/rounk-ctrl/b04e5622e30e0d62956870d5c22b7017
+    https://stackoverflow.com/questions/75835069/dark-system-contextmenu-in-window
+*/
+
+enum class PreferredAppMode { Default, AllowDark, ForceDark, ForceLight, Max };
+using PFN_SetPreferredAppMode = PreferredAppMode(WINAPI*)(PreferredAppMode appMode);
+using PFN_FlushMenuThemes = void(WINAPI*)();
+
+static PFN_SetPreferredAppMode SetPreferredAppMode;
+static PFN_FlushMenuThemes FlushMenuThemes;
+static bool has_dark_mode_support;
+
+static void InitDarkModeSupport()
+{
+    // This stuff only works with Windows 1903+
+    if (!IsWindows10_1903OrGreater())
+        return;
+    // Already initialized?
+    if (SetPreferredAppMode)
+        return;
+
+    HMODULE uxtheme = LoadLibraryW(L"uxtheme.dll");
+    SetPreferredAppMode = reinterpret_cast<PFN_SetPreferredAppMode>(GetProcAddress(uxtheme, MAKEINTRESOURCEA(135)));
+    FlushMenuThemes = reinterpret_cast<PFN_FlushMenuThemes>(GetProcAddress(uxtheme, MAKEINTRESOURCEA(136)));
+
+    has_dark_mode_support = SetPreferredAppMode && FlushMenuThemes;
+}
 
 static const wchar_t autostart_registry_path[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 static const wchar_t autostart_registry_key[] = L"HDRTray";
@@ -67,6 +98,8 @@ static BOOL wrap_Shell_NotifyIconW(DWORD message, NOTIFYICONDATAW* data)
 
 NotifyIcon::NotifyIcon(HWND hwnd)
 {
+    InitDarkModeSupport();
+
     notify_template = NOTIFYICONDATAW { sizeof(NOTIFYICONDATAW) };
     notify_template.hWnd = hwnd;
     notify_template.uID = 0;
@@ -285,6 +318,12 @@ void NotifyIcon::FetchDarkMode()
 
     // In both "dark" and "accented" modes the task bar is dark enough to require light text
     dark_mode_icons = sys_parts_coloring != windows10colors::SysPartsMode::Light;
+
+    if (has_dark_mode_support) {
+        // Make context menu popup mode match task bar mode
+        SetPreferredAppMode(dark_mode_icons ? PreferredAppMode::ForceDark : PreferredAppMode::ForceLight);
+        FlushMenuThemes();
+    }
 }
 
 void NotifyIcon::UpdateIcon()

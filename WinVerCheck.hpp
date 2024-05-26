@@ -49,4 +49,9 @@ static bool IsWindows10_1803OrGreater ()
     return IsWindows10BuildOrGreater(17134);
 }
 
+static bool IsWindows10_1903OrGreater ()
+{
+    return IsWindows10BuildOrGreater(18362);
+}
+
 #endif // WINVERCHECK_H_

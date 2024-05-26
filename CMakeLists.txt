@@ -66,10 +66,10 @@ target_compile_definitions(HDR PRIVATE UNICODE _UNICODE)
 add_executable(HDRTray)
 target_sources(HDRTray PRIVATE
                "HDRTray.h"
-               "NotifyIcon.hpp"
                "HDRTray.cpp"
                "HDRTray.manifest"
                "HDRTray.rc"
+               "NotifyIcon.hpp"
                "NotifyIcon.cpp"
                "WinVerCheck.hpp"
                )
