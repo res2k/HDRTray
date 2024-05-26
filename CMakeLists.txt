@@ -54,9 +54,7 @@ if(MSVC)
     endforeach()
 endif()
 
-add_library(Windows10Colors STATIC)
-target_sources(Windows10Colors PRIVATE Windows10Colors/Windows10Colors/Windows10Colors.cpp Windows10Colors/Windows10Colors/Windows10Colors.h)
-target_include_directories(Windows10Colors PUBLIC Windows10Colors/Windows10Colors/)
+add_subdirectory(ext)
 
 add_library(HDR STATIC)
 target_sources(HDR PRIVATE "HDR.h" "HDR.cpp")
