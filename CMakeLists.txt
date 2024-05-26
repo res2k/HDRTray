@@ -71,6 +71,7 @@ target_sources(HDRTray PRIVATE
                "HDRTray.manifest"
                "HDRTray.rc"
                "NotifyIcon.cpp"
+               "WinVerCheck.hpp"
                )
 target_compile_definitions(HDRTray PRIVATE UNICODE _UNICODE)
 target_include_directories(HDRTray PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")

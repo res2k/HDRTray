@@ -20,11 +20,10 @@
 #include "HDRTray.h"
 #include "HDR.h"
 #include "NotifyIcon.hpp"
+#include "WinVerCheck.hpp"
 
 #include <memory>
 #include <utility>
-
-#include "VersionHelpers.h"
 
 #define MAX_LOADSTRING 100
 
@@ -37,33 +36,6 @@ static const wchar_t szWindowClass[] = L"HDRTrayWindow";  // the main window cla
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
-
-static bool IsWindows10BuildOrGreater(DWORD dwBuildNumber)
-{
-    OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0, {0}, 0, 0 };
-    DWORDLONG        const dwlConditionMask = VerSetConditionMask(
-        VerSetConditionMask(
-        VerSetConditionMask(
-            0, VER_MAJORVERSION, VER_GREATER_EQUAL),
-               VER_MINORVERSION, VER_GREATER_EQUAL),
-               VER_BUILDNUMBER, VER_GREATER_EQUAL);
-
-    osvi.dwMajorVersion = 10;
-    osvi.dwMinorVersion = 0;
-    osvi.dwBuildNumber = dwBuildNumber;
-
-    return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_BUILDNUMBER, dwlConditionMask) != FALSE;
-}
-
-static bool IsWindows10_1709OrGreater ()
-{
-    return IsWindows10BuildOrGreater(16299);
-}
-
-static bool IsWindows10_1803OrGreater ()
-{
-    return IsWindows10BuildOrGreater(17134);
-}
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
