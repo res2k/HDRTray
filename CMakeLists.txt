@@ -33,6 +33,8 @@ else()
     message(STATUS "No Python 3 interpreter found!")
 endif()
 
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 if(MSVC)
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELEASE}")
@@ -55,13 +57,10 @@ endif()
 add_library(Windows10Colors STATIC)
 target_sources(Windows10Colors PRIVATE Windows10Colors/Windows10Colors/Windows10Colors.cpp Windows10Colors/Windows10Colors/Windows10Colors.h)
 target_include_directories(Windows10Colors PUBLIC Windows10Colors/Windows10Colors/)
-set_target_properties(Windows10Colors PROPERTIES
-                      MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 add_library(HDR STATIC)
 target_sources(HDR PRIVATE "HDR.h" "HDR.cpp")
 target_compile_definitions(HDR PRIVATE UNICODE _UNICODE)
-set_target_properties(HDR PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 # Add source to this project's executable.
 add_executable(HDRTray)
@@ -77,8 +76,7 @@ target_compile_definitions(HDRTray PRIVATE UNICODE _UNICODE)
 target_include_directories(HDRTray PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
 target_link_libraries(HDRTray PRIVATE HDR Windows10Colors comctl32)
 set_target_properties(HDRTray PROPERTIES
-                      WIN32_EXECUTABLE ON
-                      MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+                      WIN32_EXECUTABLE ON)
 
 if(MARKO_AVAILABLE)
     set(MD2HTML "${CMAKE_CURRENT_SOURCE_DIR}/build/md2html.py")
