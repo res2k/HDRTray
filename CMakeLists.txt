@@ -58,13 +58,16 @@ target_include_directories(Windows10Colors PUBLIC Windows10Colors/Windows10Color
 set_target_properties(Windows10Colors PROPERTIES
                       MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+add_library(HDR STATIC)
+target_sources(HDR PRIVATE "HDR.h" "HDR.cpp")
+target_compile_definitions(HDR PRIVATE UNICODE _UNICODE)
+set_target_properties(HDR PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 # Add source to this project's executable.
 add_executable(HDRTray)
 target_sources(HDRTray PRIVATE
-               "HDR.h"
                "HDRTray.h"
                "NotifyIcon.hpp"
-               "HDR.cpp"
                "HDRTray.cpp"
                "HDRTray.manifest"
                "HDRTray.rc"
@@ -72,7 +75,7 @@ target_sources(HDRTray PRIVATE
                )
 target_compile_definitions(HDRTray PRIVATE UNICODE _UNICODE)
 target_include_directories(HDRTray PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
-target_link_libraries(HDRTray PRIVATE Windows10Colors comctl32)
+target_link_libraries(HDRTray PRIVATE HDR Windows10Colors comctl32)
 set_target_properties(HDRTray PROPERTIES
                       WIN32_EXECUTABLE ON
                       MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
