@@ -13,7 +13,7 @@ BEGIN
             VALUE "ProductName",      "HDRCmd"
             VALUE "ProductVersion",   "@VERSION_FULL@"
             VALUE "Licence", "GNU General Public License, version 3"
-            VALUE "Info", "https://res2k.github.io/HDRTray
+            VALUE "Info", "https://res2k.github.io/HDRTray"
         END
     END
 
