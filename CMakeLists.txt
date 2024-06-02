@@ -78,7 +78,7 @@ if(MARKO_AVAILABLE)
     add_custom_target(ConvertMD ALL DEPENDS ${GENERATED_HTML_FILES})
 endif()
 
-install(TARGETS HDRTray
+install(TARGETS HDRTray HDRCmd
         RUNTIME
         DESTINATION ".")
 if(MARKO_AVAILABLE)
