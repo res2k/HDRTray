@@ -22,7 +22,7 @@
 
 int wmain(int argc, const wchar_t* const argv[])
 {
-    CLI::App app{"HDRCmd - enable/disable \"Use HDR\" from command line"};
+    CLI::App app{"HDRCmd - turn \"Use HDR\" on or off from command line"};
     app.allow_windows_style_options();
     app.ignore_case();
     app.require_subcommand(1);
