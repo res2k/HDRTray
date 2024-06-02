@@ -74,7 +74,7 @@ Status GetWindowsHDRStatus()
     return status;
 }
 
-std::optional<Status> ToggleHDRStatus()
+std::optional<Status> SetWindowsHDRStatus(bool enable)
 {
     std::optional<Status> status;
 
@@ -96,15 +96,8 @@ std::optional<Status> ToggleHDRStatus()
         if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&getColorInfo.header)) {
             if (getColorInfo.advancedColorSupported) {
                 Status new_status = Status::Unsupported;
-                if (getColorInfo.advancedColorEnabled) // HDR is ON
-                {
-                    setColorState.enableAdvancedColor = FALSE;
-                    new_status = Status::Off;
-                } else // HDR is OFF
-                {
-                    setColorState.enableAdvancedColor = TRUE;
-                    new_status = Status::On;
-                }
+                setColorState.enableAdvancedColor = enable;
+                new_status = enable ? Status::On : Status::Off;
                 if (ERROR_SUCCESS == DisplayConfigSetDeviceInfo(&setColorState.header)) {
                     if(!status)
                         status = new_status;
@@ -116,6 +109,14 @@ std::optional<Status> ToggleHDRStatus()
     });
 
     return status;
+}
+
+std::optional<Status> ToggleHDRStatus()
+{
+    auto status = GetWindowsHDRStatus();
+    if (status == Status::Unsupported)
+        return Status::Unsupported;
+    return SetWindowsHDRStatus(status == Status::Off ? true : false);
 }
 
 } // namespace hdr
