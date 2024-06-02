@@ -115,6 +115,24 @@ std::optional<Status> ToggleHDRStatus()
     return SetWindowsHDRStatus(status == Status::Off ? true : false);
 }
 
+static const wchar_t* GetFallbackDisplayName(const DISPLAYCONFIG_MODE_INFO& mode)
+{
+    DISPLAYCONFIG_TARGET_BASE_TYPE target_base = {};
+    target_base.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_BASE_TYPE;
+    target_base.header.size = sizeof(target_base);
+    target_base.header.adapterId.HighPart = mode.adapterId.HighPart;
+    target_base.header.adapterId.LowPart = mode.adapterId.LowPart;
+    target_base.header.id = mode.id;
+
+    if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&target_base.header)) {
+        if ((target_base.baseOutputTechnology != DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER)
+            && (target_base.baseOutputTechnology & DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL))
+            return L"Internal Display";
+    }
+
+    return L"Unnamed";
+}
+
 std::vector<Display> GetDisplays()
 {
     std::vector<Display> result;
@@ -144,9 +162,12 @@ std::vector<Display> GetDisplays()
         deviceName.header.adapterId.HighPart = mode.adapterId.HighPart;
         deviceName.header.adapterId.LowPart = mode.adapterId.LowPart;
         deviceName.header.id = mode.id;
-        if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&deviceName.header))
-            new_disp.name = deviceName.monitorFriendlyDeviceName;
-        else
+        if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&deviceName.header)) {
+            if (deviceName.flags.friendlyNameFromEdid)
+                new_disp.name = deviceName.monitorFriendlyDeviceName;
+            else
+                new_disp.name = GetFallbackDisplayName(mode); // Seen with eg a laptop display.
+        } else
             return;
 
         result.emplace_back(std::move(new_disp));
