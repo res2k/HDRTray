@@ -1,3 +1,6 @@
 [submodule "Windows10Colors"]
 	path = ext/Windows10Colors
 	url = ../Windows10Colors.git
+[submodule "ext/CLI11"]
+	path = ext/CLI11
+	url = https://github.com/CLIUtils/CLI11
