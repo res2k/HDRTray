@@ -16,23 +16,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "CLI/CLI.hpp"
+#ifndef VERSION_H_
+#define VERSION_H_
 
-#include "Subcommands.hpp"
-#include "version.h"
+#define VERSION_FULL    "@VERSION_FULL@"
 
-int wmain(int argc, const wchar_t* const argv[])
-{
-    CLI::App app{"HDRCmd " VERSION_FULL " - turn \"Use HDR\" on or off from command line"};
-    app.allow_windows_style_options();
-    app.ignore_case();
-    app.require_subcommand(1);
-
-    subcommand::Status::add(app);
-    subcommand::Enable::add(app);
-    subcommand::Disable::add(app);
-
-    CLI11_PARSE(app, argc, argv);
-    const auto* subcmd = app.get_subcommands()[0];
-    return static_cast<const subcommand::Base*>(subcmd)->run();
-}
+#endif // VERSION_H_
