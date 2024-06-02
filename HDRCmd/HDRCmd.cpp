@@ -21,12 +21,19 @@
 #include "Subcommands.hpp"
 #include "version.h"
 
+#include <format>
+
+static std::string failure_message(const CLI::App *app, const CLI::Error &e) {
+    return std::format("Invalid command line arguments: {}\n\n{}", e.what(), app->help());
+}
+
 int wmain(int argc, const wchar_t* const argv[])
 {
     CLI::App app{"HDRCmd " VERSION_FULL " - turn \"Use HDR\" on or off from command line"};
     app.allow_windows_style_options();
     app.ignore_case();
     app.require_subcommand(1);
+    app.failure_message(failure_message);
 
     subcommand::Status::add(app);
     subcommand::Enable::add(app);
