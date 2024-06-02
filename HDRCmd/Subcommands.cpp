@@ -59,7 +59,16 @@ int Status::run() const
         print_status_long();
         return 0;
     } else if (stricmp(mode.c_str(), "exitcode") == 0) {
-        // TODO: return exit code based on HDR status
+        auto status = hdr::GetWindowsHDRStatus();
+        switch(status)
+        {
+        case hdr::Status::On:
+            return 0;
+        case hdr::Status::Off:
+            return 1;
+        case hdr::Status::Unsupported:
+            return 2;
+        }
     }
     // Validation should've caught other cases...
     return -1;
