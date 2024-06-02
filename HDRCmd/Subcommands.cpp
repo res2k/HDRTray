@@ -20,12 +20,42 @@
 
 #include "HDR.h"
 
+#include <format>
+
 namespace subcommand {
+
+class StatusModeValidator : public CLI::Validator
+{
+    static constexpr const char* descr_string = "(s)hort,(l)ong,e(x)itcode";
+
+    static std::string validate_func(std::string& item)
+    {
+        item = CLI::detail::to_lower(item);
+        item = CLI::detail::remove_underscore(item);
+        if (std::string("short").starts_with(item)) {
+            item = "short";
+            return {};
+        }
+        if (std::string("long").starts_with(item)) {
+            item = "long";
+            return {};
+        }
+        if (std::string("exitcode").starts_with(item) || item == "x") {
+            item = "exitcode";
+            return {};
+        }
+        return std::format("\"{}\" not in {} (abbreviation is allowed)", item, descr_string);
+    }
+
+public:
+    StatusModeValidator() : Validator(descr_string, &validate_func) { }
+};
+
 Status::Status(CLI::App* parent) : Base("Print current HDR status", "status", parent)
 {
     auto mode_option = add_option("-m,--mode", mode, "How to report status mode");
     mode_option->type_name("MODE");
-    mode_option->check(CLI::IsMember({ "short", "long", "exitcode" }, CLI::ignore_case, CLI::ignore_underscore));
+    mode_option->transform(StatusModeValidator());
 }
 
 void Status::print_status_short()
