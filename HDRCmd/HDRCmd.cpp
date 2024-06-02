@@ -20,6 +20,7 @@
 
 #include "Subcommands.hpp"
 #include "version.h"
+#include "WinVerCheck.hpp"
 
 #include <format>
 
@@ -30,6 +31,13 @@ static std::string failure_message(const CLI::App *app, const CLI::Error &e) {
 int wmain(int argc, const wchar_t* const argv[])
 {
     CLI::App app{"HDRCmd " VERSION_FULL " - turn \"Use HDR\" on or off from command line"};
+
+    // if Windows 10 < version 1803 refuse to start
+    if (!IsWindows10_1803OrGreater()) {
+        std::cerr << "Sorry, HDRCmd only works on Windows 10, version 1803 and above" << std::endl;
+        return -2;
+    }
+
     app.allow_windows_style_options();
     app.ignore_case();
     app.require_subcommand(1);
