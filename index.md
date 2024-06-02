@@ -14,6 +14,12 @@ HDR can be toggled on or off with a left-click on the icon.
 Right-clicking opens the context menu offering an option to automatically start
 the program when you log in to Windows.
 
+Command line utility
+--------------------
+Since version 0.5, the [`HDRCmd` command line utility](HDRCmd.md) is included. It can be used to toggle HDR on and off from scripts and check it's status.
+
+[Read the `HDRCmd` documentation here.](HDRCmd.md)
+
 Latest Release
 --------------
 The latest release can be found on the [“Releases” tab of the GitHub project page](https://github.com/res2k/HDRTray/releases).
