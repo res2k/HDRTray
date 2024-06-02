@@ -1,0 +1,6 @@
+﻿LANGUAGE 9, 1
+
+//
+// Version Info
+//
+#include "version.rc"
