@@ -12,8 +12,6 @@ set(VERSION_REVISION ${GITVERSIONDETECT_VERSION_PATCH})
 set(VERSION_BUILD ${GITVERSIONDETECT_VERSION_COMMIT_NUM})
 set(VERSION_FULL ${GITVERSIONDETECT_VERSION})
 
-configure_file(version.rc.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc")
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -56,35 +54,11 @@ endif()
 
 add_subdirectory(ext)
 
-add_library(HDR STATIC)
-target_sources(HDR PRIVATE "HDR.h" "HDR.cpp")
-target_compile_definitions(HDR PRIVATE UNICODE _UNICODE)
+add_subdirectory(common)
+add_subdirectory(hdr)
 
-# Add source to this project's executable.
-add_executable(HDRTray)
-target_sources(HDRTray PRIVATE
-               "HDRTray.h"
-               "HDRTray.cpp"
-               "HDRTray.manifest"
-               "HDRTray.rc"
-               "NotifyIcon.hpp"
-               "NotifyIcon.cpp"
-               "WinVerCheck.hpp"
-               )
-target_compile_definitions(HDRTray PRIVATE UNICODE _UNICODE)
-target_include_directories(HDRTray PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
-target_link_libraries(HDRTray PRIVATE HDR Windows10Colors comctl32)
-set_target_properties(HDRTray PROPERTIES
-                      WIN32_EXECUTABLE ON)
-
-add_executable(HDRCmd)
-target_sources(HDRCmd PRIVATE
-               "HDRCmd.cpp"
-               "HDRCmd.rc"
-               )
-target_compile_definitions(HDRCmd PRIVATE UNICODE _UNICODE)
-target_include_directories(HDRCmd PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
-target_link_libraries(HDRCmd PRIVATE CLI11 HDR)
+add_subdirectory(HDRTray)
+add_subdirectory(HDRCmd)
 
 if(MARKO_AVAILABLE)
     set(MD2HTML "${CMAKE_CURRENT_SOURCE_DIR}/build/md2html.py")
