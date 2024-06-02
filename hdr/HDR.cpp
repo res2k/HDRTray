@@ -29,10 +29,6 @@ template<typename F> static void ForEachDisplay(F func)
         if (ERROR_SUCCESS
             == QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &pathCount, paths.data(), &modeCount, modes.data(), 0)) {
 
-            DISPLAYCONFIG_SOURCE_DEVICE_NAME getSourceName = {};
-            getSourceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME;
-            getSourceName.header.size = sizeof(getSourceName);
-
             for (const auto& path : paths) {
                 const auto& mode = modes.at(path.targetInfo.modeInfoIdx);
 
@@ -117,6 +113,46 @@ std::optional<Status> ToggleHDRStatus()
     if (status == Status::Unsupported)
         return Status::Unsupported;
     return SetWindowsHDRStatus(status == Status::Off ? true : false);
+}
+
+std::vector<Display> GetDisplays()
+{
+    std::vector<Display> result;
+
+    ForEachDisplay([&](const DISPLAYCONFIG_MODE_INFO& mode) {
+        Display new_disp;
+
+        DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO getColorInfo = {};
+        getColorInfo.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO;
+        getColorInfo.header.size = sizeof(getColorInfo);
+        getColorInfo.header.adapterId.HighPart = mode.adapterId.HighPart;
+        getColorInfo.header.adapterId.LowPart = mode.adapterId.LowPart;
+        getColorInfo.header.id = mode.id;
+
+        if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&getColorInfo.header)) {
+            if (getColorInfo.advancedColorSupported)
+                new_disp.status = getColorInfo.advancedColorEnabled ? Status::On : Status::Off;
+            else
+                new_disp.status = Status::Unsupported;
+        }
+        else
+            return;
+
+        DISPLAYCONFIG_TARGET_DEVICE_NAME deviceName = {};
+        deviceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+        deviceName.header.size = sizeof(deviceName);
+        deviceName.header.adapterId.HighPart = mode.adapterId.HighPart;
+        deviceName.header.adapterId.LowPart = mode.adapterId.LowPart;
+        deviceName.header.id = mode.id;
+        if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&deviceName.header))
+            new_disp.name = deviceName.monitorFriendlyDeviceName;
+        else
+            return;
+
+        result.emplace_back(std::move(new_disp));
+    });
+
+    return result;
 }
 
 } // namespace hdr
