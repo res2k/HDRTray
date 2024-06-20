@@ -4,6 +4,7 @@ configure_file(version.rc.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc")
 add_executable(HDRCmd)
 target_sources(HDRCmd PRIVATE
                "HDRCmd.cpp"
+               "HDRCmd.manifest"
                "HDRCmd.rc"
                "Subcommands.hpp"
                "Subcommands.cpp"
