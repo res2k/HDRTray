@@ -20,6 +20,7 @@
 
 #include "subcommand/Disable.hpp"
 #include "subcommand/Enable.hpp"
+#include "subcommand/LoginStartup.hpp"
 #include "subcommand/Status.hpp"
 #include "subcommand/Toggle.hpp"
 #include "version.h"
@@ -50,6 +51,7 @@ int wmain(int argc, const wchar_t* const argv[])
     subcommand::Enable::add(app);
     subcommand::Disable::add(app);
     subcommand::Toggle::add(app);
+    subcommand::LoginStartup::add(app);
 
     CLI11_PARSE(app, argc, argv);
     const auto* subcmd = app.get_subcommands()[0];
