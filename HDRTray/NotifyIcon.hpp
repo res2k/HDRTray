@@ -56,8 +56,8 @@ public:
 
     enum { MESSAGE = WM_USER + 11 };
 
-    void ToggleAutostartEnabled();
-    void ToggleHDR();
+    // Handle (some) context menu commands
+    bool HandleCommand(int command);
 
     void SetSDRWhiteLevel(float nits);
 
@@ -70,6 +70,8 @@ protected:
     void UpdateIcon();
 
     bool IsAutostartEnabled() const;
+    void ToggleAutostartEnabled();
+    void ToggleHDR();
 };
 
 #endif // NOTIFYICON_HPP_

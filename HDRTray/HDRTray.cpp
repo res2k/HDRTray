@@ -184,20 +184,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             int wmId = LOWORD(wParam);
             // Parse the menu selections:
+            if (notify_icon->HandleCommand(wmId))
+                break;
             switch (wmId)
             {
-            case IDM_ENABLE_HDR:
-                notify_icon->ToggleHDR();
-                break;
-            case IDM_AUTOSTART:
-                notify_icon->ToggleAutostartEnabled();
-                break;
-            case IDM_SDRWL_80: // Lowest / sRGB
-                notify_icon->SetSDRWhiteLevel(80);
-                break;
-            case IDM_SDRWL_203: // ITU-R BT.2408
-                notify_icon->SetSDRWhiteLevel(203);
-                break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;

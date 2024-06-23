@@ -190,6 +190,26 @@ LRESULT NotifyIcon::HandleMessage(HWND hWnd, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
+bool NotifyIcon::HandleCommand(int command)
+{
+    switch (command)
+    {
+    case IDM_ENABLE_HDR:
+        ToggleHDR();
+        return true;
+    case IDM_AUTOSTART:
+        ToggleAutostartEnabled();
+        return true;
+    case IDM_SDRWL_80: // Lowest / sRGB
+        SetSDRWhiteLevel(80);
+        return true;
+    case IDM_SDRWL_203: // ITU-R BT.2408
+        SetSDRWhiteLevel(203);
+        return true;
+    }
+    return false;
+}
+
 // Quote the executable path
 static std::wstring get_autostart_value()
 {
