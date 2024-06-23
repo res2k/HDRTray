@@ -11,6 +11,8 @@ target_sources(HDRCmd PRIVATE
                "subcommand/Disable.cpp"
                "subcommand/Enable.hpp"
                "subcommand/Enable.cpp"
+               "subcommand/LoginStartup.hpp"
+               "subcommand/LoginStartup.cpp"
                "subcommand/Status.hpp"
                "subcommand/Status.cpp"
                )
