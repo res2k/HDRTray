@@ -57,8 +57,8 @@ static void InitDarkModeSupport()
     has_dark_mode_support = SetPreferredAppMode && FlushMenuThemes;
 }
 
-static const wchar_t autostart_registry_path[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
-static const wchar_t autostart_registry_key[] = L"HDRTray";
+static const wchar_t loginstartup_registry_path[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
+static const wchar_t loginstartup_registry_key[] = L"HDRTray";
 
 // Wraps Shell_NotifyIconW(), prints to debug output in case of a failure
 static BOOL wrap_Shell_NotifyIconW(DWORD message, NOTIFYICONDATAW* data)
@@ -196,15 +196,15 @@ bool NotifyIcon::HandleCommand(int command)
     case IDM_ENABLE_HDR:
         ToggleHDR();
         return true;
-    case IDM_AUTOSTART:
-        ToggleAutostartEnabled();
+    case IDM_LOGIN_STARTUP:
+        ToggleLoginStartupEnabled();
         return true;
     }
     return false;
 }
 
 // Quote the executable path
-static std::wstring get_autostart_value()
+static std::wstring get_loginstartup_value()
 {
     wchar_t* exe_path = nullptr;
     _get_wpgmptr(&exe_path);
@@ -217,11 +217,11 @@ static std::wstring get_autostart_value()
     return result;
 }
 
-static bool is_autostart_enabled(HKEY key_autostart, const wchar_t* autostart_value)
+static bool is_loginstartup_enabled(HKEY key_loginstartup, const wchar_t* loginstartup_value)
 {
     DWORD value_type = 0;
     DWORD value_size = 0;
-    auto query_value_res = RegQueryValueExW(key_autostart, autostart_registry_key, nullptr, &value_type, nullptr, &value_size);
+    auto query_value_res = RegQueryValueExW(key_loginstartup, loginstartup_registry_key, nullptr, &value_type, nullptr, &value_size);
     bool has_auto_start = (query_value_res == ERROR_SUCCESS) || (query_value_res == ERROR_MORE_DATA);
     if(has_auto_start)
         has_auto_start &= value_type == REG_SZ;
@@ -230,11 +230,11 @@ static bool is_autostart_enabled(HKEY key_autostart, const wchar_t* autostart_va
         DWORD value_len = value_size / sizeof(WCHAR);
         DWORD buf_size = (value_len + 1) * sizeof(WCHAR);
         auto* buf = reinterpret_cast<WCHAR*>(_alloca(buf_size));
-        if (RegQueryValueExW(key_autostart, autostart_registry_key, nullptr, nullptr, reinterpret_cast<BYTE*>(buf),
+        if (RegQueryValueExW(key_loginstartup, loginstartup_registry_key, nullptr, nullptr, reinterpret_cast<BYTE*>(buf),
                              &buf_size)
             == ERROR_SUCCESS) {
             buf[value_len] = 0;
-            has_auto_start = _wcsicmp(buf, autostart_value) == 0;
+            has_auto_start = _wcsicmp(buf, loginstartup_value) == 0;
         } else {
             has_auto_start = false;
         }
@@ -243,27 +243,27 @@ static bool is_autostart_enabled(HKEY key_autostart, const wchar_t* autostart_va
     return has_auto_start;
 }
 
-void NotifyIcon::ToggleAutostartEnabled()
+void NotifyIcon::ToggleLoginStartupEnabled()
 {
-    HKEY key_autostart = nullptr;
-    if (RegCreateKeyExW(HKEY_CURRENT_USER, autostart_registry_path, 0, nullptr, 0,
-                        KEY_READ | KEY_WRITE | KEY_QUERY_VALUE | KEY_SET_VALUE, nullptr, &key_autostart, nullptr)
+    HKEY key_loginstartup = nullptr;
+    if (RegCreateKeyExW(HKEY_CURRENT_USER, loginstartup_registry_path, 0, nullptr, 0,
+                        KEY_READ | KEY_WRITE | KEY_QUERY_VALUE | KEY_SET_VALUE, nullptr, &key_loginstartup, nullptr)
         != ERROR_SUCCESS)
         return;
 
-    auto autostart_value = get_autostart_value();
+    auto loginstartup_value = get_loginstartup_value();
 
-    auto has_auto_start = is_autostart_enabled(key_autostart, autostart_value.c_str());
+    auto has_auto_start = is_loginstartup_enabled(key_loginstartup, loginstartup_value.c_str());
 
     bool new_auto_start = !has_auto_start;
     if(new_auto_start) {
-        RegSetValueExW(key_autostart, autostart_registry_key, 0, REG_SZ, reinterpret_cast<const BYTE*>(autostart_value.c_str()),
-                       static_cast<DWORD>((autostart_value.size() + 1) * sizeof(WCHAR)));
+        RegSetValueExW(key_loginstartup, loginstartup_registry_key, 0, REG_SZ, reinterpret_cast<const BYTE*>(loginstartup_value.c_str()),
+                       static_cast<DWORD>((loginstartup_value.size() + 1) * sizeof(WCHAR)));
     } else {
-        RegDeleteValueW(key_autostart, autostart_registry_key);
+        RegDeleteValueW(key_loginstartup, loginstartup_registry_key);
     }
 
-    RegCloseKey(key_autostart);
+    RegCloseKey(key_loginstartup);
 }
 
 void NotifyIcon::ToggleHDR()
@@ -298,8 +298,8 @@ void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
 
     MENUITEMINFOW mii = { sizeof(MENUITEMINFOW) };
     mii.fMask = MIIM_STATE;
-    mii.fState = IsAutostartEnabled() ? MFS_CHECKED : MFS_UNCHECKED;
-    SetMenuItemInfoW(popup_menu, IDM_AUTOSTART, false, &mii);
+    mii.fState = IsLoginStartupEnabled() ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfoW(popup_menu, IDM_LOGIN_STARTUP, false, &mii);
 
     wchar_t str_hdr_unsupported[256];
     mii = { sizeof(MENUITEMINFOW) };
@@ -370,17 +370,17 @@ void NotifyIcon::UpdateIcon()
 
 }
 
-bool NotifyIcon::IsAutostartEnabled() const
+bool NotifyIcon::IsLoginStartupEnabled() const
 {
-    HKEY key_autostart = nullptr;
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, autostart_registry_path, 0, KEY_READ | KEY_QUERY_VALUE, &key_autostart) != ERROR_SUCCESS)
+    HKEY key_loginstartup = nullptr;
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, loginstartup_registry_path, 0, KEY_READ | KEY_QUERY_VALUE, &key_loginstartup) != ERROR_SUCCESS)
         return false;
 
-    auto autostart_value = get_autostart_value();
+    auto loginstartup_value = get_loginstartup_value();
 
-    auto has_auto_start = is_autostart_enabled(key_autostart, autostart_value.c_str());
+    auto has_auto_start = is_loginstartup_enabled(key_loginstartup, loginstartup_value.c_str());
 
-    RegCloseKey(key_autostart);
+    RegCloseKey(key_loginstartup);
 
     return has_auto_start;
 }

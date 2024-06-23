@@ -24,7 +24,7 @@
 #define IDS_TOGGLE_HDR_ERROR    106
 
 #define IDM_EXIT                101
-#define IDM_AUTOSTART           102
+#define IDM_LOGIN_STARTUP       102
 #define IDM_ENABLE_HDR          103
 
 #define IDI_APP                 1

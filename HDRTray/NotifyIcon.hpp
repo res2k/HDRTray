@@ -67,8 +67,8 @@ protected:
     void FetchDarkMode();
     void UpdateIcon();
 
-    bool IsAutostartEnabled() const;
-    void ToggleAutostartEnabled();
+    bool IsLoginStartupEnabled() const;
+    void ToggleLoginStartupEnabled();
     void ToggleHDR();
 };
 
