@@ -20,6 +20,7 @@
 #include "HDRTray.h"
 #include "HDR.h"
 #include "l10n.h"
+#include "LoginStartupConfig.hpp"
 #include "NotifyIcon.hpp"
 #include "WinVerCheck.hpp"
 
