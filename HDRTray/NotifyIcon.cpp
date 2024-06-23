@@ -18,6 +18,7 @@
 
 #include "NotifyIcon.hpp"
 
+#include "LoginStartupConfig.hpp"
 #include "Resource.h"
 #include "WinVerCheck.hpp"
 
@@ -56,9 +57,6 @@ static void InitDarkModeSupport()
 
     has_dark_mode_support = SetPreferredAppMode && FlushMenuThemes;
 }
-
-static const wchar_t loginstartup_registry_path[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
-static const wchar_t loginstartup_registry_key[] = L"HDRTray";
 
 // Wraps Shell_NotifyIconW(), prints to debug output in case of a failure
 static BOOL wrap_Shell_NotifyIconW(DWORD message, NOTIFYICONDATAW* data)
@@ -197,67 +195,15 @@ bool NotifyIcon::HandleCommand(int command)
     return false;
 }
 
-// Quote the executable path
-static std::wstring get_loginstartup_value()
-{
-    wchar_t* exe_path = nullptr;
-    _get_wpgmptr(&exe_path);
-
-    std::wstring result;
-    result.reserve(wcslen(exe_path) + 2);
-    result.push_back('"');
-    result.append(exe_path);
-    result.push_back('"');
-    return result;
-}
-
-static bool is_loginstartup_enabled(HKEY key_loginstartup, const wchar_t* loginstartup_value)
-{
-    DWORD value_type = 0;
-    DWORD value_size = 0;
-    auto query_value_res = RegQueryValueExW(key_loginstartup, loginstartup_registry_key, nullptr, &value_type, nullptr, &value_size);
-    bool has_auto_start = (query_value_res == ERROR_SUCCESS) || (query_value_res == ERROR_MORE_DATA);
-    if(has_auto_start)
-        has_auto_start &= value_type == REG_SZ;
-    if(has_auto_start)
-    {
-        DWORD value_len = value_size / sizeof(WCHAR);
-        DWORD buf_size = (value_len + 1) * sizeof(WCHAR);
-        auto* buf = reinterpret_cast<WCHAR*>(_alloca(buf_size));
-        if (RegQueryValueExW(key_loginstartup, loginstartup_registry_key, nullptr, nullptr, reinterpret_cast<BYTE*>(buf),
-                             &buf_size)
-            == ERROR_SUCCESS) {
-            buf[value_len] = 0;
-            has_auto_start = _wcsicmp(buf, loginstartup_value) == 0;
-        } else {
-            has_auto_start = false;
-        }
-    }
-
-    return has_auto_start;
-}
-
 void NotifyIcon::ToggleLoginStartupEnabled()
 {
-    HKEY key_loginstartup = nullptr;
-    if (RegCreateKeyExW(HKEY_CURRENT_USER, loginstartup_registry_path, 0, nullptr, 0,
-                        KEY_READ | KEY_WRITE | KEY_QUERY_VALUE | KEY_SET_VALUE, nullptr, &key_loginstartup, nullptr)
-        != ERROR_SUCCESS)
-        return;
+    // Determine flag based on whether menu item was checked or not
+    MENUITEMINFOW mii = { sizeof(MENUITEMINFOW) };
+    mii.fMask = MIIM_STATE;
+    GetMenuItemInfoW(popup_menu, IDM_LOGIN_STARTUP, false, &mii);
 
-    auto loginstartup_value = get_loginstartup_value();
-
-    auto has_auto_start = is_loginstartup_enabled(key_loginstartup, loginstartup_value.c_str());
-
-    bool new_auto_start = !has_auto_start;
-    if(new_auto_start) {
-        RegSetValueExW(key_loginstartup, loginstartup_registry_key, 0, REG_SZ, reinterpret_cast<const BYTE*>(loginstartup_value.c_str()),
-                       static_cast<DWORD>((loginstartup_value.size() + 1) * sizeof(WCHAR)));
-    } else {
-        RegDeleteValueW(key_loginstartup, loginstartup_registry_key);
-    }
-
-    RegCloseKey(key_loginstartup);
+    bool loginstartup_enabled = mii.fState == MFS_CHECKED;
+    LoginStartupConfig::instance().SetEnabled(!loginstartup_enabled);
 }
 
 void NotifyIcon::ToggleHDR()
@@ -290,9 +236,11 @@ void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
     // needed to clicking "outside" the menu works
     SetForegroundWindow(hWnd);
 
+    auto loginstartup_enabled = LoginStartupConfig::instance().IsEnabled();
+
     MENUITEMINFOW mii = { sizeof(MENUITEMINFOW) };
     mii.fMask = MIIM_STATE;
-    mii.fState = IsLoginStartupEnabled() ? MFS_CHECKED : MFS_UNCHECKED;
+    mii.fState = (loginstartup_enabled && *loginstartup_enabled) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfoW(popup_menu, IDM_LOGIN_STARTUP, false, &mii);
 
     wchar_t str_hdr_unsupported[256];
@@ -362,19 +310,4 @@ void NotifyIcon::UpdateIcon()
     }
     Shell_NotifyIconW(NIM_MODIFY, &notify_mod);
 
-}
-
-bool NotifyIcon::IsLoginStartupEnabled() const
-{
-    HKEY key_loginstartup = nullptr;
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, loginstartup_registry_path, 0, KEY_READ | KEY_QUERY_VALUE, &key_loginstartup) != ERROR_SUCCESS)
-        return false;
-
-    auto loginstartup_value = get_loginstartup_value();
-
-    auto has_auto_start = is_loginstartup_enabled(key_loginstartup, loginstartup_value.c_str());
-
-    RegCloseKey(key_loginstartup);
-
-    return has_auto_start;
 }
