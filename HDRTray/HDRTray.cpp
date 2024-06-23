@@ -185,14 +185,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             int wmId = LOWORD(wParam);
             // Parse the menu selections:
+            if (notify_icon->HandleCommand(wmId))
+                break;
             switch (wmId)
             {
-            case IDM_ENABLE_HDR:
-                notify_icon->ToggleHDR();
-                break;
-            case IDM_AUTOSTART:
-                notify_icon->ToggleAutostartEnabled();
-                break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
