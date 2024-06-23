@@ -19,6 +19,7 @@
 #include "framework.h"
 #include "HDRTray.h"
 #include "HDR.h"
+#include "LoginStartupConfig.hpp"
 #include "NotifyIcon.hpp"
 #include "WinVerCheck.hpp"
 
