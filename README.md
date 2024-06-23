@@ -42,6 +42,18 @@ Specifies how the status should be reported. Accepts the following values:
 * `long`, `l`: Print the overall HDR status and status per display.
 * `exitcode`, `x`: Special mode for scripting. Exit code is 0 if HDR is on, 1 if HDR is off, and 2 if HDR is unsupported. (Other values indicate some error.)
 
+## `startup` command
+Prints or changes the 'Start when logging in' option for the notification area icon to the console.
+
+### `status` subcommand
+Prints the status of 'Start when logging in' option for the notification area icon to the console. Default if no other subcommand was specified.
+
+### `on` subcommand
+Turn the 'Start when logging in' option on. HDRTray will be automatically started beginning with the next login. Prints new status to the console.
+
+### `off` subcommand
+Turn the 'Start when logging in' option off. HDRTray will no longer be automatically started upon login. Prints new status to the console.
+
 Latest Release
 --------------
 The latest release can be found on the [“Releases” tab of the GitHub project page](https://github.com/res2k/HDRTray/releases).
