@@ -28,7 +28,7 @@ BEGIN
     POPUP "Dummy"
     BEGIN
         MENUITEM "Enable &HDR",                      IDM_ENABLE_HDR
-        MENUITEM "&Start when logging in",           IDM_AUTOSTART
+        MENUITEM "&Start when logging in",           IDM_LOGIN_STARTUP
         MENUITEM SEPARATOR
         MENUITEM "SDR white level &80 (sRGB)",       IDM_SDRWL_80
         MENUITEM "SDR white level &203 (BT.2408)",   IDM_SDRWL_203
@@ -73,7 +73,7 @@ BEGIN
     POPUP "Dummy"
     BEGIN
         MENUITEM "Ativar o &HDR",           IDM_ENABLE_HDR
-        MENUITEM "&Iniciar ao fazer login", IDM_AUTOSTART
+        MENUITEM "&Iniciar ao fazer login", IDM_LOGIN_STARTUP
         MENUITEM SEPARATOR
         MENUITEM "SDR white level &80 (sRGB)",       IDM_SDRWL_80
         MENUITEM "SDR white level &203 (BT.2408)",   IDM_SDRWL_203
