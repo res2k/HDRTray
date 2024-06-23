@@ -172,12 +172,12 @@ static const wchar_t* GetFallbackDisplayName(const DISPLAYCONFIG_MODE_INFO& mode
     return L"Unnamed";
 }
 
-std::vector<Display> GetDisplays()
+std::vector<DisplayInfo> GetDisplays()
 {
-    std::vector<Display> result;
+    std::vector<DisplayInfo> result;
 
     ForEachDisplay([&](const DISPLAYCONFIG_MODE_INFO& mode) {
-        Display new_disp;
+        DisplayInfo new_disp;
 
         new_disp.status = GetDisplayHDRStatus(mode);
 
