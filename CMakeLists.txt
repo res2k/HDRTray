@@ -52,6 +52,8 @@ if(MSVC)
     endforeach()
 endif()
 
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+
 add_subdirectory(ext)
 
 add_subdirectory(common)
