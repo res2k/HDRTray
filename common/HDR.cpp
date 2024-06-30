@@ -140,56 +140,27 @@ template<typename F> static void ForEachDisplay(F func)
     }
 }
 
-static Status GetDisplayHDRStatus(const DisplayID& display)
-{
-    // Prefer GET_ADVANCED_COLOR_INFO_2, this reports the actual HDR mode if ACM is enabled
-    DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO_2 getColorInfo2 = {};
-    getColorInfo2.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO_2;
-    getColorInfo2.header.size = sizeof(getColorInfo2);
-    display.ToDeviceInputHeader(getColorInfo2.header);
-    if (use_win11_24h2_color_functions && DisplayConfigGetDeviceInfo(&getColorInfo2.header) == ERROR_SUCCESS)
-    {
-        if (!getColorInfo2.highDynamicRangeSupported)
-            return Status::Unsupported;
-
-        // Only DISPLAYCONFIG_ADVANCED_COLOR_MODE_HDR is true HDR.
-        return getColorInfo2.activeColorMode == DISPLAYCONFIG_ADVANCED_COLOR_MODE_HDR ? Status::On : Status::Off;
-    }
-
-    DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO getColorInfo = {};
-    getColorInfo.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO;
-    getColorInfo.header.size = sizeof(getColorInfo);
-    display.ToDeviceInputHeader(getColorInfo.header);
-
-    if (DisplayConfigGetDeviceInfo(&getColorInfo.header) != ERROR_SUCCESS)
-        return Status::Unsupported;
-
-    if (!getColorInfo.advancedColorSupported)
-        return Status::Unsupported;
-
-    return getColorInfo.advancedColorEnabled ? Status::On : Status::Off;
-}
-
 Status GetWindowsHDRStatus()
 {
     bool anySupported = false;
     bool anyEnabled = false;
 
-    ForEachDisplay([&](const DisplayID& display) {
-        Status displayStatus = GetDisplayHDRStatus(display);
-        anySupported |= displayStatus != Status::Unsupported;
-        anyEnabled |= displayStatus == Status::On;
-    });
+    for (auto& display : GetDisplays()) {
+        auto status = display.GetStatus();
+        if (!status || *status == Status::Unsupported)
+            continue;
+        anySupported = true;
+        anyEnabled |= *status == Status::On;
+    }
 
-    if (anySupported)
-        return anyEnabled ? Status::On : Status::Off;
-    else
+    if (!anySupported)
         return Status::Unsupported;
+    return anyEnabled ? Status::On : Status::Off;
 }
 
 static std::optional<Status> SetDisplayHDRStatus(const DisplayID& display, bool enable)
 {
-    if (GetDisplayHDRStatus(display) == Status::Unsupported)
+    if (DisplayInfo(display).GetStatus().value_or(Status::Unsupported) == Status::Unsupported)
         return std::nullopt;
 
     /* Try SET_HDR_STATE first, if available (on Windows 11 >= 24H2).
@@ -201,7 +172,7 @@ static std::optional<Status> SetDisplayHDRStatus(const DisplayID& display, bool 
     display.ToDeviceInputHeader(setHdrState.header);
     setHdrState.enableHdr = enable;
     if (use_win11_24h2_color_functions && DisplayConfigSetDeviceInfo(&setHdrState.header) == ERROR_SUCCESS)
-        return GetDisplayHDRStatus(display);
+        return DisplayInfo(display).GetStatus().value_or(Status::Unsupported);
 
     DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE setColorState = {};
     setColorState.header.type = DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE;
@@ -212,7 +183,7 @@ static std::optional<Status> SetDisplayHDRStatus(const DisplayID& display, bool 
     if (DisplayConfigSetDeviceInfo(&setColorState.header) != ERROR_SUCCESS)
         return std::nullopt;
     // Don't assume changing the HDR mode was successful... re-query the status
-    return GetDisplayHDRStatus(display);
+    return DisplayInfo(display).GetStatus().value_or(Status::Unsupported);
 }
 
 std::optional<Status> SetWindowsHDRStatus(bool enable)
