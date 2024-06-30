@@ -38,6 +38,9 @@ class DisplayInfo
 public:
     DisplayInfo(DisplayID id) : id(id) {}
 
+    /// Get display ID
+    const DisplayID& GetID() const { return id; }
+
     template<typename T>
     using result_type = std::expected<T, LONG>;
 
