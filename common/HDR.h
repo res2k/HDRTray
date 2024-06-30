@@ -15,9 +15,20 @@
 #include <utility>
 #include <vector>
 
+#include "framework.h"
+
 namespace hdr {
 
 enum class Status { Unsupported = 0, Off = 1, On = 2 };
+
+struct DisplayID
+{
+    LUID adapter;
+    UINT32 id;
+
+    static DisplayID FromMode(const DISPLAYCONFIG_MODE_INFO& mode);
+    void ToDeviceInputHeader(DISPLAYCONFIG_DEVICE_INFO_HEADER& header) const;
+};
 
 /// Display information
 struct DisplayInfo
