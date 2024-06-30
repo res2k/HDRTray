@@ -27,6 +27,8 @@
 
 #include <format>
 
+#include <winrt/Windows.Foundation.h>
+
 static std::string failure_message(const CLI::App *app, const CLI::Error &e) {
     return std::format("Invalid command line arguments: {}\n\n{}", e.what(), app->help());
 }
@@ -40,6 +42,10 @@ int wmain(int argc, const wchar_t* const argv[])
         std::cerr << "Sorry, HDRCmd only works on Windows 10, version 1803 and above" << std::endl;
         return -2;
     }
+
+    // Init WinRT. For monitor stable ID.
+    // FIXME: Obtain lazily?
+    winrt::init_apartment();
 
     app.allow_windows_style_options();
     app.ignore_case();

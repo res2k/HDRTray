@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2005-2018 Team Kodi
+ *  Copyright (C) 2022-2024 Frank Richter
  *
  *  This file is based on source code from Kodi - https://kodi.tv
  *
@@ -16,9 +17,15 @@
 #include "framework.h"
 #include "WinVerCheck.hpp"
 
+// WinRT stuff, for display stable ID
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Devices.Display.Core.h>
+
 #if !defined(NTDDI_WIN11_GA) || WDK_NTDDI_VERSION < NTDDI_WIN11_GA
 #error Windows SDK too old: Version >= 10.0.26100 required
 #endif
+
+using namespace winrt;
 
 namespace hdr {
 
@@ -55,17 +62,7 @@ static const wchar_t* GetFallbackDisplayName(const DisplayID& display)
 
 DisplayInfo::result_type<std::wstring> DisplayInfo::GetName() const
 {
-    const auto& dev_name = GetCached<DISPLAYCONFIG_TARGET_DEVICE_NAME>(
-        deviceName, [this]() -> result_type<DISPLAYCONFIG_TARGET_DEVICE_NAME> {
-            DISPLAYCONFIG_TARGET_DEVICE_NAME deviceName = {};
-            deviceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
-            deviceName.header.size = sizeof(deviceName);
-            id.ToDeviceInputHeader(deviceName.header);
-            LONG result = DisplayConfigGetDeviceInfo(&deviceName.header);
-            if (result != ERROR_SUCCESS)
-                return std::unexpected(HRESULT_FROM_WIN32(result));
-            return deviceName;
-        }, ValueFreshness::Cached);
+    const auto& dev_name = GetCachedDeviceName();
 
     if (dev_name) {
         if (dev_name->flags.friendlyNameFromEdid)
@@ -109,12 +106,58 @@ DisplayInfo::result_type<Status> DisplayInfo::GetStatus(ValueFreshness freshness
         freshness);
 }
 
+static Windows::Devices::Display::Core::DisplayManager display_mgr = nullptr;
+
+static DisplayInfo::result_type<std::wstring> GetDisplayStableID(const wchar_t* devPath)
+{
+    try {
+        if (!display_mgr)
+            display_mgr = Windows::Devices::Display::Core::DisplayManager::Create(
+                Windows::Devices::Display::Core::DisplayManagerOptions::None);
+        auto targets = display_mgr.GetCurrentTargets();
+        for (const auto& display_target : targets) {
+            if (!display_target.IsConnected())
+                continue;
+            if (display_target.DeviceInterfacePath() == devPath)
+                return std::wstring(display_target.StableMonitorId());
+        }
+        return std::unexpected(HRESULT_FROM_WIN32(ERROR_NOT_FOUND));
+    } catch (hresult_error& e) {
+        return std::unexpected(e.code());
+    }
+}
+
+DisplayInfo::result_type<std::wstring> DisplayInfo::GetStableID() const
+{
+    return GetCached<std::wstring>(stableID, [this]() -> result_type<std::wstring> {
+        const auto& dev_name = GetCachedDeviceName();
+        if (!dev_name)
+            return std::unexpected(dev_name.error());
+        return GetDisplayStableID(dev_name->monitorDevicePath);
+    }, ValueFreshness::Cached);
+}
+
 template<typename T, typename F>
 const DisplayInfo::result_type<T>& DisplayInfo::GetCached(cache_type<T>& cache, F produce, ValueFreshness freshness) const
 {
     if(!cache || freshness == ValueFreshness::ForceRefresh)
         cache = produce();
     return *cache;
+}
+
+const DisplayInfo::result_type<DISPLAYCONFIG_TARGET_DEVICE_NAME>& DisplayInfo::GetCachedDeviceName() const
+{
+    return GetCached<DISPLAYCONFIG_TARGET_DEVICE_NAME>(
+        deviceName, [this]() -> result_type<DISPLAYCONFIG_TARGET_DEVICE_NAME> {
+            DISPLAYCONFIG_TARGET_DEVICE_NAME deviceName = {};
+            deviceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+            deviceName.header.size = sizeof(deviceName);
+            id.ToDeviceInputHeader(deviceName.header);
+            LONG result = DisplayConfigGetDeviceInfo(&deviceName.header);
+            if (result != ERROR_SUCCESS)
+                return std::unexpected(HRESULT_FROM_WIN32(result));
+            return deviceName;
+        }, ValueFreshness::Cached);
 }
 
 //---------------------------------------------------------------------------
