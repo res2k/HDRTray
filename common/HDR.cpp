@@ -158,9 +158,9 @@ Status GetWindowsHDRStatus()
     return anyEnabled ? Status::On : Status::Off;
 }
 
-static std::optional<Status> SetDisplayHDRStatus(const DisplayID& display, bool enable)
+static std::optional<Status> SetDisplayHDRStatus(const DisplayInfo& display, bool enable)
 {
-    if (DisplayInfo(display).GetStatus().value_or(Status::Unsupported) == Status::Unsupported)
+    if (display.GetStatus().value_or(Status::Unsupported) == Status::Unsupported)
         return std::nullopt;
 
     /* Try SET_HDR_STATE first, if available (on Windows 11 >= 24H2).
@@ -169,39 +169,39 @@ static std::optional<Status> SetDisplayHDRStatus(const DisplayID& display, bool 
     DISPLAYCONFIG_SET_HDR_STATE setHdrState = {};
     setHdrState.header.type = DISPLAYCONFIG_DEVICE_INFO_SET_HDR_STATE;
     setHdrState.header.size = sizeof(setHdrState);
-    display.ToDeviceInputHeader(setHdrState.header);
+    display.GetID().ToDeviceInputHeader(setHdrState.header);
     setHdrState.enableHdr = enable;
     if (use_win11_24h2_color_functions && DisplayConfigSetDeviceInfo(&setHdrState.header) == ERROR_SUCCESS)
-        return DisplayInfo(display).GetStatus().value_or(Status::Unsupported);
+        return display.GetStatus(DisplayInfo::ValueFreshness::ForceRefresh).value_or(Status::Unsupported);
 
     DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE setColorState = {};
     setColorState.header.type = DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE;
     setColorState.header.size = sizeof(setColorState);
-    display.ToDeviceInputHeader(setColorState.header);
+    display.GetID().ToDeviceInputHeader(setColorState.header);
     setColorState.enableAdvancedColor = enable;
 
     if (DisplayConfigSetDeviceInfo(&setColorState.header) != ERROR_SUCCESS)
         return std::nullopt;
     // Don't assume changing the HDR mode was successful... re-query the status
-    return DisplayInfo(display).GetStatus().value_or(Status::Unsupported);
+    return display.GetStatus(DisplayInfo::ValueFreshness::ForceRefresh).value_or(Status::Unsupported);
 }
 
 std::optional<Status> SetWindowsHDRStatus(bool enable)
 {
-    std::optional<Status> status;
+    std::optional<Status> status_result;
 
-    ForEachDisplay([&](const DisplayID& display) {
+    for (auto& display : GetDisplays()) {
         auto new_status = SetDisplayHDRStatus(display, enable);
         if (!new_status)
-            return;
+            continue;
 
-        if(!status)
-            status = *new_status;
+        if(!status_result)
+            status_result = *new_status;
         else
-            status = static_cast<Status>(std::max(static_cast<int>(*status), static_cast<int>(*new_status)));
-    });
+            status_result = static_cast<Status>(std::max(static_cast<int>(*status_result), static_cast<int>(*new_status)));
+    }
 
-    return status;
+    return status_result;
 }
 
 std::optional<Status> ToggleHDRStatus()
