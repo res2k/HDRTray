@@ -51,6 +51,8 @@ public:
     result_type<std::wstring> GetName() const;
     /// Get HDR status for display
     result_type<Status> GetStatus(ValueFreshness freshness = ValueFreshness::Cached) const;
+    /// Get "stable ID" of display
+    result_type<std::wstring> GetStableID() const;
 
 private:
     template<typename T>
@@ -62,9 +64,12 @@ private:
     mutable cache_type<DISPLAYCONFIG_TARGET_DEVICE_NAME> deviceName;
     /// HDR status
     mutable cache_type<Status> status;
+    /// Stable name
+    mutable cache_type<std::wstring> stableID;
 
     template<typename T, typename F>
     const result_type<T>& GetCached(cache_type<T>& cache, F produce, ValueFreshness freshness) const;
+    const result_type<DISPLAYCONFIG_TARGET_DEVICE_NAME>& GetCachedDeviceName() const;
 };
 
 using DisplayInfo_vec = std::vector<DisplayInfo>;
