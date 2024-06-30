@@ -67,11 +67,27 @@ private:
     const result_type<T>& GetCached(cache_type<T>& cache, F produce, ValueFreshness freshness) const;
 };
 
-Status GetWindowsHDRStatus();
-std::optional<Status> SetWindowsHDRStatus(bool enable);
-std::optional<Status> ToggleHDRStatus();
+using DisplayInfo_vec = std::vector<DisplayInfo>;
+
+Status GetWindowsHDRStatus(const DisplayInfo_vec& displays);
+std::optional<Status> SetWindowsHDRStatus(const DisplayInfo_vec& displays, bool enable);
+std::optional<Status> ToggleHDRStatus(const DisplayInfo_vec& displays);
+
 /// Get information for all displays
 std::vector<DisplayInfo> GetDisplays();
+
+static inline Status GetWindowsHDRStatus()
+{
+    return GetWindowsHDRStatus(GetDisplays());
+}
+static inline std::optional<Status> SetWindowsHDRStatus(bool enable)
+{
+    return SetWindowsHDRStatus(GetDisplays(), enable);
+}
+static inline std::optional<Status> ToggleHDRStatus()
+{
+    return ToggleHDRStatus(GetDisplays());
+}
 
 } // namespace hdr
 
