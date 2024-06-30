@@ -140,12 +140,11 @@ template<typename F> static void ForEachDisplay(F func)
     }
 }
 
-Status GetWindowsHDRStatus()
+Status GetWindowsHDRStatus(const DisplayInfo_vec& displays)
 {
     bool anySupported = false;
     bool anyEnabled = false;
-
-    for (auto& display : GetDisplays()) {
+    for (auto& display : displays) {
         auto status = display.GetStatus();
         if (!status || *status == Status::Unsupported)
             continue;
@@ -186,11 +185,11 @@ static std::optional<Status> SetDisplayHDRStatus(const DisplayInfo& display, boo
     return display.GetStatus(DisplayInfo::ValueFreshness::ForceRefresh).value_or(Status::Unsupported);
 }
 
-std::optional<Status> SetWindowsHDRStatus(bool enable)
+std::optional<Status> SetWindowsHDRStatus(const DisplayInfo_vec& displays, bool enable)
 {
     std::optional<Status> status_result;
 
-    for (auto& display : GetDisplays()) {
+    for (auto& display : displays) {
         auto new_status = SetDisplayHDRStatus(display, enable);
         if (!new_status)
             continue;
@@ -204,12 +203,12 @@ std::optional<Status> SetWindowsHDRStatus(bool enable)
     return status_result;
 }
 
-std::optional<Status> ToggleHDRStatus()
+std::optional<Status> ToggleHDRStatus(const DisplayInfo_vec& displays)
 {
-    auto status = GetWindowsHDRStatus();
+    auto status = GetWindowsHDRStatus(displays);
     if (status == Status::Unsupported)
         return Status::Unsupported;
-    return SetWindowsHDRStatus(status == Status::Off ? true : false);
+    return SetWindowsHDRStatus(displays, status == Status::Off ? true : false);
 }
 
 std::vector<DisplayInfo> GetDisplays()
