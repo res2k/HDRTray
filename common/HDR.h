@@ -42,7 +42,7 @@ public:
     const DisplayID& GetID() const { return id; }
 
     template<typename T>
-    using result_type = std::expected<T, LONG>;
+    using result_type = std::expected<T, HRESULT>;
 
     /// Indicates how "fresh" a queried value should be
     enum struct ValueFreshness { Cached, ForceRefresh };
