@@ -82,6 +82,8 @@ void Status::print_status_short()
 void Status::print_status_long()
 {
     auto displays = hdr::GetDisplays();
+    // Filter out all displays w/o name or status
+    std::erase_if(displays, [](const hdr::DisplayInfo& info) { return !info.GetStatus() || !info.GetName(); });
 
     // Tabulate.
     // Columns: #, Display name, Status
@@ -93,8 +95,8 @@ void Status::print_status_long()
     widths[2] = col_headings[2].size();
     for(const auto& disp : displays)
     {
-        widths[1] = std::max(widths[1], disp.name.size());
-        widths[2] = std::max(widths[2], status_string(disp.status).size());
+        widths[1] = std::max(widths[1], disp.GetName()->size());
+        widths[2] = std::max(widths[2], status_string(*disp.GetStatus()).size());
     }
 
     // Print heading
@@ -115,8 +117,8 @@ void Status::print_status_long()
     for (size_t i = 0; i < displays.size(); i++)
     {
         const auto& disp = displays[i];
-        std::println("{:>{}}\t{:<{}}\t{:<{}}", i, widths[0], CLI::narrow(disp.name), widths[1],
-                     status_string(disp.status), widths[2]);
+        std::println("{:>{}}\t{:<{}}\t{:<{}}", i, widths[0], CLI::narrow(*disp.GetName()), widths[1],
+                     status_string(*disp.GetStatus()), widths[2]);
     }
 }
 
