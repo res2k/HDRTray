@@ -35,6 +35,90 @@ void DisplayID::ToDeviceInputHeader(DISPLAYCONFIG_DEVICE_INFO_HEADER& header) co
     header.id = id;
 }
 
+//---------------------------------------------------------------------------
+
+static const wchar_t* GetFallbackDisplayName(const DisplayID& display)
+{
+    DISPLAYCONFIG_TARGET_BASE_TYPE target_base = {};
+    target_base.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_BASE_TYPE;
+    target_base.header.size = sizeof(target_base);
+    display.ToDeviceInputHeader(target_base.header);
+
+    if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&target_base.header)) {
+        if ((target_base.baseOutputTechnology != DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER)
+            && (target_base.baseOutputTechnology & DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL))
+            return L"Internal Display";
+    }
+
+    return L"Unnamed";
+}
+
+DisplayInfo::result_type<std::wstring> DisplayInfo::GetName() const
+{
+    const auto& dev_name = GetCached<DISPLAYCONFIG_TARGET_DEVICE_NAME>(
+        deviceName, [this]() -> result_type<DISPLAYCONFIG_TARGET_DEVICE_NAME> {
+            DISPLAYCONFIG_TARGET_DEVICE_NAME deviceName = {};
+            deviceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+            deviceName.header.size = sizeof(deviceName);
+            id.ToDeviceInputHeader(deviceName.header);
+            LONG result = DisplayConfigGetDeviceInfo(&deviceName.header);
+            if (result != ERROR_SUCCESS)
+                return std::unexpected(result);
+            return deviceName;
+        }, ValueFreshness::Cached);
+
+    if (dev_name) {
+        if (dev_name->flags.friendlyNameFromEdid)
+            return dev_name->monitorFriendlyDeviceName;
+        else
+            return GetFallbackDisplayName(id); // Seen with eg a laptop display.
+    }
+    return std::unexpected(dev_name.error());
+}
+
+DisplayInfo::result_type<Status> DisplayInfo::GetStatus(ValueFreshness freshness) const
+{
+    return GetCached<Status>(
+        status,
+        [this]() -> result_type<Status> {
+            // Prefer GET_ADVANCED_COLOR_INFO_2, this reports the actual HDR mode if ACM is enabled
+            DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO_2 getColorInfo2 = {};
+            getColorInfo2.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO_2;
+            getColorInfo2.header.size = sizeof(getColorInfo2);
+            id.ToDeviceInputHeader(getColorInfo2.header);
+            if (use_win11_24h2_color_functions && DisplayConfigGetDeviceInfo(&getColorInfo2.header) == ERROR_SUCCESS)
+            {
+                if (!getColorInfo2.highDynamicRangeSupported)
+                    return Status::Unsupported;
+
+                return getColorInfo2.activeColorMode == DISPLAYCONFIG_ADVANCED_COLOR_MODE_HDR ? Status::On : Status::Off;
+            }
+
+            DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO getColorInfo = {};
+            getColorInfo.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO;
+            getColorInfo.header.size = sizeof(getColorInfo);
+            id.ToDeviceInputHeader(getColorInfo.header);
+            LONG result = DisplayConfigGetDeviceInfo(&getColorInfo.header);
+            if (result != ERROR_SUCCESS)
+                return std::unexpected(result);
+            if (getColorInfo.advancedColorSupported)
+                return getColorInfo.advancedColorEnabled ? Status::On : Status::Off;
+            else
+                return Status::Unsupported;
+        },
+        freshness);
+}
+
+template<typename T, typename F>
+const DisplayInfo::result_type<T>& DisplayInfo::GetCached(cache_type<T>& cache, F produce, ValueFreshness freshness) const
+{
+    if(!cache || freshness == ValueFreshness::ForceRefresh)
+        cache = produce();
+    return *cache;
+}
+
+//---------------------------------------------------------------------------
+
 template<typename F> static void ForEachDisplay(F func)
 {
     uint32_t pathCount = 0;
@@ -157,44 +241,12 @@ std::optional<Status> ToggleHDRStatus()
     return SetWindowsHDRStatus(status == Status::Off ? true : false);
 }
 
-static const wchar_t* GetFallbackDisplayName(const DisplayID& display)
-{
-    DISPLAYCONFIG_TARGET_BASE_TYPE target_base = {};
-    target_base.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_BASE_TYPE;
-    target_base.header.size = sizeof(target_base);
-    display.ToDeviceInputHeader(target_base.header);
-
-    if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&target_base.header)) {
-        if ((target_base.baseOutputTechnology != DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER)
-            && (target_base.baseOutputTechnology & DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL))
-            return L"Internal Display";
-    }
-
-    return L"Unnamed";
-}
-
 std::vector<DisplayInfo> GetDisplays()
 {
     std::vector<DisplayInfo> result;
 
     ForEachDisplay([&](const DisplayID& display) {
-        DisplayInfo new_disp;
-
-        new_disp.status = GetDisplayHDRStatus(display);
-
-        DISPLAYCONFIG_TARGET_DEVICE_NAME deviceName = {};
-        deviceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
-        deviceName.header.size = sizeof(deviceName);
-        display.ToDeviceInputHeader(deviceName.header);
-        if (DisplayConfigGetDeviceInfo(&deviceName.header) != ERROR_SUCCESS)
-            return;
-
-        if (deviceName.flags.friendlyNameFromEdid)
-            new_disp.name = deviceName.monitorFriendlyDeviceName;
-        else
-            new_disp.name = GetFallbackDisplayName(display); // Seen with eg a laptop display.
-
-        result.emplace_back(std::move(new_disp));
+        result.emplace_back(display);
     });
 
     return result;

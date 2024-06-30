@@ -10,6 +10,8 @@
 #ifndef HDR_H_
 #define HDR_H_
 
+#include <expected>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -31,12 +33,35 @@ struct DisplayID
 };
 
 /// Display information
-struct DisplayInfo
+class DisplayInfo
 {
+public:
+    DisplayInfo(DisplayID id) : id(id) {}
+
+    template<typename T>
+    using result_type = std::expected<T, LONG>;
+
+    /// Indicates how "fresh" a queried value should be
+    enum struct ValueFreshness { Cached, ForceRefresh };
+
+    /// Get name of display
+    result_type<std::wstring> GetName() const;
+    /// Get HDR status for display
+    result_type<Status> GetStatus(ValueFreshness freshness = ValueFreshness::Cached) const;
+
+private:
+    template<typename T>
+    using cache_type = std::optional<result_type<T>>;
+
+    /// Display ID
+    DisplayID id;
     /// Display name
-    std::wstring name;
+    mutable cache_type<DISPLAYCONFIG_TARGET_DEVICE_NAME> deviceName;
     /// HDR status
-    Status status;
+    mutable cache_type<Status> status;
+
+    template<typename T, typename F>
+    const result_type<T>& GetCached(cache_type<T>& cache, F produce, ValueFreshness freshness) const;
 };
 
 Status GetWindowsHDRStatus();
