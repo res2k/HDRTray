@@ -24,21 +24,16 @@ namespace hdr {
 
 static const bool use_win11_24h2_color_functions = IsWindows11_24H2OrGreater();
 
-struct DisplayID
+DisplayID DisplayID::FromMode(const DISPLAYCONFIG_MODE_INFO& mode)
 {
-    LUID adapter;
-    UINT32 id;
+    return DisplayID { .adapter = mode.adapterId, .id = mode.id };
+}
 
-    static DisplayID FromMode(const DISPLAYCONFIG_MODE_INFO& mode)
-    {
-        return DisplayID { .adapter = mode.adapterId, .id = mode.id };
-    }
-    void ToDeviceInputHeader(DISPLAYCONFIG_DEVICE_INFO_HEADER& header) const
-    {
-        header.adapterId = adapter;
-        header.id = id;
-    }
-};
+void DisplayID::ToDeviceInputHeader(DISPLAYCONFIG_DEVICE_INFO_HEADER& header) const
+{
+    header.adapterId = adapter;
+    header.id = id;
+}
 
 template<typename F> static void ForEachDisplay(F func)
 {
