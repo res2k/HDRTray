@@ -63,7 +63,7 @@ DisplayInfo::result_type<std::wstring> DisplayInfo::GetName() const
             id.ToDeviceInputHeader(deviceName.header);
             LONG result = DisplayConfigGetDeviceInfo(&deviceName.header);
             if (result != ERROR_SUCCESS)
-                return std::unexpected(result);
+                return std::unexpected(HRESULT_FROM_WIN32(result));
             return deviceName;
         }, ValueFreshness::Cached);
 
@@ -100,7 +100,7 @@ DisplayInfo::result_type<Status> DisplayInfo::GetStatus(ValueFreshness freshness
             id.ToDeviceInputHeader(getColorInfo.header);
             LONG result = DisplayConfigGetDeviceInfo(&getColorInfo.header);
             if (result != ERROR_SUCCESS)
-                return std::unexpected(result);
+                return std::unexpected(HRESULT_FROM_WIN32(result));
             if (getColorInfo.advancedColorSupported)
                 return getColorInfo.advancedColorEnabled ? Status::On : Status::Off;
             else
