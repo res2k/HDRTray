@@ -16,8 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef NOTIFYICON_H_
-#define NOTIFYICON_H_
+#ifndef NOTIFYICON_HPP_
+#define NOTIFYICON_HPP_
 
 #include "framework.h"
 #include "HDR.h"
@@ -70,4 +70,4 @@ protected:
     bool IsAutostartEnabled() const;
 };
 
-#endif // NOTIFYICON_H_
+#endif // NOTIFYICON_HPP_

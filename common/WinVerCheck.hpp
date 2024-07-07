@@ -16,8 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef WINVERCHECK_H_
-#define WINVERCHECK_H_
+#ifndef WINVERCHECK_HPP_
+#define WINVERCHECK_HPP_
 
 #include "framework.h"
 #include "VersionHelpers.h"
@@ -54,4 +54,4 @@ static bool IsWindows10_1903OrGreater ()
     return IsWindows10BuildOrGreater(18362);
 }
 
-#endif // WINVERCHECK_H_
+#endif // WINVERCHECK_HPP_
