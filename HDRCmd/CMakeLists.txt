@@ -8,6 +8,8 @@ target_sources(HDRCmd PRIVATE
                "HDRCmd.rc"
                "subcommand/display_status.hpp"
                "subcommand/display_status.cpp"
+               "subcommand/resolve_display.hpp"
+               "subcommand/resolve_display.cpp"
                "subcommand/Base.hpp"
                "subcommand/Disable.hpp"
                "subcommand/Disable.cpp"
@@ -15,6 +17,8 @@ target_sources(HDRCmd PRIVATE
                "subcommand/Enable.cpp"
                "subcommand/LoginStartup.hpp"
                "subcommand/LoginStartup.cpp"
+               "subcommand/Select.hpp"
+               "subcommand/Select.cpp"
                "subcommand/Status.hpp"
                "subcommand/Status.cpp"
                )
