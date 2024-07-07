@@ -19,6 +19,7 @@
 #include "display_status.hpp"
 
 #include "CLI/CLI.hpp"
+#include "DisplayConfig.hpp"
 
 #include <array>
 #include <iostream>
@@ -38,6 +39,15 @@ std::string_view status_string(hdr::Status status)
     return "???";
 }
 
+static std::string_view selected_str(const hdr::DisplayInfo& disp)
+{
+    auto stable_id_res = disp.GetStableID();
+    bool display_enabled = true;
+    if (stable_id_res)
+        display_enabled = DisplayConfig::instance().IsEnabled(*stable_id_res);
+    return display_enabled ? "yes" : "no";
+}
+
 void print_status_long()
 {
     auto displays = hdr::GetDisplays();
@@ -46,16 +56,18 @@ void print_status_long()
 
     // Tabulate.
     // Columns: #, Display name, Status
-    static constexpr size_t num_cols = 3;
-    static constexpr std::string_view col_headings[num_cols] = { "Display #", "Name", "Status" };
+    static constexpr size_t num_cols = 4;
+    static constexpr std::string_view col_headings[num_cols] = { "Display #", "Name", "Status", "Selected" };
     std::array<size_t, num_cols> widths;
     widths[0] = std::max(size_t(ceil(log10(displays.size() + 1))) + 1, col_headings[0].size());
     widths[1] = col_headings[1].size();
     widths[2] = col_headings[2].size();
+    widths[3] = col_headings[3].size();
     for(const auto& disp : displays)
     {
         widths[1] = std::max(widths[1], disp.GetName()->size());
         widths[2] = std::max(widths[2], status_string(*disp.GetStatus()).size());
+        // Don't bother w/ "Selected", it's either "yes" or "no"
     }
 
     // Print heading
@@ -76,8 +88,8 @@ void print_status_long()
     for (size_t i = 0; i < displays.size(); i++)
     {
         const auto& disp = displays[i];
-        std::println("{:>{}}\t{:<{}}\t{:<{}}", i, widths[0], CLI::narrow(*disp.GetName()), widths[1],
-                     status_string(*disp.GetStatus()), widths[2]);
+        std::println("{:>{}}\t{:<{}}\t{:<{}}\t{:<{}}", i, widths[0], CLI::narrow(*disp.GetName()), widths[1],
+                     status_string(*disp.GetStatus()), widths[2], selected_str(disp), widths[3]);
     }
 }
 
