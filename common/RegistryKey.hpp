@@ -57,6 +57,11 @@ public:
     {
         return RegQueryValueExW(key, valueName, nullptr, type, data, data_size);
     }
+    /// Wrapper around RegGetValueW (), using the internally stored key
+    LSTATUS GetValue(LPCWSTR subKey, LPCWSTR value, DWORD   flags, LPDWORD type, PVOID data, LPDWORD data_size)
+    {
+        return RegGetValueW(key, subKey, value, flags, type, data, data_size);
+    }
     /// Wrapper around RegSetValueExW(), using the internally stored key
     LSTATUS SetValueEx(LPCWSTR valueName, DWORD type, const BYTE* data, DWORD data_size) const
     {
