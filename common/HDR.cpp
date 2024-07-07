@@ -258,8 +258,9 @@ std::vector<DisplayInfo> GetDisplays()
 {
     std::vector<DisplayInfo> result;
 
+    size_t index = 0;
     ForEachDisplay([&](const DisplayID& display) {
-        result.emplace_back(display);
+        result.emplace_back(index++, display);
     });
 
     return result;
