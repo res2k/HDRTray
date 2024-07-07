@@ -21,6 +21,7 @@
 #include "subcommand/Disable.hpp"
 #include "subcommand/Enable.hpp"
 #include "subcommand/LoginStartup.hpp"
+#include "subcommand/Select.hpp"
 #include "subcommand/Status.hpp"
 #include "version.h"
 #include "WinVerCheck.hpp"
@@ -55,6 +56,7 @@ int wmain(int argc, const wchar_t* const argv[])
     subcommand::Status::add(app);
     subcommand::Enable::add(app);
     subcommand::Disable::add(app);
+    subcommand::Select::add(app);
     subcommand::LoginStartup::add(app);
 
     CLI11_PARSE(app, argc, argv);
