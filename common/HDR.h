@@ -36,8 +36,10 @@ struct DisplayID
 class DisplayInfo
 {
 public:
-    DisplayInfo(DisplayID id) : id(id) {}
+    DisplayInfo(size_t index, DisplayID id) : index(index), id(id) {}
 
+    /// Get display index
+    size_t GetIndex() const { return index; }
     /// Get display ID
     const DisplayID& GetID() const { return id; }
 
@@ -58,6 +60,8 @@ private:
     template<typename T>
     using cache_type = std::optional<result_type<T>>;
 
+    /// Display index
+    size_t index;
     /// Display ID
     DisplayID id;
     /// Display name
