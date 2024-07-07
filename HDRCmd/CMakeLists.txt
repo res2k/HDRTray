@@ -6,6 +6,8 @@ target_sources(HDRCmd PRIVATE
                "HDRCmd.cpp"
                "HDRCmd.manifest"
                "HDRCmd.rc"
+               "subcommand/display_status.hpp"
+               "subcommand/display_status.cpp"
                "subcommand/Base.hpp"
                "subcommand/Disable.hpp"
                "subcommand/Disable.cpp"
