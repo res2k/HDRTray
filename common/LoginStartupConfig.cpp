@@ -20,15 +20,15 @@
 
 #include "RegistryKey.hpp"
 
-#include <memory>
+#include <optional>
 #include <string_view>
 
-static std::unique_ptr<LoginStartupConfig> loginstartup_singleton;
+static std::optional<LoginStartupConfig> loginstartup_singleton;
 
 LoginStartupConfig& LoginStartupConfig::instance()
 {
     if (!loginstartup_singleton)
-        loginstartup_singleton.reset(new LoginStartupConfig);
+        loginstartup_singleton.emplace(LoginStartupConfig{});
     return *loginstartup_singleton;
 }
 
