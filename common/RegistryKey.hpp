@@ -29,10 +29,20 @@ class RegistryKey
     HKEY key = nullptr;
 
 public:
+    RegistryKey() = default;
+    RegistryKey(const RegistryKey&) = delete;
+    RegistryKey(RegistryKey&& other) { std::swap(key, other.key); }
     ~RegistryKey()
     {
         if (key)
             RegCloseKey(key);
+    }
+
+    RegistryKey& operator=(const RegistryKey&) = delete;
+    RegistryKey& operator=(RegistryKey&& other)
+    {
+        std::swap(key, other.key);
+        return *this;
     }
 
     operator HKEY() const { return key; }
