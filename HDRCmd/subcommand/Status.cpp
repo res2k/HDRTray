@@ -18,10 +18,9 @@
 
 #include "Status.hpp"
 
+#include "display_status.hpp"
 #include "HDR.h"
 
-#include <array>
-#include <format>
 #include <print>
 
 namespace subcommand {
@@ -60,66 +59,10 @@ Status::Status(CLI::App* parent) : Base("Print current HDR status", "status", pa
     mode_option->transform(StatusModeValidator());
 }
 
-static std::string_view status_string(hdr::Status status)
-{
-    switch (status) {
-    case hdr::Status::Off:
-        return "off";
-    case hdr::Status::On:
-        return "on";
-    case hdr::Status::Unsupported:
-        return "unsupported";
-    }
-    return "???";
-}
-
 void Status::print_status_short()
 {
     auto status = hdr::GetWindowsHDRStatus();
-    std::println("HDR is {}", status_string(status));
-}
-
-void Status::print_status_long()
-{
-    auto displays = hdr::GetDisplays();
-    // Filter out all displays w/o name or status
-    std::erase_if(displays, [](const hdr::DisplayInfo& info) { return !info.GetStatus() || !info.GetName(); });
-
-    // Tabulate.
-    // Columns: #, Display name, Status
-    static constexpr size_t num_cols = 3;
-    static constexpr std::string_view col_headings[num_cols] = { "Display #", "Name", "Status" };
-    std::array<size_t, num_cols> widths;
-    widths[0] = std::max(size_t(ceil(log10(displays.size() + 1))) + 1, col_headings[0].size());
-    widths[1] = col_headings[1].size();
-    widths[2] = col_headings[2].size();
-    for(const auto& disp : displays)
-    {
-        widths[1] = std::max(widths[1], disp.GetName()->size());
-        widths[2] = std::max(widths[2], status_string(*disp.GetStatus()).size());
-    }
-
-    // Print heading
-    for (size_t i = 0; i < num_cols; i++)
-    {
-        if (i > 0)
-            std::cout << "\t";
-        std::print("{:<{}}", col_headings[i], widths[i]);
-    }
-    std::cout << std::endl;
-    for (size_t i = 0; i < num_cols; i++)
-    {
-        if (i > 0)
-            std::cout << "\t";
-        std::print("{:-<{}}", "", widths[i]);
-    }
-    std::cout << std::endl;
-    for (size_t i = 0; i < displays.size(); i++)
-    {
-        const auto& disp = displays[i];
-        std::println("{:>{}}\t{:<{}}\t{:<{}}", i, widths[0], CLI::narrow(*disp.GetName()), widths[1],
-                     status_string(*disp.GetStatus()), widths[2]);
-    }
+    std::println("HDR is {}", display_status::status_string(status));
 }
 
 int Status::run() const
@@ -130,7 +73,7 @@ int Status::run() const
     } else if (stricmp(mode.c_str(), "long") == 0) {
         print_status_short();
         std::cout << std::endl;
-        print_status_long();
+        display_status::print_status_long();
         return 0;
     } else if (stricmp(mode.c_str(), "exitcode") == 0) {
         auto status = hdr::GetWindowsHDRStatus();

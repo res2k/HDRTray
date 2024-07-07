@@ -16,27 +16,19 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef SUBCOMMAND_STATUS_HPP_
-#define SUBCOMMAND_STATUS_HPP_
+#ifndef SUBCOMMAND_DISPLAYSTATUS_HPP_
+#define SUBCOMMAND_DISPLAYSTATUS_HPP_
 
-#include "Base.hpp"
+#include "HDR.h"
 
-namespace subcommand {
-class Status : public Base
-{
-    static void print_status_short();
+#include <string_view>
 
-protected:
-    std::string mode;
+namespace subcommand::display_status {
+/// Get string for a display status
+std::string_view status_string(hdr::Status status);
+/// Print "long" display status
+void print_status_long();
 
-    Status(CLI::App* parent);
+} // namespace subcommand::display_status
 
-public:
-    int run() const override;
-
-    static CLI::App* add(CLI::App& app);
-};
-
-} // namespace subcommand
-
-#endif // SUBCOMMAND_STATUS_HPP_
+#endif // SUBCOMMAND_DISPLAYSTATUS_HPP_
