@@ -18,7 +18,9 @@
 
 #include "CLI/CLI.hpp"
 
-#include "Subcommands.hpp"
+#include "subcommand/Disable.hpp"
+#include "subcommand/Enable.hpp"
+#include "subcommand/Status.hpp"
 #include "version.h"
 #include "WinVerCheck.hpp"
 

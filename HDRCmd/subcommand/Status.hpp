@@ -16,25 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef SUBCOMMANDS_HPP_
-#define SUBCOMMANDS_HPP_
+#ifndef SUBCOMMAND_STATUS_HPP_
+#define SUBCOMMAND_STATUS_HPP_
 
-#include "CLI/CLI.hpp"
+#include "Base.hpp"
 
 namespace subcommand {
-class Base : public CLI::App
-{
-protected:
-    template<typename... Arg>
-    Base(Arg&&... arg) : App(std::forward<Arg>(arg)...)
-    {
-    }
-
-public:
-    virtual int run() const = 0;
-
-};
-
 class Status : public Base
 {
     static void print_status_short();
@@ -51,28 +38,6 @@ public:
     static CLI::App* add(CLI::App& app);
 };
 
-class Enable : public Base
-{
-protected:
-    Enable(CLI::App* parent);
-
-public:
-    int run() const override;
-
-    static CLI::App* add(CLI::App& app);
-};
-
-class Disable : public Base
-{
-protected:
-    Disable(CLI::App* parent);
-
-public:
-    int run() const override;
-
-    static CLI::App* add(CLI::App& app);
-};
-
 } // namespace subcommand
 
-#endif // SUBCOMMANDS_HPP_
+#endif // SUBCOMMAND_STATUS_HPP_

@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "Subcommands.hpp"
+#include "Status.hpp"
 
 #include "HDR.h"
 
@@ -149,40 +149,6 @@ int Status::run() const
 CLI::App* Status::add(CLI::App& app)
 {
     return app.add_subcommand(std::shared_ptr<Status>(new Status(&app)));
-}
-
-//---------------------------------------------------------------------------
-
-Enable::Enable(CLI::App* parent) : Base("Turn HDR on", "on", parent) { }
-
-int Enable::run() const
-{
-    auto result = hdr::SetWindowsHDRStatus(true);
-    if (!result)
-        return -1;
-    return *result == hdr::Status::On ? 0 : 1;
-}
-
-CLI::App* Enable::add(CLI::App& app)
-{
-    return app.add_subcommand(std::shared_ptr<Enable>(new Enable(&app)));
-}
-
-//---------------------------------------------------------------------------
-
-Disable::Disable(CLI::App* parent) : Base("Turn HDR off", "off", parent) { }
-
-int Disable::run() const
-{
-    auto result = hdr::SetWindowsHDRStatus(false);
-    if (!result)
-        return -1;
-    return *result == hdr::Status::Off ? 0 : 1;
-}
-
-CLI::App* Disable::add(CLI::App& app)
-{
-    return app.add_subcommand(std::shared_ptr<Disable>(new Disable(&app)));
 }
 
 } // namespace subcommand

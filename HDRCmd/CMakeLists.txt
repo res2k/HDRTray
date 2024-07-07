@@ -6,8 +6,13 @@ target_sources(HDRCmd PRIVATE
                "HDRCmd.cpp"
                "HDRCmd.manifest"
                "HDRCmd.rc"
-               "Subcommands.hpp"
-               "Subcommands.cpp"
+               "subcommand/Base.hpp"
+               "subcommand/Disable.hpp"
+               "subcommand/Disable.cpp"
+               "subcommand/Enable.hpp"
+               "subcommand/Enable.cpp"
+               "subcommand/Status.hpp"
+               "subcommand/Status.cpp"
                )
 target_compile_definitions(HDRCmd PRIVATE UNICODE _UNICODE)
 target_include_directories(HDRCmd PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
