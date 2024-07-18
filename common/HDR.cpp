@@ -15,6 +15,10 @@
 
 #include "framework.h"
 
+#if !defined(NTDDI_WIN11_GA) || WDK_NTDDI_VERSION < NTDDI_WIN11_GA
+#error Windows SDK too old: Version >= 10.0.26100 required
+#endif
+
 namespace hdr {
 
 template<typename F> static void ForEachDisplay(F func)
@@ -87,6 +91,17 @@ static std::optional<Status> SetDisplayHDRStatus(const DISPLAYCONFIG_MODE_INFO& 
 
     if (!getColorInfo.advancedColorSupported)
         return std::nullopt;
+
+    // Try SET_HDR_STATE first (available on Windows 11 24H2)
+    DISPLAYCONFIG_SET_HDR_STATE setHdrState = {};
+    setHdrState.header.type = DISPLAYCONFIG_DEVICE_INFO_SET_HDR_STATE;
+    setHdrState.header.size = sizeof(setHdrState);
+    setHdrState.header.adapterId.HighPart = mode.adapterId.HighPart;
+    setHdrState.header.adapterId.LowPart = mode.adapterId.LowPart;
+    setHdrState.header.id = mode.id;
+    setHdrState.enableHdr = enable;
+    if (DisplayConfigSetDeviceInfo(&setHdrState.header) == ERROR_SUCCESS)
+        return GetDisplayHDRStatus(mode);
 
     DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE setColorState = {};
     setColorState.header.type = DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE;
