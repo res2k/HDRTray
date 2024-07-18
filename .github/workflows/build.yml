@@ -29,6 +29,11 @@ jobs:
     - name: Install marko
       run: python -m pip install marko
 
+    - uses: res2k/setup-winsdk@support-sdk-26100 # TEMPORARY until upstream fbactions/setup-winsdk works w/ 26100
+      with:
+        winsdk-build-version: 26100
+      name: Install Windows 11 SDK 26100
+
     - name: Configure CMake
       run: cmake -A x64 -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/install
 
