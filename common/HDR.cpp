@@ -94,17 +94,7 @@ Status GetWindowsHDRStatus()
 
 static std::optional<Status> SetDisplayHDRStatus(const DISPLAYCONFIG_MODE_INFO& mode, bool enable)
 {
-    DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO getColorInfo = {};
-    getColorInfo.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO;
-    getColorInfo.header.size = sizeof(getColorInfo);
-    getColorInfo.header.adapterId.HighPart = mode.adapterId.HighPart;
-    getColorInfo.header.adapterId.LowPart = mode.adapterId.LowPart;
-    getColorInfo.header.id = mode.id;
-
-    if (DisplayConfigGetDeviceInfo(&getColorInfo.header) != ERROR_SUCCESS)
-        return std::nullopt;
-
-    if (!getColorInfo.advancedColorSupported)
+    if (GetDisplayHDRStatus(mode) == Status::Unsupported)
         return std::nullopt;
 
     // Try SET_HDR_STATE first (available on Windows 11 24H2)
