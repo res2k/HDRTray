@@ -44,6 +44,21 @@ template<typename F> static void ForEachDisplay(F func)
 
 static Status GetDisplayHDRStatus(const DISPLAYCONFIG_MODE_INFO& mode)
 {
+    // Prefer GET_ADVANCED_COLOR_INFO_2, this reports the actual HDR mode if ACM is enabled
+    DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO_2 getColorInfo2 = {};
+    getColorInfo2.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO_2;
+    getColorInfo2.header.size = sizeof(getColorInfo2);
+    getColorInfo2.header.adapterId.HighPart = mode.adapterId.HighPart;
+    getColorInfo2.header.adapterId.LowPart = mode.adapterId.LowPart;
+    getColorInfo2.header.id = mode.id;
+    if (DisplayConfigGetDeviceInfo(&getColorInfo2.header) == ERROR_SUCCESS)
+    {
+        if (!getColorInfo2.highDynamicRangeSupported)
+            return Status::Unsupported;
+
+        return getColorInfo2.activeColorMode == DISPLAYCONFIG_ADVANCED_COLOR_MODE_HDR ? Status::On : Status::Off;
+    }
+
     DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO getColorInfo = {};
     getColorInfo.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO;
     getColorInfo.header.size = sizeof(getColorInfo);
