@@ -183,20 +183,7 @@ std::vector<Display> GetDisplays()
     ForEachDisplay([&](const DISPLAYCONFIG_MODE_INFO& mode) {
         Display new_disp;
 
-        DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO getColorInfo = {};
-        getColorInfo.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO;
-        getColorInfo.header.size = sizeof(getColorInfo);
-        getColorInfo.header.adapterId.HighPart = mode.adapterId.HighPart;
-        getColorInfo.header.adapterId.LowPart = mode.adapterId.LowPart;
-        getColorInfo.header.id = mode.id;
-
-        if (DisplayConfigGetDeviceInfo(&getColorInfo.header) != ERROR_SUCCESS)
-            return;
-
-        if (getColorInfo.advancedColorSupported)
-            new_disp.status = getColorInfo.advancedColorEnabled ? Status::On : Status::Off;
-        else
-            new_disp.status = Status::Unsupported;
+        new_disp.status = GetDisplayHDRStatus(mode);
 
         DISPLAYCONFIG_TARGET_DEVICE_NAME deviceName = {};
         deviceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
