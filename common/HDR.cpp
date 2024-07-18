@@ -22,19 +22,19 @@ template<typename F> static void ForEachDisplay(F func)
     uint32_t pathCount = 0;
     uint32_t modeCount = 0;
 
-    if (ERROR_SUCCESS == GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathCount, &modeCount)) {
-        std::vector<DISPLAYCONFIG_PATH_INFO> paths(pathCount);
-        std::vector<DISPLAYCONFIG_MODE_INFO> modes(modeCount);
+    if (GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathCount, &modeCount) != ERROR_SUCCESS)
+        return;
 
-        if (ERROR_SUCCESS
-            == QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &pathCount, paths.data(), &modeCount, modes.data(), 0)) {
+    std::vector<DISPLAYCONFIG_PATH_INFO> paths(pathCount);
+    std::vector<DISPLAYCONFIG_MODE_INFO> modes(modeCount);
 
-            for (const auto& path : paths) {
-                const auto& mode = modes.at(path.targetInfo.modeInfoIdx);
+    if (QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &pathCount, paths.data(), &modeCount, modes.data(), 0) != ERROR_SUCCESS)
+        return;
 
-                func(mode);
-            }
-        }
+    for (const auto& path : paths) {
+        const auto& mode = modes.at(path.targetInfo.modeInfoIdx);
+
+        func(mode);
     }
 }
 
@@ -52,13 +52,14 @@ Status GetWindowsHDRStatus()
         getColorInfo.header.adapterId.LowPart = mode.adapterId.LowPart;
         getColorInfo.header.id = mode.id;
 
-        if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&getColorInfo.header)) {
-            if (getColorInfo.advancedColorEnabled)
-                advancedColorEnabled = true;
+        if (DisplayConfigGetDeviceInfo(&getColorInfo.header) != ERROR_SUCCESS)
+            return;
 
-            if (getColorInfo.advancedColorSupported)
-                advancedColorSupported = true;
-        }
+        if (getColorInfo.advancedColorEnabled)
+            advancedColorEnabled = true;
+
+        if (getColorInfo.advancedColorSupported)
+            advancedColorSupported = true;
     });
 
     if (!advancedColorSupported) {
@@ -89,19 +90,23 @@ std::optional<Status> SetWindowsHDRStatus(bool enable)
         setColorState.header.adapterId.LowPart = mode.adapterId.LowPart;
         setColorState.header.id = mode.id;
 
-        if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&getColorInfo.header)) {
-            if (getColorInfo.advancedColorSupported) {
-                Status new_status = Status::Unsupported;
-                setColorState.enableAdvancedColor = enable;
-                new_status = enable ? Status::On : Status::Off;
-                if (ERROR_SUCCESS == DisplayConfigSetDeviceInfo(&setColorState.header)) {
-                    if(!status)
-                        status = new_status;
-                    else
-                        status = static_cast<Status>(std::max(static_cast<int>(*status), static_cast<int>(new_status)));
-                }
-            }
-        }
+        if (DisplayConfigGetDeviceInfo(&getColorInfo.header) != ERROR_SUCCESS)
+            return;
+
+        if (!getColorInfo.advancedColorSupported)
+            return;
+
+        Status new_status = Status::Unsupported;
+        setColorState.enableAdvancedColor = enable;
+
+        new_status = enable ? Status::On : Status::Off;
+        if (DisplayConfigSetDeviceInfo(&setColorState.header) != ERROR_SUCCESS)
+            return;
+
+        if(!status)
+            status = new_status;
+        else
+            status = static_cast<Status>(std::max(static_cast<int>(*status), static_cast<int>(new_status)));
     });
 
     return status;
@@ -147,14 +152,13 @@ std::vector<Display> GetDisplays()
         getColorInfo.header.adapterId.LowPart = mode.adapterId.LowPart;
         getColorInfo.header.id = mode.id;
 
-        if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&getColorInfo.header)) {
-            if (getColorInfo.advancedColorSupported)
-                new_disp.status = getColorInfo.advancedColorEnabled ? Status::On : Status::Off;
-            else
-                new_disp.status = Status::Unsupported;
-        }
-        else
+        if (DisplayConfigGetDeviceInfo(&getColorInfo.header) != ERROR_SUCCESS)
             return;
+
+        if (getColorInfo.advancedColorSupported)
+            new_disp.status = getColorInfo.advancedColorEnabled ? Status::On : Status::Off;
+        else
+            new_disp.status = Status::Unsupported;
 
         DISPLAYCONFIG_TARGET_DEVICE_NAME deviceName = {};
         deviceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
@@ -162,13 +166,13 @@ std::vector<Display> GetDisplays()
         deviceName.header.adapterId.HighPart = mode.adapterId.HighPart;
         deviceName.header.adapterId.LowPart = mode.adapterId.LowPart;
         deviceName.header.id = mode.id;
-        if (ERROR_SUCCESS == DisplayConfigGetDeviceInfo(&deviceName.header)) {
-            if (deviceName.flags.friendlyNameFromEdid)
-                new_disp.name = deviceName.monitorFriendlyDeviceName;
-            else
-                new_disp.name = GetFallbackDisplayName(mode); // Seen with eg a laptop display.
-        } else
+        if (DisplayConfigGetDeviceInfo(&deviceName.header) != ERROR_SUCCESS)
             return;
+
+        if (deviceName.flags.friendlyNameFromEdid)
+            new_disp.name = deviceName.monitorFriendlyDeviceName;
+        else
+            new_disp.name = GetFallbackDisplayName(mode); // Seen with eg a laptop display.
 
         result.emplace_back(std::move(new_disp));
     });
