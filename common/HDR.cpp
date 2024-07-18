@@ -73,43 +73,48 @@ Status GetWindowsHDRStatus()
         return Status::Unsupported;
 }
 
+static std::optional<Status> SetDisplayHDRStatus(const DISPLAYCONFIG_MODE_INFO& mode, bool enable)
+{
+    DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO getColorInfo = {};
+    getColorInfo.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO;
+    getColorInfo.header.size = sizeof(getColorInfo);
+    getColorInfo.header.adapterId.HighPart = mode.adapterId.HighPart;
+    getColorInfo.header.adapterId.LowPart = mode.adapterId.LowPart;
+    getColorInfo.header.id = mode.id;
+
+    if (DisplayConfigGetDeviceInfo(&getColorInfo.header) != ERROR_SUCCESS)
+        return std::nullopt;
+
+    if (!getColorInfo.advancedColorSupported)
+        return std::nullopt;
+
+    DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE setColorState = {};
+    setColorState.header.type = DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE;
+    setColorState.header.size = sizeof(setColorState);
+    setColorState.header.adapterId.HighPart = mode.adapterId.HighPart;
+    setColorState.header.adapterId.LowPart = mode.adapterId.LowPart;
+    setColorState.header.id = mode.id;
+    setColorState.enableAdvancedColor = enable;
+
+    if (DisplayConfigSetDeviceInfo(&setColorState.header) != ERROR_SUCCESS)
+        return std::nullopt;
+    // Don't assume changing the HDR mode was successful... re-query the status
+    return GetDisplayHDRStatus(mode);
+}
+
 std::optional<Status> SetWindowsHDRStatus(bool enable)
 {
     std::optional<Status> status;
 
     ForEachDisplay([&](const DISPLAYCONFIG_MODE_INFO& mode) {
-        DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO getColorInfo = {};
-        getColorInfo.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO;
-        getColorInfo.header.size = sizeof(getColorInfo);
-        getColorInfo.header.adapterId.HighPart = mode.adapterId.HighPart;
-        getColorInfo.header.adapterId.LowPart = mode.adapterId.LowPart;
-        getColorInfo.header.id = mode.id;
-
-        DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE setColorState = {};
-        setColorState.header.type = DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE;
-        setColorState.header.size = sizeof(setColorState);
-        setColorState.header.adapterId.HighPart = mode.adapterId.HighPart;
-        setColorState.header.adapterId.LowPart = mode.adapterId.LowPart;
-        setColorState.header.id = mode.id;
-
-        if (DisplayConfigGetDeviceInfo(&getColorInfo.header) != ERROR_SUCCESS)
+        auto new_status = SetDisplayHDRStatus(mode, enable);
+        if (!new_status)
             return;
-
-        if (!getColorInfo.advancedColorSupported)
-            return;
-
-        Status new_status = Status::Unsupported;
-        setColorState.enableAdvancedColor = enable;
-
-        if (DisplayConfigSetDeviceInfo(&setColorState.header) != ERROR_SUCCESS)
-            return;
-        // Don't assume changing the HDR mode was successful... re-query the status
-        new_status = GetDisplayHDRStatus(mode);
 
         if(!status)
-            status = new_status;
+            status = *new_status;
         else
-            status = static_cast<Status>(std::max(static_cast<int>(*status), static_cast<int>(new_status)));
+            status = static_cast<Status>(std::max(static_cast<int>(*status), static_cast<int>(*new_status)));
     });
 
     return status;
