@@ -59,6 +59,7 @@ static Status GetDisplayHDRStatus(const DISPLAYCONFIG_MODE_INFO& mode)
         if (!getColorInfo2.highDynamicRangeSupported)
             return Status::Unsupported;
 
+        // Only DISPLAYCONFIG_ADVANCED_COLOR_MODE_HDR is true HDR.
         return getColorInfo2.activeColorMode == DISPLAYCONFIG_ADVANCED_COLOR_MODE_HDR ? Status::On : Status::Off;
     }
 
@@ -100,7 +101,9 @@ static std::optional<Status> SetDisplayHDRStatus(const DISPLAYCONFIG_MODE_INFO& 
     if (GetDisplayHDRStatus(mode) == Status::Unsupported)
         return std::nullopt;
 
-    // Try SET_HDR_STATE first (available on Windows 11 24H2)
+    /* Try SET_HDR_STATE first, if available (on Windows 11 >= 24H2).
+     * This seems to work better with ACM enabled (in which case "advanced color" is always
+     * enabled and changing it doesn't do much.) */
     DISPLAYCONFIG_SET_HDR_STATE setHdrState = {};
     setHdrState.header.type = DISPLAYCONFIG_DEVICE_INFO_SET_HDR_STATE;
     setHdrState.header.size = sizeof(setHdrState);
