@@ -23,6 +23,8 @@ jobs:
       with:
         submodules: recursive
         fetch-tags: true
+        fetch-depth: 0
+        filter: tree:0
 
     - name: Install marko
       run: python -m pip install marko
