@@ -86,8 +86,8 @@ Status GetWindowsHDRStatus()
 
     ForEachDisplay([&](const DISPLAYCONFIG_MODE_INFO& mode) {
         Status displayStatus = GetDisplayHDRStatus(mode);
-        anySupported = displayStatus != Status::Unsupported;
-        anyEnabled = displayStatus == Status::On;
+        anySupported |= displayStatus != Status::Unsupported;
+        anyEnabled |= displayStatus == Status::On;
     });
 
     if (anySupported)
