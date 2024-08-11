@@ -42,10 +42,10 @@ static std::wstring DisplayValueName(std::wstring_view display_stable_id)
 std::expected<bool, LSTATUS> DisplayConfig::GetEnabledFlag(std::wstring_view display_stable_id) const
 {
     RegistryKey key_displayconfig;
-    auto create_result = key_displayconfig.Create(HKEY_CURRENT_USER, displayconfig_hkcu_path, 0,
-                                                  KEY_READ | KEY_QUERY_VALUE, nullptr);
-    if (create_result != ERROR_SUCCESS)
-        return std::unexpected(create_result);
+    auto open_result =
+        key_displayconfig.Open(HKEY_CURRENT_USER, displayconfig_hkcu_path, 0, KEY_READ | KEY_QUERY_VALUE);
+    if (open_result != ERROR_SUCCESS)
+        return std::unexpected(open_result);
     auto value_name = DisplayValueName(display_stable_id);
 
     DWORD value, value_size = sizeof(value);
