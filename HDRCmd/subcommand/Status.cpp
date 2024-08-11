@@ -61,7 +61,7 @@ Status::Status(CLI::App* parent) : Base("Print current HDR status", "status", pa
 
 void Status::print_status_short()
 {
-    auto status = hdr::GetWindowsHDRStatus();
+    auto status = hdr::GetWindowsHDRStatus(hdr::GetEnabledDisplays());
     std::println("HDR is {}", display_status::status_string(status));
 }
 
@@ -76,7 +76,7 @@ int Status::run() const
         display_status::print_status_long();
         return 0;
     } else if (stricmp(mode.c_str(), "exitcode") == 0) {
-        auto status = hdr::GetWindowsHDRStatus();
+        auto status = hdr::GetWindowsHDRStatus(hdr::GetEnabledDisplays());
         switch(status)
         {
         case hdr::Status::On:
