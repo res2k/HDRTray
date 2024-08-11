@@ -219,7 +219,7 @@ void NotifyIcon::ToggleHDR()
     POINT mouse_pos;
     bool has_mouse_pos = GetCursorPos(&mouse_pos);
 
-    auto new_status = hdr::ToggleHDRStatus();
+    auto new_status = hdr::ToggleHDRStatus(hdr::GetEnabledDisplays());
 
     if(new_status) {
         hdr_status = *new_status;
@@ -275,7 +275,7 @@ const NotifyIcon::Icons& NotifyIcon::GetCurrentIconSet() const
 
 void NotifyIcon::FetchHDRStatus()
 {
-    this->hdr_status = hdr::GetWindowsHDRStatus();
+    this->hdr_status = hdr::GetWindowsHDRStatus(hdr::GetEnabledDisplays());
 }
 
 void NotifyIcon::FetchDarkMode()
