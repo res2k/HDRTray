@@ -55,8 +55,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 
-    // if Windows 10 < version 1803 refuse to start
-    if (!IsWindows10_1803OrGreater()) {
+    // if Windows 10 < version 1809 refuse to start
+    if (!IsWindows10_1809OrGreater()) {
         const wchar_t* string_data = nullptr;
         int message_len = LoadStringW(hInst, IDS_WINDOWS_TOO_OLD, (LPWSTR)&string_data, 0);
         auto message = std::wstring(string_data, message_len);

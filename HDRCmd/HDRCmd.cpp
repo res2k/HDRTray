@@ -38,9 +38,9 @@ int wmain(int argc, const wchar_t* const argv[])
 {
     CLI::App app{"HDRCmd " VERSION_FULL " - turn \"Use HDR\" on or off from command line"};
 
-    // if Windows 10 < version 1803 refuse to start
-    if (!IsWindows10_1803OrGreater()) {
-        std::cerr << "Sorry, HDRCmd only works on Windows 10, version 1803 and above" << std::endl;
+    // if Windows 10 < version 1809 refuse to start
+    if (!IsWindows10_1809OrGreater()) {
+        std::cerr << "Sorry, HDRCmd only works on Windows 10, version 1809 and above" << std::endl;
         return -2;
     }
 
