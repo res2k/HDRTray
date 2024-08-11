@@ -56,8 +56,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Initialize global strings
     l10n::LoadString(IDS_APP_TITLE, szTitle);
 
-    // if Windows 10 < version 1803 refuse to start
-    if (!IsWindows10_1803OrGreater()) {
+    // if Windows 10 < version 1809 refuse to start
+    if (!IsWindows10_1809OrGreater()) {
         auto message = std::wstring(l10n::LoadString(IDS_WINDOWS_TOO_OLD));
         MessageBoxW(nullptr, message.c_str(), szTitle, MB_OK | MB_ICONERROR);
         return 1;

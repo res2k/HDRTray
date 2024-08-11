@@ -48,7 +48,7 @@ BEGIN
    IDS_HDR_UNSUPPORTED  "HDR not supported"
    IDS_HDR_OFF          "HDR is off\nClick to turn on HDR"
    IDS_HDR_ON           "HDR is on\nClick to turn off HDR"
-   IDS_WINDOWS_TOO_OLD  "Sorry, HDRTray only works on Windows 10, version 1803 and above"
+   IDS_WINDOWS_TOO_OLD  "Sorry, HDRTray only works on Windows 10, version 1809 and above"
    IDS_TOGGLE_HDR_ERROR "Failed to switch HDR mode"
 END
 
@@ -93,6 +93,6 @@ BEGIN
    IDS_HDR_UNSUPPORTED  "HDR não suportado"
    IDS_HDR_OFF          "HDR desativado\nClique para ativar o HDR"
    IDS_HDR_ON           "HDR ativado\nClique para desativar o HDR"
-   IDS_WINDOWS_TOO_OLD  "Desculpe, o HDRTray só funciona no Windows 10, versão 1803 e posterior"
+   IDS_WINDOWS_TOO_OLD  "Desculpe, o HDRTray só funciona no Windows 10, versão 1809 e posterior"
    IDS_TOGGLE_HDR_ERROR "Houve uma falha ao alternar o modo HDR"
 END
