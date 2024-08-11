@@ -21,16 +21,23 @@
 
 #include "Base.hpp"
 
+#include "HDR.h"
+
 namespace subcommand {
 
 class DisplayUsing : public Base
 {
 protected:
+    /// Default name for "optional" display specification
+    static const char* default_displays_option_name;
     /// Display IDs given on command line
     std::vector<std::string> display_ids;
 
     /// Add an option for explicit display selection. Fills display_ids
     CLI::Option* add_displays_option(CLI::App* app, std::string option_name, std::string option_description);
+
+    /// Return selected displays, from command line, if explicitly given, or configuration by default
+    hdr::DisplayInfo_vec GetSelectedDisplays() const;
 
     template<typename... Arg>
     DisplayUsing(Arg&&... arg) : Base(std::forward<Arg>(arg)...)
