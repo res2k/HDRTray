@@ -30,6 +30,9 @@
 class DisplayConfig
 {
 public:
+    /// Path of display configuration below HKCU
+    static const wchar_t displayconfig_hkcu_path[];
+
     /// Return reference to singleton
     static DisplayConfig& instance();
 
