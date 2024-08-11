@@ -25,14 +25,14 @@
 
 static std::optional<DisplayConfig> displayconfig_singleton;
 
+const wchar_t DisplayConfig::displayconfig_hkcu_path[] = L"SOFTWARE\\HDRTray";
+
 DisplayConfig& DisplayConfig::instance()
 {
     if (!displayconfig_singleton)
         displayconfig_singleton.emplace(DisplayConfig{});
     return *displayconfig_singleton;
 }
-
-static const wchar_t displayconfig_registry_path[] = L"SOFTWARE\\HDRTray";
 
 static std::wstring DisplayValueName(std::wstring_view display_stable_id)
 {
@@ -42,7 +42,7 @@ static std::wstring DisplayValueName(std::wstring_view display_stable_id)
 std::expected<bool, LSTATUS> DisplayConfig::GetEnabledFlag(std::wstring_view display_stable_id) const
 {
     RegistryKey key_displayconfig;
-    auto create_result = key_displayconfig.Create(HKEY_CURRENT_USER, displayconfig_registry_path, 0,
+    auto create_result = key_displayconfig.Create(HKEY_CURRENT_USER, displayconfig_hkcu_path, 0,
                                                   KEY_READ | KEY_QUERY_VALUE, nullptr);
     if (create_result != ERROR_SUCCESS)
         return std::unexpected(create_result);
@@ -60,7 +60,7 @@ std::expected<bool, LSTATUS> DisplayConfig::GetEnabledFlag(std::wstring_view dis
 std::expected<void, LSTATUS> DisplayConfig::SetEnabledFlag(std::wstring_view display_stable_id, bool flag)
 {
     RegistryKey key_displayconfig;
-    auto create_result = key_displayconfig.Create(HKEY_CURRENT_USER, displayconfig_registry_path, 0,
+    auto create_result = key_displayconfig.Create(HKEY_CURRENT_USER, displayconfig_hkcu_path, 0,
                                                   KEY_READ | KEY_WRITE | KEY_QUERY_VALUE | KEY_SET_VALUE, nullptr);
     if (create_result != ERROR_SUCCESS)
         return std::unexpected(create_result);
