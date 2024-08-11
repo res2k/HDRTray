@@ -16,26 +16,28 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef SUBCOMMAND_SELECT_HPP_
-#define SUBCOMMAND_SELECT_HPP_
+#ifndef SUBCOMMAND_DISPLAYUSING_HPP_
+#define SUBCOMMAND_DISPLAYUSING_HPP_
 
-#include "DisplayUsing.hpp"
+#include "Base.hpp"
 
 namespace subcommand {
 
-class Select : public DisplayUsing
+class DisplayUsing : public Base
 {
 protected:
-    Select(CLI::App* parent);
+    /// Display IDs given on command line
+    std::vector<std::string> display_ids;
 
-    int toggle_displays(bool flag) const;
+    /// Add an option for explicit display selection. Fills display_ids
+    CLI::Option* add_displays_option(CLI::App* app, std::string option_name, std::string option_description);
 
-public:
-    int run() const override;
-
-    static CLI::App* add(CLI::App& app);
+    template<typename... Arg>
+    DisplayUsing(Arg&&... arg) : Base(std::forward<Arg>(arg)...)
+    {
+    }
 };
 
 } // namespace subcommand
 
-#endif // SUBCOMMAND_SELECT_HPP_
+#endif // SUBCOMMAND_DISPLAYUSING_HPP_

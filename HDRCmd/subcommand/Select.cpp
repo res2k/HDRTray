@@ -25,13 +25,13 @@
 
 namespace subcommand {
 
-Select::Select(CLI::App* parent) : Base("Select displays to include in HDR toggling", "select", parent)
+Select::Select(CLI::App* parent) : DisplayUsing("Select displays to include in HDR toggling", "select", parent)
 {
     add_subcommand("list", "Print list of displays");
     auto on_cmd = add_subcommand("on", "Include a display in HDR toggling");
-    on_cmd->add_option("DISPLAY", display_ids, "displays to include in HDR toggling")->type_name("# or NAME")->required();
+    add_displays_option(on_cmd, "DISPLAY", "displays to include in HDR toggling")->required();
     auto off_cmd = add_subcommand("off", "Exclude a display from HDR toggling");
-    off_cmd->add_option("DISPLAY", display_ids, "displays to exclude from HDR toggling")->type_name("# or NAME")->required();
+    add_displays_option(off_cmd, "DISPLAY", "displays to exclude from HDR toggling")->required();
 }
 
 int Select::toggle_displays(bool flag) const
