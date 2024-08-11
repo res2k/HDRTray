@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "framework.h"
+#include "DisplayConfig.hpp"
 #include "WinVerCheck.hpp"
 
 // WinRT stuff, for display stable ID
@@ -264,6 +265,18 @@ std::vector<DisplayInfo> GetDisplays()
     });
 
     return result;
+}
+
+std::vector<DisplayInfo> GetEnabledDisplays()
+{
+    auto displays = GetDisplays();
+    std::erase_if(displays, [](const DisplayInfo& disp) {
+        auto stable_id = disp.GetStableID();
+        if (!stable_id)
+            return false;
+        return !DisplayConfig::instance().IsEnabled(*stable_id);
+    });
+    return displays;
 }
 
 } // namespace hdr

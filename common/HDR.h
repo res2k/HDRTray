@@ -84,6 +84,8 @@ std::optional<Status> ToggleHDRStatus(const DisplayInfo_vec& displays);
 
 /// Get information for all displays
 std::vector<DisplayInfo> GetDisplays();
+/// Get information for enabled displays (via DisplayConfig)
+std::vector<DisplayInfo> GetEnabledDisplays();
 
 static inline Status GetWindowsHDRStatus()
 {
