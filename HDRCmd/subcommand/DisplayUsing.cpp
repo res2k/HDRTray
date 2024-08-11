@@ -16,26 +16,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef SUBCOMMAND_SELECT_HPP_
-#define SUBCOMMAND_SELECT_HPP_
-
 #include "DisplayUsing.hpp"
 
 namespace subcommand {
 
-class Select : public DisplayUsing
+CLI::Option* DisplayUsing::add_displays_option(CLI::App* app, std::string option_name, std::string option_description)
 {
-protected:
-    Select(CLI::App* parent);
+    return app->add_option(option_name, display_ids, option_description)->type_name("# or NAME");
+}
 
-    int toggle_displays(bool flag) const;
-
-public:
-    int run() const override;
-
-    static CLI::App* add(CLI::App& app);
-};
-
-} // namespace subcommand
-
-#endif // SUBCOMMAND_SELECT_HPP_
+}
