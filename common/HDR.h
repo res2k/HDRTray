@@ -30,6 +30,8 @@ struct DisplayID
 
     static DisplayID FromMode(const DISPLAYCONFIG_MODE_INFO& mode);
     void ToDeviceInputHeader(DISPLAYCONFIG_DEVICE_INFO_HEADER& header) const;
+
+    bool operator==(const DisplayID& other) const { return memcmp(&adapter, &other.adapter, sizeof(LUID)) == 0 && id == other.id; }
 };
 
 /// Display information
