@@ -13,6 +13,8 @@ target_sources(HDRCmd PRIVATE
                "subcommand/Base.hpp"
                "subcommand/Disable.hpp"
                "subcommand/Disable.cpp"
+               "subcommand/DisplayUsing.hpp"
+               "subcommand/DisplayUsing.cpp"
                "subcommand/Enable.hpp"
                "subcommand/Enable.cpp"
                "subcommand/LoginStartup.hpp"
