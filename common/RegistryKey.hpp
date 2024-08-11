@@ -52,6 +52,11 @@ public:
     {
         return RegCreateKeyExW(key, subkey, 0, nullptr, options, samDesired, security_attributes, &this->key, nullptr);
     }
+    /// Wrapper around RegOpenKeyExW(), storing the opened key internally
+    LRESULT Open(HKEY key, LPCWSTR subkey, DWORD options, REGSAM samDesired)
+    {
+        return RegOpenKeyExW (key, subkey, options, samDesired, &this->key);
+    }
     /// Wrapper around RegQueryValueExW(), using the internally stored key
     LRESULT QueryValueEx(LPCWSTR valueName, LPDWORD type, LPBYTE data, LPDWORD data_size) const
     {
