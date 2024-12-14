@@ -65,8 +65,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/winui3_cmake/cmak
 
 add_subdirectory(common)
 
-add_subdirectory(HDRTray)
 add_subdirectory(HDRCmd)
+add_subdirectory(HDRTray)
+add_subdirectory(HDRTrayConfig)
 
 if(MARKO_AVAILABLE)
     set(MD2HTML "${CMAKE_CURRENT_SOURCE_DIR}/build/md2html.py")
