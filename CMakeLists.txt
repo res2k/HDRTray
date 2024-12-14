@@ -18,6 +18,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(Python3_FIND_REGISTRY LAST)
 find_package (Python3 COMPONENTS Interpreter)
 if(Python3_Interpreter_FOUND)
+    set(python_venv_dir "${CMAKE_BINARY_DIR}/python_venv")
+    make_directory(${python_venv_dir})
+    execute_process(COMMAND "${Python3_EXECUTABLE}" -m venv "${python_venv_dir}")
+    set(Python3_EXECUTABLE "${python_venv_dir}/Scripts/python.exe")
+    execute_process(COMMAND "${Python3_EXECUTABLE}" -m pip install marko
+                    WORKING_DIRECTORY "${python_venv_dir}")
     set(MARKO_AVAILABLE NO)
     execute_process(COMMAND "${Python3_EXECUTABLE}" -m marko
                     INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
