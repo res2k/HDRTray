@@ -62,6 +62,7 @@ endif()
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
 
 add_subdirectory(ext)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/winui3_cmake/cmake")
 
 add_subdirectory(common)
 
