@@ -22,6 +22,8 @@
 #include "AboutPage.g.cpp"
 #endif
 
+#include "version.h"
+
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
 
@@ -30,4 +32,8 @@ using namespace Microsoft::UI::Xaml;
 
 namespace winrt::HDRTrayConfig::implementation
 {
+    winrt::hstring AboutPage::VersionString()
+    {
+        return winrt::format(L"Version {} ({})", L"" VERSION_SHORT, L"" VERSION_COMMIT);
+    }
 }
