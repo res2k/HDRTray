@@ -22,5 +22,7 @@ namespace HDRTrayConfig
     runtimeclass AboutPage : Microsoft.UI.Xaml.Controls.Page
     {
         AboutPage();
+
+        static String VersionString{ get; };
     }
 }
