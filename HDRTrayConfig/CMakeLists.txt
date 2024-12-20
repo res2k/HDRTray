@@ -82,6 +82,7 @@ target_include_directories(HDRTrayConfig PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/ge
 target_include_directories(HDRTrayConfig PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_include_directories(HDRTrayConfig PRIVATE "${Microsoft_Windows_ImplementationLibrary_PATH}/include")
 target_include_directories(HDRTrayConfig PRIVATE "${Microsoft_WindowsAppSDK_PATH}/include")
+target_link_libraries(HDRTrayConfig PRIVATE common)
 target_link_libraries(HDRTrayConfig PRIVATE "${Microsoft_WindowsAppSDK_PATH}/lib/win10-${BUILD_ARCH}/Microsoft.WindowsAppRuntime.Bootstrap.lib" runtimeobject)
 set_target_properties(HDRTrayConfig PROPERTIES
                       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
