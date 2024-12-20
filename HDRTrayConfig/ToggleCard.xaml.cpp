@@ -39,6 +39,13 @@ namespace winrt::HDRTrayConfig::implementation
                 winrt::xaml_typename<winrt::HDRTrayConfig::ToggleCard>(),
                 winrt::Microsoft::UI::Xaml::PropertyMetadata { winrt::box_value(L"") }));
         }
+        if (!IsOnProperty_)
+        {
+            IsOnProperty_.emplace(winrt::Microsoft::UI::Xaml::DependencyProperty::Register(
+                L"IsOn", winrt::xaml_typename<bool>(),
+                winrt::xaml_typename<winrt::HDRTrayConfig::ToggleCard>(),
+                winrt::Microsoft::UI::Xaml::PropertyMetadata { winrt::box_value(false) }));
+        }
 
         ToggleCardT::InitializeComponent();
     }
@@ -53,5 +60,16 @@ namespace winrt::HDRTrayConfig::implementation
         SetValue(TextProperty(), winrt::box_value(value));
     }
 
+    bool ToggleCard::IsOn() const
+    {
+        return winrt::unbox_value<bool>(GetValue(IsOnProperty()));
+    }
+
+    void ToggleCard::IsOn(bool value)
+    {
+        SetValue(IsOnProperty(), winrt::box_value(value));
+    }
+
     std::optional<winrt::Microsoft::UI::Xaml::DependencyProperty> ToggleCard::TextProperty_;
+    std::optional<winrt::Microsoft::UI::Xaml::DependencyProperty> ToggleCard::IsOnProperty_;
 }

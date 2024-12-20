@@ -40,8 +40,19 @@ namespace winrt::HDRTrayConfig::implementation
           return *TextProperty_;
         }
     
+        bool IsOn() const;
+        void IsOn(bool value);
+
+        static winrt::Microsoft::UI::Xaml::DependencyProperty IsOnProperty() noexcept
+        {
+          return *IsOnProperty_;
+        }
+
     private:
+        bool ison_ = false;
+
         static std::optional<winrt::Microsoft::UI::Xaml::DependencyProperty> TextProperty_;
+        static std::optional<winrt::Microsoft::UI::Xaml::DependencyProperty> IsOnProperty_;
     };
 }
 
