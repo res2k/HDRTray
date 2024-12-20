@@ -18,6 +18,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(Python3_FIND_REGISTRY LAST)
 find_package (Python3 COMPONENTS Interpreter)
 if(Python3_Interpreter_FOUND)
+    set(python_venv_dir "${CMAKE_BINARY_DIR}/python_venv")
+    make_directory(${python_venv_dir})
+    execute_process(COMMAND "${Python3_EXECUTABLE}" -m venv "${python_venv_dir}")
+    set(Python3_EXECUTABLE "${python_venv_dir}/Scripts/python.exe")
+    execute_process(COMMAND "${Python3_EXECUTABLE}" -m pip install marko
+                    WORKING_DIRECTORY "${python_venv_dir}")
     set(MARKO_AVAILABLE NO)
     execute_process(COMMAND "${Python3_EXECUTABLE}" -m marko
                     INPUT_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md"
@@ -63,8 +69,7 @@ add_subdirectory(HDRCmd)
 
 if(MARKO_AVAILABLE)
     set(MD2HTML "${CMAKE_CURRENT_SOURCE_DIR}/build/md2html.py")
-    set(MD_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/md")
-    make_directory("${MD_OUTPUT_DIR}")
+    set(MD_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}")
     set(GENERATED_HTML_FILES)
     foreach(md_file LICENSE README)
         set(MD_INPUT "${CMAKE_CURRENT_SOURCE_DIR}/${md_file}.md")
