@@ -1,3 +1,5 @@
+configure_file(version.h.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.h")
+
 add_library(common STATIC)
 target_sources(common PRIVATE
                "DisplayConfig.hpp"
@@ -11,3 +13,4 @@ target_sources(common PRIVATE
                )
 target_compile_definitions(common PRIVATE UNICODE _UNICODE)
 target_include_directories(common PUBLIC .)
+target_include_directories(common PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/generated")

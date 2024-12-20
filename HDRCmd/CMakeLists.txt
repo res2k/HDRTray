@@ -1,4 +1,3 @@
-configure_file(version.h.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.h")
 configure_file(version.rc.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc")
 
 add_executable(HDRCmd)
