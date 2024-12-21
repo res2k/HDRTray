@@ -1,6 +1,3 @@
-include(nuget)
-nuget_install()
-
 include(arch_name)
 include(find_platform_winmds)
 include(generate_winappsdk)
@@ -15,7 +12,6 @@ include(winmd_from_idl)
 set(ROOT_NAMESPACE "HDRTrayConfig") # must match XAML class namespaces etc.
 
 # Arguments that are shared by multiple functions
-set(WINSDK_VERSION 10.0.17763.0)
 set(common_args
     WINSDK_VERSION ${WINSDK_VERSION}
     NAMESPACE "${ROOT_NAMESPACE}"
