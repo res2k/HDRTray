@@ -20,6 +20,9 @@
 
 #include "ToggleCard.g.h"
 
+#include <wil/wistd_type_traits.h>
+#include <wil/cppwinrt_authoring.h>
+
 namespace winrt::HDRTrayConfig::implementation
 {
     struct ToggleCard : ToggleCardT<ToggleCard>
@@ -47,6 +50,9 @@ namespace winrt::HDRTrayConfig::implementation
         {
           return *IsOnProperty_;
         }
+
+        wil::details::event_base<winrt::Microsoft::UI::Xaml::RoutedEventHandler> Toggled;
+        void OnToggledImpl(::winrt::Windows::Foundation::IInspectable const&, ::winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
 
     private:
         bool ison_ = false;
