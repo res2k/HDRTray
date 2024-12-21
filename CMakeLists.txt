@@ -65,7 +65,23 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
 add_subdirectory(ext)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/winui3_cmake/cmake")
 
+# We need to use the same CppWinRT version for common and HDRTrayConfig,
+# so generate headers from the nuget packages
+include(nuget)
+nuget_install()
+
+set(WINSDK_VERSION 10.0.17763.0)
+
+include(find_platform_winmds)
+include(run_cppwinrt)
+find_platform_winmds(PATHS_VAR PLATFORM_WINMD_PATHS WINSDK_VERSION ${WINSDK_VERSION})
+run_cppwinrt(TARGET platform_cppwinrt
+             OUT "${CMAKE_CURRENT_BINARY_DIR}/generated"
+             IN ${PLATFORM_WINMD_PATHS})
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/generated")
+
 add_subdirectory(common)
+add_dependencies(common platform_cppwinrt)
 
 add_subdirectory(HDRCmd)
 add_subdirectory(HDRTray)
