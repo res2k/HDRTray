@@ -22,6 +22,11 @@
 #include "MainWindow.g.cpp"
 #endif
 
+#include "App.xaml.h"
+
+#include <commctrl.h>
+#include <Microsoft.UI.Xaml.Window.h>
+
 #include <format>
 
 using namespace winrt;
@@ -33,6 +38,19 @@ using namespace Windows::UI::Xaml::Interop;
 
 namespace winrt::HDRTrayConfig::implementation
 {
+    void MainWindow::InitializeComponent()
+    {
+        MainWindowT::InitializeComponent();
+
+        auto windowNative = this->m_inner.as<::IWindowNative>();
+        HWND hWnd = 0;
+        windowNative->get_WindowHandle(&hWnd);
+
+        SetWindowSubclass(hWnd, &SubclassProc, 0, reinterpret_cast<DWORD_PTR>(this));
+
+        viewModel = Application::Current().as<App>()->ViewModel();
+    }
+
     void MainWindow::NavigationView_SelectionChanged(IInspectable const&, Controls::NavigationViewSelectionChangedEventArgs const& args)
     {
         auto selectedItem = args.SelectedItem().as<Controls::NavigationViewItem>();
@@ -45,6 +63,15 @@ namespace winrt::HDRTrayConfig::implementation
     void MainWindow::NavigationView_Loaded(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
         contentFrame().Navigate(winrt::xaml_typename<HDRPage>());
+    }
+
+    LRESULT MainWindow::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
+    {
+        auto* This = reinterpret_cast<MainWindow*>(dwRefData);
+        if (uMsg == WM_DISPLAYCHANGE)
+            This->viewModel.UpdateHDRStatus();
+
+        return DefSubclassProc(hWnd, uMsg, wParam, lParam);
     }
 }
 
