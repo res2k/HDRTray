@@ -16,22 +16,27 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "pch.h"
+#include "HDRViewModel.h"
+#include "HDRViewModel.g.cpp"
 
-#include "App.xaml.g.h"
+#include "HDR.h"
 
 namespace winrt::HDRTrayConfig::implementation
 {
-    struct App : AppT<App>
+    HDRViewModel::HDRViewModel()
+    {}
+
+    void HDRViewModel::UpdateHDRStatus()
     {
-        App();
+        bool hdr_enabled = hdr::GetWindowsHDRStatus() == hdr::Status::On;
+        IsHDREnabled(hdr_enabled);
+    }
 
-        void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
-
-        HDRViewModel ViewModel();
-
-    private:
-        winrt::Microsoft::UI::Xaml::Window window{ nullptr };
-        HDRViewModel viewModel{ nullptr };
-    };
+    void HDRViewModel::RequestHDREnabled(bool flag)
+    {
+        auto hdr_status = hdr::SetWindowsHDRStatus(flag);
+        bool hdr_enabled = hdr_status && *hdr_status == hdr::Status::On;
+        IsHDREnabled(hdr_enabled);
+    }
 }

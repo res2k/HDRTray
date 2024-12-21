@@ -31,19 +31,19 @@ winmd_from_idl(OUT "${XamlMetaDataProvider_WINMD}"
                REF ${WINMD_PATHS}
                ${common_args})
 
-set(xaml_winmds "")
-foreach(xaml_page IN ITEMS AboutPage HDRPage MainWindow SettingsPage ToggleCard)
-    set(xaml_page_winmd "${CMAKE_CURRENT_BINARY_DIR}/winmd_unmerged/${xaml_page}.winmd")
-    winmd_from_idl(OUT "${xaml_page_winmd}"
-                   IN "${CMAKE_CURRENT_SOURCE_DIR}/${xaml_page}.idl"
+set(idl_winmds "")
+foreach(idl_file IN ITEMS AboutPage HDRPage HDRViewModel MainWindow SettingsPage ToggleCard)
+    set(idl_winmd "${CMAKE_CURRENT_BINARY_DIR}/winmd_unmerged/${idl_file}.winmd")
+    winmd_from_idl(OUT "${idl_winmd}"
+                   IN "${CMAKE_CURRENT_SOURCE_DIR}/${idl_file}.idl"
                    REF ${WINMD_PATHS}
                    ${common_args})
-    list(APPEND xaml_winmds "${xaml_page_winmd}")
+    list(APPEND idl_winmds "${idl_winmd}")
 endforeach()
 
 merge_winmds(TARGET HDRTrayConfig_merge_winmds
              OUTDIR "${CMAKE_CURRENT_BINARY_DIR}/winmd_merged"
-             IN "${XamlMetaDataProvider_WINMD}" ${xaml_winmds}
+             IN "${XamlMetaDataProvider_WINMD}" ${idl_winmds}
              REF ${WINMD_PATHS}
              ${common_args})
 
@@ -67,6 +67,8 @@ target_sources(HDRTrayConfig PRIVATE
                "app.manifest"
                "${cppwinrt_generated}"
                "${XamlMetaDataProvider_CPP}"
+               "HDRViewModel.cpp"
+               "HDRViewModel.h"
 
                "${Microsoft_WindowsAppSDK_PATH}/include/MddBootstrapAutoInitializer.cpp"
                )

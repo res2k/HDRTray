@@ -17,21 +17,21 @@
 */
 
 #pragma once
+#include "HDRViewModel.g.h"
 
-#include "App.xaml.g.h"
+#include <wil/wistd_type_traits.h>
+#include <wil/cppwinrt_authoring.h>
 
 namespace winrt::HDRTrayConfig::implementation
 {
-    struct App : AppT<App>
+    struct HDRViewModel : HDRViewModelT<HDRViewModel>,
+                          wil::notify_property_changed_base<HDRViewModel>
     {
-        App();
+        WIL_NOTIFYING_PROPERTY(bool, IsHDREnabled, false);
 
-        void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
+        HDRViewModel();
 
-        HDRViewModel ViewModel();
-
-    private:
-        winrt::Microsoft::UI::Xaml::Window window{ nullptr };
-        HDRViewModel viewModel{ nullptr };
+        void UpdateHDRStatus();
+        void RequestHDREnabled(bool flag);
     };
 }

@@ -18,6 +18,7 @@
 
 #include "pch.h"
 #include "App.xaml.h"
+#include "HDRViewModel.h"
 #include "MainWindow.xaml.h"
 
 using namespace winrt;
@@ -55,7 +56,15 @@ namespace winrt::HDRTrayConfig::implementation
     /// <param name="e">Details about the launch request and process.</param>
     void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
     {
+        viewModel = make<HDRViewModel>();
+        viewModel.UpdateHDRStatus();
+
         window = make<MainWindow>();
         window.Activate();
+    }
+
+    winrt::HDRTrayConfig::HDRViewModel App::ViewModel()
+    {
+        return viewModel;
     }
 }
