@@ -14,3 +14,4 @@ target_sources(common PRIVATE
 target_compile_definitions(common PRIVATE UNICODE _UNICODE)
 target_include_directories(common PUBLIC .)
 target_include_directories(common PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/generated")
+target_link_libraries(common PUBLIC runtimeobject)
