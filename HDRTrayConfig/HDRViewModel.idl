@@ -16,22 +16,15 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
-
-#include "App.xaml.g.h"
-
-namespace winrt::HDRTrayConfig::implementation
+namespace HDRTrayConfig
 {
-    struct App : AppT<App>
+    runtimeclass HDRViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
-        App();
-
-        void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
-
-        HDRViewModel ViewModel();
-
-    private:
-        winrt::Microsoft::UI::Xaml::Window window{ nullptr };
-        HDRViewModel viewModel{ nullptr };
-    };
+        // Update HDR enabled state to reflect actual system state
+        void UpdateHDRStatus();
+        // Get the current HDR enabled state
+        Boolean IsHDREnabled{ get; };
+        // Request HDR state change
+        void RequestHDREnabled(Boolean flag);
+    }
 }
