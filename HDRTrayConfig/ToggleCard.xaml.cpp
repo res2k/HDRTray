@@ -70,6 +70,13 @@ namespace winrt::HDRTrayConfig::implementation
         SetValue(IsOnProperty(), winrt::box_value(value));
     }
 
+    void ToggleCard::OnToggledImpl(::winrt::Windows::Foundation::IInspectable const&, ::winrt::Microsoft::UI::Xaml::RoutedEventArgs const& args)
+    {
+        // Update IsOn() before invoking event, so listeners will see new value
+        IsOn(Switch().IsOn());
+        Toggled.invoke(*this, args);
+    }
+
     std::optional<winrt::Microsoft::UI::Xaml::DependencyProperty> ToggleCard::TextProperty_;
     std::optional<winrt::Microsoft::UI::Xaml::DependencyProperty> ToggleCard::IsOnProperty_;
 }

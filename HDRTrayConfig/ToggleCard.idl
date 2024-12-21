@@ -28,5 +28,7 @@ namespace HDRTrayConfig
 
         static Microsoft.UI.Xaml.DependencyProperty IsOnProperty{ get; };
         Boolean IsOn;
+
+        event Microsoft.UI.Xaml.RoutedEventHandler Toggled;
     }
 }

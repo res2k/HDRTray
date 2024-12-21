@@ -38,6 +38,6 @@
 
         <TextBlock Grid.Column="0" Text="{x:Bind Text}" VerticalAlignment="Center"/>
         <!-- TODO: Subtext -->
-        <ToggleSwitch Grid.Column="1" IsOn="{x:Bind IsOn}" />
+        <ToggleSwitch x:Name="Switch" Grid.Column="1" IsOn="{x:Bind IsOn, Mode=OneWay}" Toggled="OnToggledImpl" />
     </Grid>
 </UserControl>
