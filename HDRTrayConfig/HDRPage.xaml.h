@@ -20,10 +20,16 @@
 
 #include "HDRPage.g.h"
 
+#include <wil/wistd_type_traits.h>
+#include <wil/cppwinrt_authoring.h>
+
 namespace winrt::HDRTrayConfig::implementation
 {
-    struct HDRPage : HDRPageT<HDRPage>
+    struct HDRPage : HDRPageT<HDRPage>,
+                     wil::notify_property_changed_base<HDRPage>
     {
+        WIL_NOTIFYING_PROPERTY(HDRViewModel, ViewModel, nullptr);
+
         HDRPage()
         {
             // Xaml objects should not call InitializeComponent during construction.
@@ -31,6 +37,12 @@ namespace winrt::HDRTrayConfig::implementation
         }
 
         void InitializeComponent();
+
+        void OnHDRToggled(::winrt::Windows::Foundation::IInspectable const&, ::winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
+
+    private:
+        winrt::HDRTrayConfig::HDRViewModel viewModel{ nullptr };
+
     };
 }
 
