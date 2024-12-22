@@ -22,5 +22,7 @@ namespace HDRTrayConfig
     runtimeclass HDRPage : Microsoft.UI.Xaml.Controls.Page
     {
         HDRPage();
+
+        HDRViewModel ViewModel{ get; };
     }
 }

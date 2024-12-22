@@ -32,11 +32,12 @@ winmd_from_idl(OUT "${XamlMetaDataProvider_WINMD}"
                ${common_args})
 
 set(idl_winmds "")
-foreach(idl_file IN ITEMS AboutPage HDRPage HDRViewModel MainWindow SettingsPage ToggleCard)
+# There are some dependencies between .idl files, so the order isn't completely arbitrary
+foreach(idl_file IN ITEMS HDRViewModel AboutPage HDRPage MainWindow SettingsPage ToggleCard)
     set(idl_winmd "${CMAKE_CURRENT_BINARY_DIR}/winmd_unmerged/${idl_file}.winmd")
     winmd_from_idl(OUT "${idl_winmd}"
                    IN "${CMAKE_CURRENT_SOURCE_DIR}/${idl_file}.idl"
-                   REF ${WINMD_PATHS}
+                   REF ${WINMD_PATHS} ${idl_winmds}
                    ${common_args})
     list(APPEND idl_winmds "${idl_winmd}")
 endforeach()
