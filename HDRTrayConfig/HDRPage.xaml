@@ -28,8 +28,8 @@
     <Page.Resources>
         <StackLayout x:Name="DisplaysLayout" Orientation="Vertical" Spacing="8" />
 
-        <DataTemplate x:Key="DisplayTemplate" x:DataType="x:String">
-            <CheckBox Content="{x:Bind}" />
+        <DataTemplate x:Key="DisplayTemplate" x:DataType="local:HDRDisplay">
+            <CheckBox Content="{x:Bind Name}" />
         </DataTemplate>
     </Page.Resources>
 
@@ -49,9 +49,10 @@
                             CornerRadius="{ThemeResource ControlCornerRadius}"
                             Padding="16,12">
                     <ItemsRepeater
-                    x:Name="displaysRepeater"
+                        x:Name="displaysRepeater"
                         Layout="{StaticResource DisplaysLayout}"
-                        ItemTemplate="{StaticResource DisplayTemplate}" />
+                        ItemTemplate="{StaticResource DisplayTemplate}"
+                        ItemsSource="{x:Bind Path=ViewModel.Displays, Mode=OneWay}"/>
                 </StackPanel>
             </StackPanel>
 
