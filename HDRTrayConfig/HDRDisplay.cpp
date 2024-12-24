@@ -16,28 +16,18 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
-#include "HDRViewModel.g.h"
-
-#include <wil/wistd_type_traits.h>
-#include <wil/cppwinrt_authoring.h>
+#include "pch.h"
+#include "HDRDisplay.h"
+#include "HDRDisplay.g.cpp"
 
 namespace winrt::HDRTrayConfig::implementation
 {
-    struct HDRViewModel : HDRViewModelT<HDRViewModel>,
-                          wil::notify_property_changed_base<HDRViewModel>
+    HDRDisplay::HDRDisplay(size_t display_idx, const hdr::DisplayID& display_id)
     {
-        WIL_NOTIFYING_PROPERTY(bool, IsHDREnabled, false);
-        WIL_NOTIFYING_PROPERTY(Windows::Foundation::Collections::IVector<IInspectable>,
-                               Displays,
-                               { });
-
-        HDRViewModel();
-
-        void UpdateHDRStatus();
-        void RequestHDREnabled(bool flag);
-
-    private:
-        void UpdateDisplays();
-    };
+        auto display = hdr::DisplayInfo(display_idx, display_id);
+        auto name_result = display.GetName();
+        if(!name_result.has_value())
+            throw_hresult(name_result.error());
+        Name(hstring(name_result.value()));
+    }
 }

@@ -17,27 +17,20 @@
 */
 
 #pragma once
-#include "HDRViewModel.g.h"
+#include "HDRDisplay.g.h"
+
+#include "HDR.h"
 
 #include <wil/wistd_type_traits.h>
 #include <wil/cppwinrt_authoring.h>
 
 namespace winrt::HDRTrayConfig::implementation
 {
-    struct HDRViewModel : HDRViewModelT<HDRViewModel>,
-                          wil::notify_property_changed_base<HDRViewModel>
+    struct HDRDisplay : HDRDisplayT<HDRDisplay>,
+                        wil::notify_property_changed_base<HDRDisplay>
     {
-        WIL_NOTIFYING_PROPERTY(bool, IsHDREnabled, false);
-        WIL_NOTIFYING_PROPERTY(Windows::Foundation::Collections::IVector<IInspectable>,
-                               Displays,
-                               { });
+        WIL_NOTIFYING_PROPERTY(hstring, Name, {});
 
-        HDRViewModel();
-
-        void UpdateHDRStatus();
-        void RequestHDREnabled(bool flag);
-
-    private:
-        void UpdateDisplays();
+        HDRDisplay(size_t display_idx, const hdr::DisplayID& display_id);
     };
 }

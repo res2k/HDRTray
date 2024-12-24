@@ -37,15 +37,6 @@ namespace winrt::HDRTrayConfig::implementation
         HDRPageT::InitializeComponent();
 
         ViewModel(Application::Current().as<App>()->ViewModel());
-
-        auto display_strings = winrt::multi_threaded_vector<winrt::Windows::Foundation::IInspectable>();
-
-        for (const auto& s : { L"Display 1" , L"Display 2" })
-        {
-            display_strings.Append(winrt::box_value(s));
-        }
-
-        displaysRepeater().ItemsSource(display_strings);
     }
 
     void HDRPage::OnHDRToggled(::winrt::Windows::Foundation::IInspectable const&, ::winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)

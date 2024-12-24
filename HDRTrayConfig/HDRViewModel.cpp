@@ -20,23 +20,39 @@
 #include "HDRViewModel.h"
 #include "HDRViewModel.g.cpp"
 
+#include "HDRDisplay.h"
+
 #include "HDR.h"
 
 namespace winrt::HDRTrayConfig::implementation
 {
     HDRViewModel::HDRViewModel()
-    {}
+    {
+        UpdateDisplays();
+    }
 
     void HDRViewModel::UpdateHDRStatus()
     {
-        bool hdr_enabled = hdr::GetWindowsHDRStatus() == hdr::Status::On;
+        bool hdr_enabled = hdr::GetWindowsHDRStatus(hdr::GetEnabledDisplays()) == hdr::Status::On;
         IsHDREnabled(hdr_enabled);
     }
 
     void HDRViewModel::RequestHDREnabled(bool flag)
     {
-        auto hdr_status = hdr::SetWindowsHDRStatus(flag);
+        auto hdr_status = hdr::SetWindowsHDRStatus(hdr::GetEnabledDisplays(), flag);
         bool hdr_enabled = hdr_status && *hdr_status == hdr::Status::On;
         IsHDREnabled(hdr_enabled);
+    }
+
+    void HDRViewModel::UpdateDisplays()
+    {
+        auto displays = hdr::GetDisplays();
+        std::vector<IInspectable> winrt_disps;
+        winrt_disps.reserve(displays.size());
+        for(auto& disp : displays)
+        {
+            winrt_disps.emplace_back(winrt::make<HDRDisplay>(disp.GetIndex(), disp.GetID()));
+        }
+        Displays(winrt::multi_threaded_vector(std::move(winrt_disps)));
     }
 }
