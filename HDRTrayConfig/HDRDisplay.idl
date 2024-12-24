@@ -16,28 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#pragma once
-#include "HDRViewModel.g.h"
-
-#include <wil/wistd_type_traits.h>
-#include <wil/cppwinrt_authoring.h>
-
-namespace winrt::HDRTrayConfig::implementation
+namespace HDRTrayConfig
 {
-    struct HDRViewModel : HDRViewModelT<HDRViewModel>,
-                          wil::notify_property_changed_base<HDRViewModel>
+    runtimeclass HDRDisplay : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
-        WIL_NOTIFYING_PROPERTY(bool, IsHDREnabled, false);
-        WIL_NOTIFYING_PROPERTY(Windows::Foundation::Collections::IVector<IInspectable>,
-                               Displays,
-                               { });
-
-        HDRViewModel();
-
-        void UpdateHDRStatus();
-        void RequestHDREnabled(bool flag);
-
-    private:
-        void UpdateDisplays();
-    };
+        // Get name of display
+        String Name{ get; };
+    }
 }
