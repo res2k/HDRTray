@@ -43,7 +43,7 @@ std::expected<bool, LSTATUS> DisplayConfig::GetEnabledFlag(std::wstring_view dis
 {
     RegistryKey key_displayconfig;
     auto open_result =
-        key_displayconfig.Open(HKEY_CURRENT_USER, displayconfig_hkcu_path, 0, KEY_READ | KEY_QUERY_VALUE);
+        key_displayconfig.Open(HKEY_CURRENT_USER, displayconfig_hkcu_path, 0, KEY_WOW64_64KEY | KEY_READ | KEY_QUERY_VALUE);
     if (open_result != ERROR_SUCCESS)
         return std::unexpected(open_result);
     auto value_name = DisplayValueName(display_stable_id);
@@ -61,7 +61,7 @@ std::expected<void, LSTATUS> DisplayConfig::SetEnabledFlag(std::wstring_view dis
 {
     RegistryKey key_displayconfig;
     auto create_result = key_displayconfig.Create(HKEY_CURRENT_USER, displayconfig_hkcu_path, 0,
-                                                  KEY_READ | KEY_WRITE | KEY_QUERY_VALUE | KEY_SET_VALUE, nullptr);
+                                                  KEY_WOW64_64KEY | KEY_READ | KEY_WRITE | KEY_QUERY_VALUE | KEY_SET_VALUE, nullptr);
     if (create_result != ERROR_SUCCESS)
         return std::unexpected(create_result);
     auto value_name = DisplayValueName(display_stable_id);
