@@ -28,6 +28,13 @@ namespace winrt::HDRTrayConfig::implementation
 {
     HDRViewModel::HDRViewModel()
     {
+        config_watcher.emplace([&, disp_queue = Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread()]() {
+            disp_queue.TryEnqueue([&]()
+            {
+                UpdateDisplays();
+                UpdateHDRStatus();
+            });
+        });
         UpdateDisplays();
     }
 
