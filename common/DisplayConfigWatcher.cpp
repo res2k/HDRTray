@@ -49,7 +49,7 @@ DWORD DisplayConfigWatcher::watch_thread_run()
     RegistryKey key_displayconfig;
     // Always create the key so we don't have to deal with its absence.
     auto create_result = key_displayconfig.Create(HKEY_CURRENT_USER, DisplayConfig::displayconfig_hkcu_path, 0,
-                                                  KEY_READ | KEY_QUERY_VALUE | KEY_NOTIFY, nullptr);
+                                                  KEY_WOW64_64KEY | KEY_READ | KEY_QUERY_VALUE | KEY_NOTIFY, nullptr);
     if (create_result != ERROR_SUCCESS)
         return create_result;
 
