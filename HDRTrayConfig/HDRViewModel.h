@@ -27,6 +27,7 @@ namespace winrt::HDRTrayConfig::implementation
     struct HDRViewModel : HDRViewModelT<HDRViewModel>,
                           wil::notify_property_changed_base<HDRViewModel>
     {
+        WIL_NOTIFYING_PROPERTY(bool, IsHDRAvailable, false);
         WIL_NOTIFYING_PROPERTY(bool, IsHDREnabled, false);
         WIL_NOTIFYING_PROPERTY(Windows::Foundation::Collections::IVector<IInspectable>,
                                Displays,
