@@ -19,6 +19,8 @@
 #pragma once
 #include "HDRViewModel.g.h"
 
+#include "DisplayConfigWatcher.hpp"
+
 #include <wil/wistd_type_traits.h>
 #include <wil/cppwinrt_authoring.h>
 
@@ -39,6 +41,8 @@ namespace winrt::HDRTrayConfig::implementation
         void RequestHDREnabled(bool flag);
 
     private:
+        std::optional<DisplayConfigWatcher> config_watcher;
+
         void UpdateDisplays();
     };
 }
