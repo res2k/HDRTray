@@ -4,6 +4,8 @@ add_library(common STATIC)
 target_sources(common PRIVATE
                "DisplayConfig.hpp"
                "DisplayConfig.cpp"
+               "DisplayConfigWatcher.hpp"
+               "DisplayConfigWatcher.cpp"
                "LoginStartupConfig.hpp"
                "LoginStartupConfig.cpp"
                "HDR.h"
