@@ -22,8 +22,6 @@
 
 #include "HDRDisplay.h"
 
-#include "HDR.h"
-
 namespace winrt::HDRTrayConfig::implementation
 {
     HDRViewModel::HDRViewModel()
@@ -54,13 +52,28 @@ namespace winrt::HDRTrayConfig::implementation
 
     void HDRViewModel::UpdateDisplays()
     {
+        display_map new_displays;
+
         auto displays = hdr::GetDisplays();
         std::vector<IInspectable> winrt_disps;
         winrt_disps.reserve(displays.size());
         for(auto& disp : displays)
         {
-            winrt_disps.emplace_back(winrt::make<HDRDisplay>(disp.GetIndex(), disp.GetID()));
+            auto display_key = std::make_pair(disp.GetIndex(), disp.GetID());
+            auto display_it = displays_map.find(display_key);
+            HDRTrayConfig::HDRDisplay disp_obj{ nullptr };
+            if (display_it != displays_map.end())
+            {
+                disp_obj = display_it->second;
+                // TODO: update disp_obj
+            }
+            else
+                disp_obj = winrt::make<HDRDisplay>(disp.GetIndex(), disp.GetID());
+            winrt_disps.emplace_back(disp_obj);
+            new_displays.emplace(display_key, disp_obj);
         }
         Displays(winrt::multi_threaded_vector(std::move(winrt_disps)));
+
+        displays_map = new_displays;
     }
 }
