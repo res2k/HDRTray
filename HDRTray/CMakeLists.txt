@@ -3,8 +3,6 @@ configure_file(version.rc.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc")
 # Add source to this project's executable.
 add_executable(HDRTray)
 target_sources(HDRTray PRIVATE
-               "DisplayConfigWatcher.hpp"
-               "DisplayConfigWatcher.cpp"
                "HDRTray.h"
                "HDRTray.cpp"
                "HDRTray.manifest"
