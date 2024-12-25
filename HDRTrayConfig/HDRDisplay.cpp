@@ -46,4 +46,15 @@ namespace winrt::HDRTrayConfig::implementation
         }
         IsSelected(selected);
     }
+
+    void HDRDisplay::RequestSelected(bool flag)
+    {
+        if (auto stable_id = display.GetStableID(); stable_id.has_value())
+        {
+            auto result = DisplayConfig::instance().SetEnabledFlag(*stable_id, flag);
+            if (!result)
+                UpdateSelected();
+            // else: let config watcher in HDRViewModel handle change
+        }
+    }
 }
