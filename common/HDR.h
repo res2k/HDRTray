@@ -32,6 +32,15 @@ struct DisplayID
     void ToDeviceInputHeader(DISPLAYCONFIG_DEVICE_INFO_HEADER& header) const;
 
     bool operator==(const DisplayID& other) const { return memcmp(&adapter, &other.adapter, sizeof(LUID)) == 0 && id == other.id; }
+    std::strong_ordering operator<=>(const DisplayID& other) const
+    {
+        int luid_cmp = memcmp(&adapter, &other.adapter, sizeof(LUID));
+        if (luid_cmp < 0)
+            return std::strong_ordering::less;
+        else if (luid_cmp > 0)
+            return std::strong_ordering::greater;
+        return std::compare_three_way{}(id, other.id);
+    }
 };
 
 /// Display information
