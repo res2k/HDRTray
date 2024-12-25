@@ -22,6 +22,8 @@ namespace HDRTrayConfig
     {
         // Update HDR enabled state to reflect actual system state
         void UpdateHDRStatus();
+        // Get whether HDR is available
+        Boolean IsHDRAvailable{ get; };
         // Get the current HDR enabled state
         Boolean IsHDREnabled{ get; };
         // Request HDR state change
