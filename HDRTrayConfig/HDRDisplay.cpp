@@ -20,14 +20,30 @@
 #include "HDRDisplay.h"
 #include "HDRDisplay.g.cpp"
 
+#include "DisplayConfig.hpp"
+
 namespace winrt::HDRTrayConfig::implementation
 {
-    HDRDisplay::HDRDisplay(size_t display_idx, const hdr::DisplayID& display_id)
+    HDRDisplay::HDRDisplay(size_t display_idx, const hdr::DisplayID& display_id) : display(display_idx, display_id)
     {
-        auto display = hdr::DisplayInfo(display_idx, display_id);
         auto name_result = display.GetName();
         if(!name_result.has_value())
             throw_hresult(name_result.error());
         Name(hstring(name_result.value()));
+
+        auto hdr_status = display.GetStatus();
+        IsHDRAvailable(hdr_status.has_value() && hdr_status.value() != hdr::Status::Unsupported);
+
+        UpdateSelected();
+    }
+
+    void HDRDisplay::UpdateSelected()
+    {
+        bool selected = false;
+        if (auto stable_id = display.GetStableID(); stable_id.has_value())
+        {
+            selected = DisplayConfig::instance().IsEnabled(*stable_id);
+        }
+        IsSelected(selected);
     }
 }
