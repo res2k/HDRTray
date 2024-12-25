@@ -20,6 +20,7 @@
 #include "HDRViewModel.g.h"
 
 #include "DisplayConfigWatcher.hpp"
+#include "HDR.h"
 
 #include <wil/wistd_type_traits.h>
 #include <wil/cppwinrt_authoring.h>
@@ -42,6 +43,10 @@ namespace winrt::HDRTrayConfig::implementation
 
     private:
         std::optional<DisplayConfigWatcher> config_watcher;
+
+        using display_idx_id_pair = std::pair<size_t, hdr::DisplayID>;
+        using display_map = std::map<display_idx_id_pair, HDRTrayConfig::HDRDisplay>;
+        display_map displays_map;
 
         void UpdateDisplays();
     };
