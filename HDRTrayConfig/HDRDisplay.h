@@ -36,6 +36,7 @@ namespace winrt::HDRTrayConfig::implementation
         HDRDisplay(size_t display_idx, const hdr::DisplayID& display_id);
 
         void UpdateSelected();
+        void RequestSelected(bool flag);
 
     private:
         hdr::DisplayInfo display;
