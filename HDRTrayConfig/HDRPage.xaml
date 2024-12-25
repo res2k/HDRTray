@@ -29,7 +29,7 @@
         <StackLayout x:Name="DisplaysLayout" Orientation="Vertical" Spacing="8" />
 
         <DataTemplate x:Key="DisplayTemplate" x:DataType="local:HDRDisplay">
-            <CheckBox Content="{x:Bind Name}" />
+            <CheckBox Content="{x:Bind Name, Mode=OneWay}" IsEnabled="{x:Bind IsHDRAvailable, Mode=OneWay}" IsChecked="{x:Bind IsSelected, Mode=OneWay}" />
         </DataTemplate>
     </Page.Resources>
 

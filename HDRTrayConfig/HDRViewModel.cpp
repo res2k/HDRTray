@@ -65,7 +65,7 @@ namespace winrt::HDRTrayConfig::implementation
             if (display_it != displays_map.end())
             {
                 disp_obj = display_it->second;
-                // TODO: update disp_obj
+                disp_obj.UpdateSelected();
             }
             else
                 disp_obj = winrt::make<HDRDisplay>(disp.GetIndex(), disp.GetID());
