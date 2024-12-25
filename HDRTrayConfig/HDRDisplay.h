@@ -30,7 +30,15 @@ namespace winrt::HDRTrayConfig::implementation
                         wil::notify_property_changed_base<HDRDisplay>
     {
         WIL_NOTIFYING_PROPERTY(hstring, Name, {});
+        WIL_NOTIFYING_PROPERTY(bool, IsHDRAvailable, false);
+        WIL_NOTIFYING_PROPERTY(bool, IsSelected, false);
 
         HDRDisplay(size_t display_idx, const hdr::DisplayID& display_id);
+
+        void UpdateSelected();
+
+    private:
+        hdr::DisplayInfo display;
+
     };
 }

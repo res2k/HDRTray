@@ -20,7 +20,14 @@ namespace HDRTrayConfig
 {
     runtimeclass HDRDisplay : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
-        // Get name of display
+        // Get human-readable name of display
         String Name{ get; };
+        // Whether display supports HDR
+        Boolean IsHDRAvailable{ get; };
+        // Whether display is selected (enabled)
+        Boolean IsSelected{ get; };
+
+        // Update "selected" status
+        void UpdateSelected();
     }
 }
