@@ -16,13 +16,28 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-namespace HDRTrayConfig
-{
-    [default_interface]
-    runtimeclass SettingsPage : Microsoft.UI.Xaml.Controls.Page
-    {
-        SettingsPage();
+#pragma once
+#include "SettingsViewModel.g.h"
 
-        SettingsViewModel ViewModel{ get; };
-    }
+#include "LoginStartupConfigWatcher.hpp"
+
+#include <wil/wistd_type_traits.h>
+#include <wil/cppwinrt_authoring.h>
+
+namespace winrt::HDRTrayConfig::implementation
+{
+    struct SettingsViewModel : SettingsViewModelT<SettingsViewModel>,
+                               wil::notify_property_changed_base<SettingsViewModel>
+    {
+        WIL_NOTIFYING_PROPERTY(bool, IsLoginStartupEnabled, false);
+        
+        SettingsViewModel();
+
+        void UpdateLoginStartup();
+        void RequestLoginStartupEnabled(bool flag);
+
+    private:
+        std::optional<LoginStartupConfigWatcher> config_watcher;
+
+    };
 }
