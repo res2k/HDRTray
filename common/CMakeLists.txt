@@ -13,6 +13,8 @@ target_sources(common PRIVATE
                "l10n.h"
                "l10n.cpp"
                "RegistryKey.hpp"
+               "RegistryWatcher.hpp"
+               "RegistryWatcher.cpp"
                "WinVerCheck.hpp"
                )
 target_compile_definitions(common PRIVATE UNICODE _UNICODE)
