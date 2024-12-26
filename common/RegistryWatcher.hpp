@@ -16,17 +16,36 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef DISPLAYCONFIGWATCHER_HPP_
-#define DISPLAYCONFIGWATCHER_HPP_
+#ifndef REGISTRYWATCHER_HPP_
+#define REGISTRYWATCHER_HPP_
 
-#include "RegistryWatcher.hpp"
+#include "framework.h"
 
-/// Helper to watch for changes to the Display configuration
-class DisplayConfigWatcher : public RegistryWatcher
+#include <functional>
+
+/// Helper to watch for changes to a registry key configuration
+class RegistryWatcher
 {
-public:
+protected:
+    using change_notification_func = std::function<void()>;
+
     /// Create a watcher that calls the notification function when a change was detected
-    DisplayConfigWatcher(change_notification_func notify_func);
+    RegistryWatcher(change_notification_func notify_func, const wchar_t* reg_path, REGSAM sam_extra = 0);
+
+public:
+    ~RegistryWatcher();
+
+private:
+    change_notification_func notify_func;
+    const wchar_t* reg_path;
+    REGSAM sam_extra;
+
+    HANDLE watcher_thread;
+    HANDLE change_event;
+    HANDLE stop_watching_event;
+
+    static DWORD WINAPI watch_thread_proc(void* parameter);
+    DWORD watch_thread_run();
 };
 
-#endif // DISPLAYCONFIGWATCHER_HPP_
+#endif // REGISTRYWATCHER_HPP_
