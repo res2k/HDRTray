@@ -18,11 +18,13 @@
 
 namespace HDRTrayConfig
 {
-    [default_interface]
-    runtimeclass SettingsPage : Microsoft.UI.Xaml.Controls.Page
+    runtimeclass SettingsViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
-        SettingsPage();
-
-        SettingsViewModel ViewModel{ get; };
+        // Update Login startup enabled state to reflect actual system state
+        void UpdateLoginStartup();
+        // Get whether login startup is enabled
+        Boolean IsLoginStartupEnabled{ get; };
+        // Request login startup state change
+        void RequestLoginStartupEnabled(Boolean flag);
     }
 }

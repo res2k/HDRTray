@@ -20,15 +20,25 @@
 
 #include "SettingsPage.g.h"
 
+#include <wil/wistd_type_traits.h>
+#include <wil/cppwinrt_authoring.h>
+
 namespace winrt::HDRTrayConfig::implementation
 {
-    struct SettingsPage : SettingsPageT<SettingsPage>
+    struct SettingsPage : SettingsPageT<SettingsPage>,
+                          wil::notify_property_changed_base<SettingsPage>
     {
+        WIL_NOTIFYING_PROPERTY(SettingsViewModel, ViewModel, nullptr);
+
         SettingsPage()
         {
             // Xaml objects should not call InitializeComponent during construction.
             // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
         }
+
+        void InitializeComponent();
+
+        void OnLoginStartupToggled(::winrt::Windows::Foundation::IInspectable const&, ::winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
     };
 }
 

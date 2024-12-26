@@ -33,7 +33,7 @@ winmd_from_idl(OUT "${XamlMetaDataProvider_WINMD}"
 
 set(idl_winmds "")
 # There are some dependencies between .idl files, so the order isn't completely arbitrary
-foreach(idl_file IN ITEMS HDRDisplay HDRViewModel AboutPage HDRPage MainWindow SettingsPage ToggleCard)
+foreach(idl_file IN ITEMS SettingsViewModel HDRDisplay HDRViewModel AboutPage HDRPage MainWindow SettingsPage ToggleCard)
     set(idl_winmd "${CMAKE_CURRENT_BINARY_DIR}/winmd_unmerged/${idl_file}.winmd")
     winmd_from_idl(OUT "${idl_winmd}"
                    IN "${CMAKE_CURRENT_SOURCE_DIR}/${idl_file}.idl"
@@ -68,6 +68,8 @@ target_sources(HDRTrayConfig PRIVATE
                "app.manifest"
                "${cppwinrt_generated}"
                "${XamlMetaDataProvider_CPP}"
+               "SettingsViewModel.cpp"
+               "SettingsViewModel.h"
                "HDRDisplay.cpp"
                "HDRDisplay.h"
                "HDRViewModel.cpp"
