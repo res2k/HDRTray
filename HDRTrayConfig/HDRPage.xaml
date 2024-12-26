@@ -41,7 +41,7 @@
         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top" Spacing="{StaticResource SettingsGroupsSpacing}" Padding="16">
             <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top" Spacing="{StaticResource SettingsPanelSpacing}">
                 <TextBlock Text="Global HDR control" Style="{StaticResource SectionHeaderStyle}"/>
-                <local:ToggleCard x:Name="HDRToggle" IsEnabled="{x:Bind Path=ViewModel.IsHDRAvailable, Mode=OneWay}" Text="Enable HDR" IsOn="{x:Bind Path=ViewModel.IsHDREnabled, Mode=OneWay}" Toggled="OnHDRToggled" />
+                <local:ToggleCard x:Name="HDRToggle" IsEnabled="{x:Bind Path=ViewModel.IsHDRAvailable, Mode=OneWay}" Text="Enable HDR" IsOn="{x:Bind Path=ViewModel.IsHDREnabled, Mode=TwoWay}" />
             </StackPanel>
 
             <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top" Spacing="{StaticResource SettingsPanelSpacing}">

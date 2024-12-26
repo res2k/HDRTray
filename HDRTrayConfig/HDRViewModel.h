@@ -21,6 +21,7 @@
 
 #include "DisplayConfigWatcher.hpp"
 #include "HDR.h"
+#include "NotifyingPropertyImpl.hpp"
 
 #include <wil/wistd_type_traits.h>
 #include <wil/cppwinrt_authoring.h>
@@ -31,7 +32,7 @@ namespace winrt::HDRTrayConfig::implementation
                           wil::notify_property_changed_base<HDRViewModel>
     {
         WIL_NOTIFYING_PROPERTY(bool, IsHDRAvailable, false);
-        WIL_NOTIFYING_PROPERTY(bool, IsHDREnabled, false);
+        NOTIFYING_PROPERTY_IMPL(bool, IsHDREnabled);
         WIL_NOTIFYING_PROPERTY(Windows::Foundation::Collections::IVector<IInspectable>,
                                Displays,
                                { });
@@ -39,7 +40,7 @@ namespace winrt::HDRTrayConfig::implementation
         HDRViewModel();
 
         void UpdateHDRStatus();
-        void RequestHDREnabled(bool flag);
+        void RequestIsHDREnabled(bool flag);
 
     private:
         std::optional<DisplayConfigWatcher> config_watcher;

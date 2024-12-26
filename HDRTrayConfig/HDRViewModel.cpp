@@ -40,14 +40,16 @@ namespace winrt::HDRTrayConfig::implementation
     {
         auto hdr_status = hdr::GetWindowsHDRStatus(hdr::GetEnabledDisplays());
         IsHDRAvailable(hdr_status != hdr::Status::Unsupported);
-        IsHDREnabled(hdr_status == hdr::Status::On);
+        SetIsHDREnabled(hdr_status == hdr::Status::On);
     }
 
-    void HDRViewModel::RequestHDREnabled(bool flag)
+    void HDRViewModel::RequestIsHDREnabled(bool flag)
     {
         auto hdr_status = hdr::SetWindowsHDRStatus(hdr::GetEnabledDisplays(), flag);
+        bool hdr_available = hdr_status && *hdr_status != hdr::Status::Unsupported;
         bool hdr_enabled = hdr_status && *hdr_status == hdr::Status::On;
-        IsHDREnabled(hdr_enabled);
+        IsHDRAvailable(hdr_available);
+        SetIsHDREnabled(hdr_enabled);
     }
 
     void HDRViewModel::UpdateDisplays()
