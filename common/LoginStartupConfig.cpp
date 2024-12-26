@@ -42,14 +42,14 @@ LoginStartupConfig::LoginStartupConfig()
     loginstartup_exe = loginstartup_exe.parent_path() / "HDRTray.exe";
 }
 
-static const wchar_t loginstartup_registry_path[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
+const wchar_t LoginStartupConfig::loginstartup_hkcu_path[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 static const wchar_t loginstartup_registry_key[] = L"HDRTray";
 
 std::expected<bool, LSTATUS> LoginStartupConfig::IsEnabled() const
 {
     RegistryKey key_loginstartup;
     auto create_result =
-        key_loginstartup.Create(HKEY_CURRENT_USER, loginstartup_registry_path, 0, KEY_READ | KEY_QUERY_VALUE, nullptr);
+        key_loginstartup.Create(HKEY_CURRENT_USER, loginstartup_hkcu_path, 0, KEY_READ | KEY_QUERY_VALUE, nullptr);
     if (create_result != ERROR_SUCCESS)
         return std::unexpected(create_result);
 
@@ -89,7 +89,7 @@ std::expected<bool, LSTATUS> LoginStartupConfig::IsEnabled() const
 std::expected<void, LSTATUS> LoginStartupConfig::SetEnabled(bool flag)
 {
     RegistryKey key_loginstartup;
-    auto create_result = key_loginstartup.Create(HKEY_CURRENT_USER, loginstartup_registry_path, 0,
+    auto create_result = key_loginstartup.Create(HKEY_CURRENT_USER, loginstartup_hkcu_path, 0,
                                               KEY_READ | KEY_WRITE | KEY_QUERY_VALUE | KEY_SET_VALUE, nullptr);
     if (create_result != ERROR_SUCCESS)
         return std::unexpected(create_result);

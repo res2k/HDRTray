@@ -8,6 +8,8 @@ target_sources(common PRIVATE
                "DisplayConfigWatcher.cpp"
                "LoginStartupConfig.hpp"
                "LoginStartupConfig.cpp"
+               "LoginStartupConfigWatcher.hpp"
+               "LoginStartupConfigWatcher.cpp"
                "HDR.h"
                "HDR.cpp"
                "RegistryKey.hpp"
