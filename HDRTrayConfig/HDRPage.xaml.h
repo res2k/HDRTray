@@ -38,7 +38,6 @@ namespace winrt::HDRTrayConfig::implementation
 
         void InitializeComponent();
 
-        void OnHDRToggled(::winrt::Windows::Foundation::IInspectable const&, ::winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
         void OnDisplayClick(winrt::Windows::Foundation::IInspectable const& sender,
                             winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
 

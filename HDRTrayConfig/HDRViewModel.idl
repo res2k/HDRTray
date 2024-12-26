@@ -25,9 +25,7 @@ namespace HDRTrayConfig
         // Get whether HDR is available
         Boolean IsHDRAvailable{ get; };
         // Get the current HDR enabled state
-        Boolean IsHDREnabled{ get; };
-        // Request HDR state change
-        void RequestHDREnabled(Boolean flag);
+        Boolean IsHDREnabled;
 
         // Return available displays
         IVector<IInspectable> Displays{ get; };
