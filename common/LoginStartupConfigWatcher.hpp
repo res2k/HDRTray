@@ -16,36 +16,17 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-/**\file
- * LoginStartup/"Start when logging in" configuration
- */
-#ifndef LOGINSTARTUPCONFIG_HPP_
-#define LOGINSTARTUPCONFIG_HPP_
+#ifndef LOGINSTARTUPCONFIGWATCHER_HPP_
+#define LOGINSTARTUPCONFIGWATCHER_HPP_
 
-#include "framework.h"
+#include "RegistryWatcher.hpp"
 
-#include <expected>
-#include <filesystem>
-
-class LoginStartupConfig
+/// Helper to watch for potential changes to the Login Startup configuration
+class LoginStartupConfigWatcher : public RegistryWatcher
 {
-protected:
-    /// Path to executable to loginstartup
-    std::filesystem::path loginstartup_exe;
-
-    LoginStartupConfig();
-
 public:
-    /// Path of login startup entires below HKCU
-    static const wchar_t loginstartup_hkcu_path[];
-
-    /// Return reference to singleton
-    static LoginStartupConfig& instance();
-
-    /// Whether loginstartup is currently enabled
-    std::expected<bool, LSTATUS> IsEnabled() const;
-    /// Enable/disable loginstartup
-    std::expected<void, LSTATUS> SetEnabled(bool flag);
+    /// Create a watcher that calls the notification function when a change was detected
+    LoginStartupConfigWatcher(change_notification_func notify_func);
 };
 
-#endif // LOGINSTARTUPCONFIG_HPP_
+#endif // LOGINSTARTUPCONFIGWATCHER_HPP_
