@@ -11,6 +11,8 @@ target_sources(common PRIVATE
                "HDR.h"
                "HDR.cpp"
                "RegistryKey.hpp"
+               "RegistryWatcher.hpp"
+               "RegistryWatcher.cpp"
                "WinVerCheck.hpp"
                )
 target_compile_definitions(common PRIVATE UNICODE _UNICODE)
