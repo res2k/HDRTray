@@ -17,30 +17,32 @@
 */
 
 #include "pch.h"
-#include "SettingsPage.xaml.h"
-#if __has_include("SettingsPage.g.cpp")
-#include "SettingsPage.g.cpp"
-#endif
-
 #include "SettingsViewModel.h"
+#include "SettingsViewModel.g.cpp"
 
-using namespace winrt;
-using namespace Microsoft::UI::Xaml;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+#include "LoginStartupConfig.hpp"
 
 namespace winrt::HDRTrayConfig::implementation
 {
-    void SettingsPage::InitializeComponent()
+    SettingsViewModel::SettingsViewModel()
     {
-        SettingsPageT::InitializeComponent();
-
-        ViewModel(winrt::make<SettingsViewModel>());
+        config_watcher.emplace([&, disp_queue = Microsoft::UI::Dispatching::DispatcherQueue::GetForCurrentThread()]() {
+            disp_queue.TryEnqueue([&]()
+            {
+                UpdateLoginStartup();
+            });
+        });
+        UpdateLoginStartup();
     }
 
-    void SettingsPage::OnLoginStartupToggled(::winrt::Windows::Foundation::IInspectable const&, ::winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
+    void SettingsViewModel::UpdateLoginStartup()
     {
-        ViewModel().RequestLoginStartupEnabled(LoginStartupToggle().IsOn());
+        auto login_startup = LoginStartupConfig::instance().IsEnabled();
+        IsLoginStartupEnabled(login_startup.has_value() && *login_startup);
+    }
+
+    void SettingsViewModel::RequestLoginStartupEnabled(bool flag)
+    {
+        LoginStartupConfig::instance().SetEnabled(flag);
     }
 }
