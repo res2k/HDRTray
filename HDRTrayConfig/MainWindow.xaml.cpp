@@ -45,6 +45,9 @@ namespace winrt::HDRTrayConfig::implementation
     {
         MainWindowT::InitializeComponent();
 
+        ExtendsContentIntoTitleBar(true);
+        SetTitleBar(DefaultTitleBar());
+
         auto hInstance = GetModuleHandle(nullptr);
         auto icon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APP));
         AppWindow().SetIcon(Microsoft::UI::GetIconIdFromIcon(icon));

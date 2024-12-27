@@ -24,35 +24,44 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Title="HDRTrayConfig">
+    Title="HDRTray Configuration">
 
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <NavigationView x:Name="NavigationView"
-                    PaneDisplayMode="Top"
-                    IsSettingsVisible="False"
-                    IsBackButtonVisible="Collapsed"
-                    Loaded="NavigationView_Loaded"
-                    SelectionChanged="NavigationView_SelectionChanged">
-        <NavigationView.MenuItems>
-            <NavigationViewItem Content="HDR Control" Tag="HDRPage">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE793;" />
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-            <NavigationViewItem Content="Settings" Tag="SettingsPage">
-                <NavigationViewItem.Icon>
-                    <FontIcon Glyph="&#xE713;" />
-                </NavigationViewItem.Icon>
-            </NavigationViewItem>
-        </NavigationView.MenuItems>
-        <NavigationView.FooterMenuItems>
-            <NavigationViewItem Content="About" Tag="AboutPage" Icon="Help" />
-        </NavigationView.FooterMenuItems>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <Frame x:Name="contentFrame">
-        </Frame>
-    </NavigationView>
+        <TitleBar x:Name="DefaultTitleBar" Grid.Row="0" Title="HDRTray Configuration" />
+        <NavigationView x:Name="NavigationView"
+                        Grid.Row="1"
+                        PaneDisplayMode="Top"
+                        IsSettingsVisible="False"
+                        IsBackButtonVisible="Collapsed"
+                        Loaded="NavigationView_Loaded"
+                        SelectionChanged="NavigationView_SelectionChanged">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Content="HDR Control" Tag="HDRPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE793;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Settings" Tag="SettingsPage">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE713;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem Content="About" Tag="AboutPage" Icon="Help" />
+            </NavigationView.FooterMenuItems>
+
+            <Frame x:Name="contentFrame">
+            </Frame>
+        </NavigationView>
+    </Grid>
 </Window>
