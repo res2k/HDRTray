@@ -61,6 +61,8 @@ run_cppwinrt(TARGET HDRTrayConfig_generate_cppwinrt
 
 translate_system_processor(BUILD_ARCH "${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
 
+configure_file(version.rc.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc")
+
 add_executable(HDRTrayConfig WIN32)
 add_dependencies(HDRTrayConfig HDRTrayConfig_generate_winappsdk)
 add_dependencies(HDRTrayConfig HDRTrayConfig_merge_winmds) # Avoids a warning in XAML compilation
@@ -72,6 +74,7 @@ target_sources(HDRTrayConfig PRIVATE
                "SettingsViewModel.h"
                "HDRDisplay.cpp"
                "HDRDisplay.h"
+               "HDRTrayConfig.rc"
                "HDRViewModel.cpp"
                "HDRViewModel.h"
 

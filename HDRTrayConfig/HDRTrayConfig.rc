@@ -1,0 +1,11 @@
+﻿LANGUAGE 9, 1
+
+//
+// Icon
+//
+1                 ICON         "../HDRTray/icons/app.ico"
+
+//
+// Version Info
+//
+#include "version.rc"
