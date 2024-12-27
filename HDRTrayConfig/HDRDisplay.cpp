@@ -44,10 +44,10 @@ namespace winrt::HDRTrayConfig::implementation
         {
             selected = DisplayConfig::instance().IsEnabled(*stable_id);
         }
-        IsSelected(selected);
+        SetIsSelected(selected);
     }
 
-    void HDRDisplay::RequestSelected(bool flag)
+    void HDRDisplay::RequestIsSelected(bool flag)
     {
         if (auto stable_id = display.GetStableID(); stable_id.has_value())
         {
