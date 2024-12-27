@@ -31,9 +31,7 @@
         <DataTemplate x:Key="DisplayTemplate" x:DataType="local:HDRDisplay">
             <CheckBox Content="{x:Bind Name, Mode=OneWay}"
                       IsEnabled="{x:Bind IsHDRAvailable, Mode=OneWay}"
-                      IsChecked="{x:Bind IsSelected, Mode=OneWay}"
-                      Tag="{x:Bind}"
-                      Click="OnDisplayClick" />
+                      IsChecked="{x:Bind IsSelected, Mode=TwoWay}" />
         </DataTemplate>
     </Page.Resources>
 

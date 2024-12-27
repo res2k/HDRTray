@@ -20,6 +20,7 @@
 #include "HDRDisplay.g.h"
 
 #include "HDR.h"
+#include "NotifyingPropertyImpl.hpp"
 
 #include <wil/wistd_type_traits.h>
 #include <wil/cppwinrt_authoring.h>
@@ -31,12 +32,12 @@ namespace winrt::HDRTrayConfig::implementation
     {
         WIL_NOTIFYING_PROPERTY(hstring, Name, {});
         WIL_NOTIFYING_PROPERTY(bool, IsHDRAvailable, false);
-        WIL_NOTIFYING_PROPERTY(bool, IsSelected, false);
+        NOTIFYING_PROPERTY_IMPL(bool, IsSelected);
 
         HDRDisplay(size_t display_idx, const hdr::DisplayID& display_id);
 
         void UpdateSelected();
-        void RequestSelected(bool flag);
+        void RequestIsSelected(bool flag);
 
     private:
         hdr::DisplayInfo display;

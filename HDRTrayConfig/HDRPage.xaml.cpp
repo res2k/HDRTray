@@ -38,13 +38,4 @@ namespace winrt::HDRTrayConfig::implementation
 
         ViewModel(Application::Current().as<App>()->ViewModel());
     }
-
-    void HDRPage::OnDisplayClick(::winrt::Windows::Foundation::IInspectable const& sender,
-                                 ::winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
-    {
-        auto sender_check = sender.as<Microsoft::UI::Xaml::Controls::CheckBox>();
-        auto hdr_display = sender_check.Tag().as<HDRDisplay>();
-        auto is_checked = sender_check.IsChecked();
-        hdr_display.RequestSelected(is_checked && is_checked.GetBoolean());
-    }
 }
