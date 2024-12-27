@@ -71,6 +71,7 @@ protected:
 
     void ToggleLoginStartupEnabled();
     void ToggleHDR();
+    void LaunchConfiguration();
 };
 
 #endif // NOTIFYICON_HPP_
