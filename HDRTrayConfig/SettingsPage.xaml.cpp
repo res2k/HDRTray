@@ -39,8 +39,4 @@ namespace winrt::HDRTrayConfig::implementation
         ViewModel(winrt::make<SettingsViewModel>());
     }
 
-    void SettingsPage::OnLoginStartupToggled(::winrt::Windows::Foundation::IInspectable const&, ::winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
-    {
-        ViewModel().RequestLoginStartupEnabled(LoginStartupToggle().IsOn());
-    }
 }
