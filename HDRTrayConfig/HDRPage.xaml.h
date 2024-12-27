@@ -38,9 +38,6 @@ namespace winrt::HDRTrayConfig::implementation
 
         void InitializeComponent();
 
-        void OnDisplayClick(winrt::Windows::Foundation::IInspectable const& sender,
-                            winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-
     private:
         winrt::HDRTrayConfig::HDRViewModel viewModel{ nullptr };
 

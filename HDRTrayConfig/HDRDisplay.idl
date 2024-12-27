@@ -25,11 +25,9 @@ namespace HDRTrayConfig
         // Whether display supports HDR
         Boolean IsHDRAvailable{ get; };
         // Whether display is selected (enabled)
-        Boolean IsSelected{ get; };
+        Boolean IsSelected;
 
         // Update "selected" status
         void UpdateSelected();
-        // Request selected status change
-        void RequestSelected(Boolean flag);
     }
 }
