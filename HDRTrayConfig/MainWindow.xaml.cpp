@@ -23,9 +23,12 @@
 #endif
 
 #include "App.xaml.h"
+#include "Resource.h"
 
 #include <commctrl.h>
 #include <Microsoft.UI.Xaml.Window.h>
+#include <winrt/Microsoft.UI.Interop.h>
+#include <winrt/Microsoft.UI.Windowing.h>
 
 #include <format>
 
@@ -41,6 +44,10 @@ namespace winrt::HDRTrayConfig::implementation
     void MainWindow::InitializeComponent()
     {
         MainWindowT::InitializeComponent();
+
+        auto hInstance = GetModuleHandle(nullptr);
+        auto icon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APP));
+        AppWindow().SetIcon(Microsoft::UI::GetIconIdFromIcon(icon));
 
         auto windowNative = this->m_inner.as<::IWindowNative>();
         HWND hWnd = 0;

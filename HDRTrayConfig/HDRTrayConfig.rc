@@ -1,9 +1,11 @@
-﻿LANGUAGE 9, 1
+﻿#include "Resource.h"
+
+LANGUAGE 9, 1
 
 //
 // Icon
 //
-1                 ICON         "../HDRTray/icons/app.ico"
+IDI_APP                 ICON         "../HDRTray/icons/app.ico"
 
 //
 // Version Info
