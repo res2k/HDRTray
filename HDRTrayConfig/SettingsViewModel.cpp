@@ -38,11 +38,13 @@ namespace winrt::HDRTrayConfig::implementation
     void SettingsViewModel::UpdateLoginStartup()
     {
         auto login_startup = LoginStartupConfig::instance().IsEnabled();
-        IsLoginStartupEnabled(login_startup.has_value() && *login_startup);
+        SetIsLoginStartupEnabled(login_startup.has_value() && *login_startup);
     }
 
-    void SettingsViewModel::RequestLoginStartupEnabled(bool flag)
+    void SettingsViewModel::RequestIsLoginStartupEnabled(bool flag)
     {
-        LoginStartupConfig::instance().SetEnabled(flag);
+        if (!LoginStartupConfig::instance().SetEnabled(flag))
+            SetIsLoginStartupEnabled(false);
+        // else: let watcher update state
     }
 }

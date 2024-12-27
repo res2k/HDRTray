@@ -35,7 +35,7 @@
             >
             <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top" Spacing="{StaticResource SettingsPanelSpacing}">
                 <TextBlock Text="Startup options" Style="{StaticResource SectionHeaderStyle}"/>
-                <local:ToggleCard x:Name="LoginStartupToggle" Text="Start when logging in"  IsOn="{x:Bind Path=ViewModel.IsLoginStartupEnabled, Mode=OneWay}" Toggled="OnLoginStartupToggled" />
+                <local:ToggleCard x:Name="LoginStartupToggle" Text="Start when logging in"  IsOn="{x:Bind Path=ViewModel.IsLoginStartupEnabled, Mode=TwoWay}" />
             </StackPanel>
         </StackPanel>
     </ScrollViewer>

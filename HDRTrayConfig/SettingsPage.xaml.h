@@ -38,7 +38,6 @@ namespace winrt::HDRTrayConfig::implementation
 
         void InitializeComponent();
 
-        void OnLoginStartupToggled(::winrt::Windows::Foundation::IInspectable const&, ::winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
     };
 }
 
