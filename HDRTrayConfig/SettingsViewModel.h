@@ -20,6 +20,7 @@
 #include "SettingsViewModel.g.h"
 
 #include "LoginStartupConfigWatcher.hpp"
+#include "NotifyingPropertyImpl.hpp"
 
 #include <wil/wistd_type_traits.h>
 #include <wil/cppwinrt_authoring.h>
@@ -29,12 +30,12 @@ namespace winrt::HDRTrayConfig::implementation
     struct SettingsViewModel : SettingsViewModelT<SettingsViewModel>,
                                wil::notify_property_changed_base<SettingsViewModel>
     {
-        WIL_NOTIFYING_PROPERTY(bool, IsLoginStartupEnabled, false);
+        NOTIFYING_PROPERTY_IMPL(bool, IsLoginStartupEnabled);
         
         SettingsViewModel();
 
         void UpdateLoginStartup();
-        void RequestLoginStartupEnabled(bool flag);
+        void RequestIsLoginStartupEnabled(bool flag);
 
     private:
         std::optional<LoginStartupConfigWatcher> config_watcher;
