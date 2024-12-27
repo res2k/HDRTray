@@ -22,10 +22,12 @@
 #define IDS_HDR_OFF             104
 #define IDS_WINDOWS_TOO_OLD     105
 #define IDS_TOGGLE_HDR_ERROR    106
+#define IDS_CONFIG_LAUNCH_FAIL  107
 
 #define IDM_EXIT                101
 #define IDM_LOGIN_STARTUP       102
 #define IDM_ENABLE_HDR          103
+#define IDM_CONFIGURATION       104
 
 #define IDI_APP                 1
 #define IDI_HDR_OFF_DARKMODE    101

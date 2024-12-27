@@ -191,6 +191,9 @@ bool NotifyIcon::HandleCommand(int command)
     case IDM_LOGIN_STARTUP:
         ToggleLoginStartupEnabled();
         return true;
+    case IDM_CONFIGURATION:
+        LaunchConfiguration();
+        return true;
     }
     return false;
 }
@@ -229,6 +232,39 @@ void NotifyIcon::ToggleHDR()
 
     if(has_mouse_pos)
         SetCursorPos(mouse_pos.x, mouse_pos.y);
+}
+
+void NotifyIcon::LaunchConfiguration()
+{
+    wchar_t* exe_path = nullptr;
+    _get_wpgmptr(&exe_path);
+    auto config_exe = std::filesystem::path(exe_path).parent_path() / "HDRTrayConfig.exe";
+    if (reinterpret_cast<INT_PTR>(ShellExecuteW(NULL, L"open", config_exe.c_str(), NULL, NULL, SWP_SHOWWINDOW)) < 32)
+    {
+        DWORD err = GetLastError();
+
+        wchar_t* error_str = nullptr;
+        FormatMessageW(
+            FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+            nullptr,
+            err,
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPWSTR)&error_str,
+            0,
+            nullptr);
+        wchar_t msg_template[256];
+        LoadStringW(hInst, IDS_CONFIG_LAUNCH_FAIL, msg_template, ARRAYSIZE(msg_template));
+
+        auto full_message = std::vformat(msg_template, std::make_wformat_args(error_str));
+        LocalFree(error_str);
+
+        MSGBOXPARAMSW mbp = { sizeof(mbp) };
+        mbp.hInstance = GetModuleHandle(nullptr);
+        mbp.lpszText = full_message.c_str();
+        mbp.lpszCaption = MAKEINTRESOURCEW(IDS_APP_TITLE);
+        mbp.dwStyle = MB_OK | MB_ICONERROR;
+        MessageBoxIndirectW(&mbp);
+    }
 }
 
 void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
