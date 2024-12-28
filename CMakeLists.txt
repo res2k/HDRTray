@@ -103,8 +103,12 @@ if(MARKO_AVAILABLE)
     add_custom_target(ConvertMD ALL DEPENDS ${GENERATED_HTML_FILES})
 endif()
 
-install(TARGETS HDRTray HDRCmd
+install(TARGETS HDRTray HDRCmd HDRTrayConfig
         RUNTIME
+        DESTINATION ".")
+install(FILES
+            "$<TARGET_FILE_DIR:HDRTrayConfig>/Microsoft.WindowsAppRuntime.Bootstrap.dll"
+            "$<TARGET_FILE_DIR:HDRTrayConfig>/HDRTrayConfig.pri"
         DESTINATION ".")
 if(MARKO_AVAILABLE)
     foreach(md_file LICENSE README)
