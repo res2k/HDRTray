@@ -45,8 +45,8 @@
                         <TextBlock Text="{x:Bind VersionString}" Style="{StaticResource CaptionTextBlockStyle}"/>
                         <TextBlock Text="(C) 2022-2024 Frank Richter" Style="{StaticResource CaptionTextBlockStyle}"/>
                     </StackPanel>
-                    <HyperlinkButton Content="Open README" NavigateUri="https://res2k.github.io/HDRTray/" />
-                    <HyperlinkButton Content="Licensed under the terms of the GNU General Public License, Version 3" NavigateUri="https://res2k.github.io/HDRTray/LICENSE.md" />
+                    <HyperlinkButton Content="Open README" Tag="README" Click="OnDocLinkClick" />
+                    <HyperlinkButton Content="Licensed under the terms of the GNU General Public License, Version 3" Tag="LICENSE" Click="OnDocLinkClick" />
                     <HyperlinkButton Content="Get latest release on GitHub" NavigateUri="https://github.com/res2k/HDRTray/releases" />
                 </StackPanel>
 

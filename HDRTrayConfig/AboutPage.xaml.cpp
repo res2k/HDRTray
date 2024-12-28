@@ -22,7 +22,12 @@
 #include "AboutPage.g.cpp"
 #endif
 
+#include <winrt/Windows.Storage.h>
+#include <winrt/Windows.System.h>
+
 #include "version.h"
+
+#include <filesystem>
 
 using namespace winrt;
 using namespace Microsoft::UI::Xaml;
@@ -32,6 +37,22 @@ using namespace Microsoft::UI::Xaml;
 
 namespace winrt::HDRTrayConfig::implementation
 {
+    void AboutPage::OnDocLinkClick(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
+    {
+        auto sender_element = sender.as<FrameworkElement >();
+        auto doc_tag = sender_element.Tag().as<hstring>();
+
+        wchar_t* exe_path = nullptr;
+        _get_wpgmptr(&exe_path);
+        auto exe_dir = std::filesystem::path(exe_path).parent_path();
+
+        auto doc_path = winrt::format(L"{}\\{}.html", exe_dir.native(), static_cast<std::wstring_view>(doc_tag));
+        [=]() -> winrt::fire_and_forget {
+            auto file = co_await Windows::Storage::StorageFile::GetFileFromPathAsync(doc_path);
+            co_await Windows::System::Launcher::LaunchFileAsync(file);
+        }();
+    }
+
     winrt::hstring AboutPage::VersionString()
     {
         return winrt::format(L"Version {} ({})", L"" VERSION_SHORT, L"" VERSION_COMMIT);

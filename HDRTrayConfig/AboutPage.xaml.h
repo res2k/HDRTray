@@ -30,6 +30,8 @@ namespace winrt::HDRTrayConfig::implementation
             // See https://github.com/microsoft/cppwinrt/tree/master/nuget#initializecomponent
         }
 
+        void OnDocLinkClick(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&);
+
         static winrt::hstring VersionString();
     };
 }
