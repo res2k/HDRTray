@@ -67,12 +67,18 @@ namespace winrt::HDRTrayConfig::implementation
         auto selectedItemTag = selectedItem.Tag().as<hstring>();
         auto pageName = std::format(L"HDRTrayConfig.{}", selectedItemTag);
         auto pageType = TypeName{ winrt::hstring(pageName), TypeKind::Metadata};
-        contentFrame().Navigate(pageType);
+        contentFrame().Navigate(pageType, nullptr, args.RecommendedNavigationTransitionInfo());
     }
 
     void MainWindow::NavigationView_Loaded(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
-        contentFrame().Navigate(winrt::xaml_typename<HDRPage>());
+        auto nav_items = NavigationView().MenuItems();
+        auto view_item_it =
+            std::find_if(nav_items.begin(), nav_items.end(), [](const winrt::Windows::Foundation::IInspectable& item) {
+                return item.as<Microsoft::UI::Xaml::Controls::NavigationViewItem>();
+            });
+        if (view_item_it != nav_items.end())
+            NavigationView().SelectedItem(*view_item_it);
     }
 
     LRESULT MainWindow::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
