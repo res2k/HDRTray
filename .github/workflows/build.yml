@@ -60,8 +60,14 @@ jobs:
       name: Make release archive
       id: release_archive
       if: startsWith(github.ref, 'refs/tags/')
+    - shell: bash
+      run: |
+        sha256sum ${{ steps.release_archive_name.outputs.RELEASE_ARCHIVE }} > sha256sum.txt
+      name: Compute sha256sum
     - name: Create release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-          files: ${{ steps.release_archive_name.outputs.RELEASE_ARCHIVE }}
+          files: |
+            ${{ steps.release_archive_name.outputs.RELEASE_ARCHIVE }}
+            sha256sum.txt
