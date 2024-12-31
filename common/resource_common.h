@@ -1,6 +1,6 @@
 /*
-    HDRTrayConfig - graphical configuration for HDRTray
-    Copyright (C) 2024 Frank Richter
+    HDRTray, a notification icon for the "Use HDR" option
+    Copyright (C) 2022-2024 Frank Richter
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,4 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "resource_common.h"
+// String: application title
+#define IDS_APP_TITLE           1
+// Icon: application icon
+#define IDI_APP                 1
