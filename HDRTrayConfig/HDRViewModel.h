@@ -42,13 +42,13 @@ namespace winrt::HDRTrayConfig::implementation
         void UpdateHDRStatus();
         void RequestIsHDREnabled(bool flag);
 
+        void UpdateDisplays();
+
     private:
         std::optional<DisplayConfigWatcher> config_watcher;
 
         using display_idx_id_pair = std::pair<size_t, hdr::DisplayID>;
         using display_map = std::map<display_idx_id_pair, HDRTrayConfig::HDRDisplay>;
         display_map displays_map;
-
-        void UpdateDisplays();
     };
 }
