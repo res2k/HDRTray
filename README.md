@@ -88,7 +88,7 @@ License
 -------
 HDRTray, a notification icon for the “Use HDR” option
 
-Copyright (C) 2022-2024 Frank Richter
+Copyright (C) 2022-2025 Frank Richter
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

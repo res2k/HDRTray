@@ -9,7 +9,7 @@ BEGIN
             VALUE "FileDescription",  "HDRTray"
             VALUE "FileVersion",      "@VERSION_MAJOR@.@VERSION_MINOR@.@VERSION_REVISION@.@VERSION_BUILD@"
             VALUE "InternalName",     "HDRTray.exe"
-            VALUE "LegalCopyright",   "Copyright (c) 2022-2024 Frank Richter"
+            VALUE "LegalCopyright",   "@COPYRIGHT_STR@"
             VALUE "ProductName",      "HDRTray"
             VALUE "ProductVersion",   "@VERSION_FULL@"
             VALUE "Licence", "GNU General Public License, version 3"
