@@ -30,7 +30,6 @@ namespace winrt::HDRTrayConfig::implementation
             disp_queue.TryEnqueue([&]()
             {
                 UpdateDisplays();
-                UpdateHDRStatus();
             });
         });
         UpdateDisplays();
@@ -77,5 +76,7 @@ namespace winrt::HDRTrayConfig::implementation
         Displays(winrt::multi_threaded_vector(std::move(winrt_disps)));
 
         displays_map = new_displays;
+
+        UpdateHDRStatus();
     }
 }

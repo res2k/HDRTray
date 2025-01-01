@@ -57,7 +57,6 @@ namespace winrt::HDRTrayConfig::implementation
     void App::OnLaunched([[maybe_unused]] LaunchActivatedEventArgs const& e)
     {
         viewModel = make<HDRViewModel>();
-        viewModel.UpdateHDRStatus();
 
         window = make<MainWindow>();
         window.Activate();
