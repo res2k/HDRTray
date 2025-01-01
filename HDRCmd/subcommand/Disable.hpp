@@ -19,10 +19,10 @@
 #ifndef SUBCOMMAND_DISABLE_HPP_
 #define SUBCOMMAND_DISABLE_HPP_
 
-#include "Base.hpp"
+#include "DisplayUsing.hpp"
 
 namespace subcommand {
-class Disable : public Base
+class Disable : public DisplayUsing
 {
 protected:
     Disable(CLI::App* parent);

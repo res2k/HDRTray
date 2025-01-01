@@ -1,8 +1,23 @@
+configure_file(version.h.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.h")
+
 add_library(common STATIC)
 target_sources(common PRIVATE
+               "DisplayConfig.hpp"
+               "DisplayConfig.cpp"
+               "DisplayConfigWatcher.hpp"
+               "DisplayConfigWatcher.cpp"
+               "LoginStartupConfig.hpp"
+               "LoginStartupConfig.cpp"
+               "LoginStartupConfigWatcher.hpp"
+               "LoginStartupConfigWatcher.cpp"
                "HDR.h"
                "HDR.cpp"
+               "RegistryKey.hpp"
+               "RegistryWatcher.hpp"
+               "RegistryWatcher.cpp"
                "WinVerCheck.hpp"
                )
 target_compile_definitions(common PRIVATE UNICODE _UNICODE)
 target_include_directories(common PUBLIC .)
+target_include_directories(common PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/generated")
+target_link_libraries(common PUBLIC runtimeobject)

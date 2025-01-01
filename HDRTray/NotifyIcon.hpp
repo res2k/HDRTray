@@ -56,8 +56,8 @@ public:
 
     enum { MESSAGE = WM_USER + 11 };
 
-    void ToggleAutostartEnabled();
-    void ToggleHDR();
+    // Handle (some) context menu commands
+    bool HandleCommand(int command);
 
 protected:
     void PopupIconMenu(HWND hWnd, POINT pos);
@@ -67,7 +67,9 @@ protected:
     void FetchDarkMode();
     void UpdateIcon();
 
-    bool IsAutostartEnabled() const;
+    void ToggleLoginStartupEnabled();
+    void ToggleHDR();
+    void LaunchConfiguration();
 };
 
 #endif // NOTIFYICON_HPP_
