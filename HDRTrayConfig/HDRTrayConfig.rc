@@ -8,6 +8,17 @@ LANGUAGE 9, 1
 IDI_APP                 ICON         "../HDRTray/icons/app.ico"
 
 //
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+   IDS_APP_TITLE                "HDRTray Configuration"
+   IDS_APP_RUNTIME_MISSING      "Windows App Runtime required"
+   IDS_DOWNLOAD_APP_RUNTIME     "Download Installer"
+END
+
+//
 // Version Info
 //
 #include "version.rc"
