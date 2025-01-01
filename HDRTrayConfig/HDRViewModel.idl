@@ -29,5 +29,7 @@ namespace HDRTrayConfig
 
         // Return available displays
         IVector<IInspectable> Displays{ get; };
+        // Update available displays
+        void UpdateDisplays();
     }
 }
