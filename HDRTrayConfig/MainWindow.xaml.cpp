@@ -84,8 +84,19 @@ namespace winrt::HDRTrayConfig::implementation
     LRESULT MainWindow::SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData)
     {
         auto* This = reinterpret_cast<MainWindow*>(dwRefData);
-        if (uMsg == WM_DISPLAYCHANGE)
+        switch(uMsg)
+        {
+        case WM_DISPLAYCHANGE:
             This->viewModel.UpdateHDRStatus();
+            break;
+        case WM_DEVICECHANGE:
+            This->viewModel.UpdateDisplays();
+            break;
+        case WM_SETTINGCHANGE:
+            if (wParam == SPI_SETWORKAREA)
+                This->viewModel.UpdateDisplays();
+            break;
+        }
 
         return DefSubclassProc(hWnd, uMsg, wParam, lParam);
     }
