@@ -77,8 +77,7 @@ target_sources(HDRTrayConfig PRIVATE
                "HDRTrayConfig.rc"
                "HDRViewModel.cpp"
                "HDRViewModel.h"
-
-               "${Microsoft_WindowsAppSDK_PATH}/include/MddBootstrapAutoInitializer.cpp"
+               "MddBootstrapAutoInitializer.cpp"
                )
 target_xaml_sources(HDRTrayConfig PRIVATE "App.xaml" VS_XAML_TYPE ApplicationDefinition)
 target_xaml_sources(HDRTrayConfig PRIVATE "AboutPage.xaml" "HDRPage.xaml" "MainWindow.xaml" "SettingsPage.xaml" "ToggleCard.xaml")
