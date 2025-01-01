@@ -43,7 +43,7 @@
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="12,0,0,0">
                         <TextBlock Text="HDRTray" Style="{StaticResource BodyStrongTextBlockStyle}" />
                         <TextBlock Text="{x:Bind VersionString}" Style="{StaticResource CaptionTextBlockStyle}"/>
-                        <TextBlock Text="(C) 2022-2024 Frank Richter" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <TextBlock Text="(C) 2022-2025 Frank Richter" Style="{StaticResource CaptionTextBlockStyle}"/>
                     </StackPanel>
                     <HyperlinkButton Content="Open README" Tag="README" Click="OnDocLinkClick" />
                     <HyperlinkButton Content="Licensed under the terms of the GNU General Public License, Version 3" Tag="LICENSE" Click="OnDocLinkClick" />
