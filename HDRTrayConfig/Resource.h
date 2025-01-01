@@ -17,3 +17,6 @@
 */
 
 #include "resource_common.h"
+
+#define IDS_APP_RUNTIME_MISSING     100
+#define IDS_DOWNLOAD_APP_RUNTIME    101
