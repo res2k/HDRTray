@@ -239,7 +239,7 @@ void NotifyIcon::LaunchConfiguration()
     wchar_t* exe_path = nullptr;
     _get_wpgmptr(&exe_path);
     auto config_exe = std::filesystem::path(exe_path).parent_path() / "HDRTrayConfig.exe";
-    if (reinterpret_cast<INT_PTR>(ShellExecuteW(NULL, L"open", config_exe.c_str(), NULL, NULL, SWP_SHOWWINDOW)) < 32)
+    if (reinterpret_cast<INT_PTR>(ShellExecuteW(NULL, L"open", config_exe.c_str(), NULL, NULL, SW_SHOWNORMAL)) < 32)
     {
         DWORD err = GetLastError();
 
