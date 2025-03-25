@@ -19,10 +19,10 @@
 #ifndef SUBCOMMAND_ENABLE_HPP_
 #define SUBCOMMAND_ENABLE_HPP_
 
-#include "Base.hpp"
+#include "DisplayUsing.hpp"
 
 namespace subcommand {
-class Enable : public Base
+class Enable : public DisplayUsing
 {
 protected:
     Enable(CLI::App* parent);

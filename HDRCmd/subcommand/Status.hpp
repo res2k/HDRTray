@@ -25,7 +25,6 @@ namespace subcommand {
 class Status : public Base
 {
     static void print_status_short();
-    static void print_status_long();
 
 protected:
     std::string mode;
