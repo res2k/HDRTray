@@ -42,6 +42,12 @@ Specifies how the status should be reported. Accepts the following values:
 * `long`, `l`: Print the overall HDR status and status per display.
 * `exitcode`, `x`: Special mode for scripting. Exit code is 0 if HDR is on, 1 if HDR is off, and 2 if HDR is unsupported. (Other values indicate some error.)
 
+Contributed scripts
+-------------------
+A number of people shared scripts they created that use `HDRCmd` to automate HDR toggling. Check them out in the [“Show and Tell” discussion category](https://github.com/res2k/HDRTray/discussions/categories/show-and-tell).
+
+If you want to share your own script, feel free to open a new discussion thread!
+
 Latest Release
 --------------
 The latest release can be found on the [“Releases” tab of the GitHub project page](https://github.com/res2k/HDRTray/releases).
