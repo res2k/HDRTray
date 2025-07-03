@@ -235,11 +235,9 @@ void NotifyIcon::ToggleHDR()
         UpdateIcon();
     } else {
         // Pop up error balloon if toggle failed
-        auto notify_balloon_tip = notify_template;
-        notify_balloon_tip.uFlags |= NIF_INFO | NIF_REALTIME;
-        l10n::LoadString(IDS_TOGGLE_HDR_ERROR, notify_balloon_tip.szInfo);
-        notify_balloon_tip.dwInfoFlags = NIIF_ERROR;
-        Shell_NotifyIconW(NIM_MODIFY, &notify_balloon_tip);
+        wchar_t message[ARRAYSIZE(notify_template.szInfo) + 1] = {0};
+        l10n::LoadString(IDS_TOGGLE_HDR_ERROR, message);
+        BalloonTip(message);
     }
 
     if(has_mouse_pos)
@@ -269,6 +267,19 @@ void NotifyIcon::LaunchConfiguration()
         mbp.dwStyle = MB_OK | MB_ICONERROR;
         MessageBoxIndirectW(&mbp);
     }
+}
+
+void NotifyIcon::BalloonTip(std::wstring_view info, std::optional<std::wstring_view> title)
+{
+    auto notify_balloon_tip = notify_template;
+    notify_balloon_tip.uFlags |= NIF_INFO | NIF_REALTIME;
+    wcsncpy_s(notify_balloon_tip.szInfo, info.data(), info.size());
+    if (title)
+    {
+        wcsncpy_s(notify_balloon_tip.szInfoTitle, title->data(), title->size());
+    }
+    notify_balloon_tip.dwInfoFlags = NIIF_ERROR;
+    Shell_NotifyIconW(NIM_MODIFY, &notify_balloon_tip);
 }
 
 void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)

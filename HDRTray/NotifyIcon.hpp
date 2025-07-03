@@ -64,6 +64,8 @@ public:
     void SetSDRWhiteLevel(float nits);
 
 protected:
+    // Show a balloon tip
+    void BalloonTip(std::wstring_view info, std::optional<std::wstring_view> title = {});
     void PopupIconMenu(HWND hWnd, POINT pos);
 
     const Icons& GetCurrentIconSet() const;
