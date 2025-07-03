@@ -249,20 +249,12 @@ void NotifyIcon::LaunchConfiguration()
     {
         DWORD err = GetLastError();
 
-        wchar_t* error_str = nullptr;
-        FormatMessageW(
-            FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER,
-            nullptr,
-            err,
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-            (LPWSTR)&error_str,
-            0,
-            nullptr);
+        auto error_str = ErrorString(err);
         wchar_t msg_template[256];
         LoadStringW(hInst, IDS_CONFIG_LAUNCH_FAIL, msg_template, ARRAYSIZE(msg_template));
 
-        auto full_message = std::vformat(msg_template, std::make_wformat_args(error_str));
-        LocalFree(error_str);
+        const wchar_t* error_str_p = error_str.get();
+        auto full_message = std::vformat(msg_template, std::make_wformat_args(error_str_p));
 
         MSGBOXPARAMSW mbp = { sizeof(mbp) };
         mbp.hInstance = GetModuleHandle(nullptr);
@@ -352,4 +344,19 @@ void NotifyIcon::UpdateIcon()
     }
     Shell_NotifyIconW(NIM_MODIFY, &notify_mod);
 
+}
+
+wil::unique_hlocal_string NotifyIcon::ErrorString(DWORD err)
+{
+    wchar_t* error_str = nullptr;
+    FormatMessageW(
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+        nullptr,
+        err,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPWSTR)&error_str,
+        0,
+        nullptr);
+
+    return wil::unique_hlocal_string(error_str);
 }

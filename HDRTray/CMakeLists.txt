@@ -12,6 +12,7 @@ target_sources(HDRTray PRIVATE
                )
 target_compile_definitions(HDRTray PRIVATE UNICODE _UNICODE)
 target_include_directories(HDRTray PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+target_include_directories(HDRTray PRIVATE "${Microsoft_Windows_ImplementationLibrary_PATH}/include")
 target_link_libraries(HDRTray PRIVATE common Windows10Colors comctl32)
 set_target_properties(HDRTray PROPERTIES
                       WIN32_EXECUTABLE ON

@@ -24,6 +24,8 @@
 
 #include <shellapi.h>
 
+#include <wil/resource.h>
+
 class NotifyIcon
 {
     bool added = false;
@@ -70,6 +72,9 @@ protected:
     void ToggleLoginStartupEnabled();
     void ToggleHDR();
     void LaunchConfiguration();
+
+    // Use FormatString to get error description
+    static wil::unique_hlocal_string ErrorString(DWORD err);
 };
 
 #endif // NOTIFYICON_HPP_
