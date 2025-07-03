@@ -212,7 +212,14 @@ void NotifyIcon::ToggleLoginStartupEnabled()
     GetMenuItemInfoW(popup_menu, IDM_LOGIN_STARTUP, false, &mii);
 
     bool loginstartup_enabled = mii.fState == MFS_CHECKED;
-    LoginStartupConfig::instance().SetEnabled(!loginstartup_enabled);
+    auto toggle_result = LoginStartupConfig::instance().SetEnabled(!loginstartup_enabled);
+    if (!toggle_result)
+    {
+        wchar_t title[ARRAYSIZE(notify_template.szInfoTitle)];
+        LoadStringW(hInst, IDS_STARTUP_TOGGLE_FAIL, title, ARRAYSIZE(title));
+        auto error_message = ErrorString(toggle_result.error());
+        BalloonTip(error_message.get(), title);
+    }
 }
 
 void NotifyIcon::ToggleHDR()

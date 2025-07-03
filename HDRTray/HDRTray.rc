@@ -46,6 +46,7 @@ BEGIN
    IDS_WINDOWS_TOO_OLD  "Sorry, HDRTray only works on Windows 10, version 1809 and above"
    IDS_TOGGLE_HDR_ERROR "Failed to switch HDR mode"
    IDS_CONFIG_LAUNCH_FAIL "Failed to start configuration utility:\n{}"
+   IDS_STARTUP_TOGGLE_FAIL "Failed to change 'Start when logging in'"
 END
 
 

@@ -24,6 +24,7 @@
 #define IDS_WINDOWS_TOO_OLD     105
 #define IDS_TOGGLE_HDR_ERROR    106
 #define IDS_CONFIG_LAUNCH_FAIL  107
+#define IDS_STARTUP_TOGGLE_FAIL 108
 
 #define IDM_EXIT                101
 #define IDM_LOGIN_STARTUP       102
