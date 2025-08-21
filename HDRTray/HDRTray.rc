@@ -1,6 +1,8 @@
 ﻿#include "resource.h"
 
-LANGUAGE 9, 1
+#include <windows.h>
+
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -25,9 +27,9 @@ IDC_TRAYPOPUP MENU
 BEGIN
     POPUP "Dummy"
     BEGIN
-        MENUITEM "Enable &HDR", IDM_ENABLE_HDR
-        MENUITEM "&Start when logging in", IDM_AUTOSTART
-        MENUITEM "&Quit",                IDM_EXIT
+        MENUITEM "Enable &HDR",             IDM_ENABLE_HDR
+        MENUITEM "&Start when logging in",  IDM_AUTOSTART
+        MENUITEM "&Quit",                   IDM_EXIT
     END
 END
 
@@ -51,3 +53,38 @@ END
 // Version Info
 //
 #include "version.rc"
+
+
+LANGUAGE LANG_PORTUGUESE, SUBLANG_PORTUGUESE_BRAZILIAN
+
+// Portuguese Brazilian translation by https://github.com/marciozomb13
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_TRAYPOPUP MENU
+BEGIN
+    POPUP "Dummy"
+    BEGIN
+        MENUITEM "Ativar o &HDR",           IDM_ENABLE_HDR
+        MENUITEM "&Iniciar ao fazer login", IDM_AUTOSTART
+        MENUITEM "&Sair",                   IDM_EXIT
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+   IDS_APP_TITLE        "HDRTray"
+   IDS_HDR_UNSUPPORTED  "HDR não suportado"
+   IDS_HDR_OFF          "HDR desativado\nClique para ativar o HDR"
+   IDS_HDR_ON           "HDR ativado\nClique para desativar o HDR"
+   IDS_WINDOWS_TOO_OLD  "Desculpe, o HDRTray só funciona no Windows 10, versão 1803 e posterior"
+   IDS_TOGGLE_HDR_ERROR "Houve uma falha ao alternar o modo HDR"
+END
