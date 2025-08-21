@@ -21,7 +21,7 @@ namespace HDRTrayConfig
     runtimeclass HDRViewModel : Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
         // Update HDR enabled state to reflect actual system state
-        void UpdateHDRStatus();
+        Boolean UpdateHDRStatus();
         // Get whether HDR is available
         Boolean IsHDRAvailable{ get; };
         // Get the current HDR enabled state

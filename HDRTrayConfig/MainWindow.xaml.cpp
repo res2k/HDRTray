@@ -39,6 +39,8 @@ using namespace Windows::UI::Xaml::Interop;
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
+enum { TIMER_ID_RECHECK_HDR_STATUS = 1 };
+
 namespace winrt::HDRTrayConfig::implementation
 {
     void MainWindow::InitializeComponent()
@@ -87,7 +89,12 @@ namespace winrt::HDRTrayConfig::implementation
         switch(uMsg)
         {
         case WM_DISPLAYCHANGE:
-            This->viewModel.UpdateHDRStatus();
+            if (!This->viewModel.UpdateHDRStatus()) {
+                /* HDR status doesn't seem to be always immediately up-to-date when receiving
+                 * WM_DISPLAYCHANGE, so periodically re-check it over a short duration */
+                This->hdr_status_check_count = 10;
+                SetTimer(hWnd, TIMER_ID_RECHECK_HDR_STATUS, 500, nullptr);
+            }
             break;
         case WM_DEVICECHANGE:
             This->viewModel.UpdateDisplays();
@@ -96,9 +103,23 @@ namespace winrt::HDRTrayConfig::implementation
             if (wParam == SPI_SETWORKAREA)
                 This->viewModel.UpdateDisplays();
             break;
+        case WM_TIMER:
+            if (wParam == TIMER_ID_RECHECK_HDR_STATUS)
+                This->HandleHDRStatusTimer(hWnd);
+            break;
         }
 
         return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+    }
+
+    void MainWindow::HandleHDRStatusTimer(HWND hWnd)
+    {
+        if (hdr_status_check_count > 0) {
+            hdr_status_check_count--;
+            if (viewModel.UpdateHDRStatus())
+                hdr_status_check_count = 0;
+        } else
+            KillTimer(hWnd, TIMER_ID_RECHECK_HDR_STATUS);
     }
 }
 

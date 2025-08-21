@@ -39,7 +39,7 @@ namespace winrt::HDRTrayConfig::implementation
 
         HDRViewModel();
 
-        void UpdateHDRStatus();
+        bool UpdateHDRStatus();
         void RequestIsHDREnabled(bool flag);
 
         void UpdateDisplays();
@@ -50,5 +50,7 @@ namespace winrt::HDRTrayConfig::implementation
         using display_idx_id_pair = std::pair<size_t, hdr::DisplayID>;
         using display_map = std::map<display_idx_id_pair, HDRTrayConfig::HDRDisplay>;
         display_map displays_map;
+
+        hdr::Status last_hdr_status = hdr::Status::Unsupported;
     };
 }
