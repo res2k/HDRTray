@@ -40,6 +40,8 @@ namespace winrt::HDRTrayConfig::implementation
 
         static LRESULT CALLBACK SubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData);
 
+        unsigned hdr_status_check_count = 0;
+        void HandleHDRStatusTimer(HWND hWnd);
     };
 }
 
