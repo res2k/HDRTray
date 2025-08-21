@@ -19,6 +19,7 @@
 #include "framework.h"
 #include "HDRTray.h"
 #include "HDR.h"
+#include "l10n.h"
 #include "NotifyIcon.hpp"
 #include "WinVerCheck.hpp"
 
@@ -51,13 +52,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         SetProcessDPIAware();
 
     // Initialize global strings
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    l10n::LoadString(IDS_APP_TITLE, szTitle);
 
     // if Windows 10 < version 1803 refuse to start
     if (!IsWindows10_1803OrGreater()) {
-        const wchar_t* string_data = nullptr;
-        int message_len = LoadStringW(hInst, IDS_WINDOWS_TOO_OLD, (LPWSTR)&string_data, 0);
-        auto message = std::wstring(string_data, message_len);
+        auto message = std::wstring(l10n::LoadString(IDS_WINDOWS_TOO_OLD));
         MessageBoxW(nullptr, message.c_str(), szTitle, MB_OK | MB_ICONERROR);
         return 1;
     }

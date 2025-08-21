@@ -18,6 +18,7 @@
 
 #include "NotifyIcon.hpp"
 
+#include "l10n.h"
 #include "Resource.h"
 #include "WinVerCheck.hpp"
 
@@ -134,7 +135,7 @@ bool NotifyIcon::Add()
 
     auto notify_add = notify_template;
     notify_add.hIcon = GetCurrentIconSet().hdr_off;
-    LoadStringW(hInst, IDS_APP_TITLE, notify_add.szTip, ARRAYSIZE(notify_add.szTip));
+    l10n::LoadString(IDS_APP_TITLE, notify_add.szTip);
     notify_add.uFlags |= NIF_ICON | NIF_TIP | NIF_SHOWTIP;
     if(!wrap_Shell_NotifyIconW(NIM_ADD, &notify_add))
         return false;
@@ -268,7 +269,7 @@ void NotifyIcon::ToggleHDR()
         // Pop up error balloon if toggle failed
         auto notify_balloon_tip = notify_template;
         notify_balloon_tip.uFlags |= NIF_INFO | NIF_REALTIME;
-        LoadStringW(hInst, IDS_TOGGLE_HDR_ERROR, notify_balloon_tip.szInfo, ARRAYSIZE(notify_balloon_tip.szInfo));
+        l10n::LoadString(IDS_TOGGLE_HDR_ERROR, notify_balloon_tip.szInfo);
         notify_balloon_tip.dwInfoFlags = NIIF_ERROR;
         Shell_NotifyIconW(NIM_MODIFY, &notify_balloon_tip);
     }
@@ -290,7 +291,7 @@ void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
     wchar_t str_hdr_unsupported[256];
     mii = { sizeof(MENUITEMINFOW) };
     if(hdr_status == hdr::Status::Unsupported) {
-        LoadStringW(hInst, IDS_HDR_UNSUPPORTED, str_hdr_unsupported, ARRAYSIZE(str_hdr_unsupported));
+        l10n::LoadString(IDS_HDR_UNSUPPORTED, str_hdr_unsupported);
         mii.fMask = MIIM_STATE | MIIM_TYPE ;
         mii.fState = MFS_DISABLED;
         mii.fType = MFT_STRING;
@@ -341,15 +342,15 @@ void NotifyIcon::UpdateIcon()
     default:
     case hdr::Status::Unsupported:
         notify_mod.hIcon = GetCurrentIconSet().hdr_off;
-        LoadStringW(hInst, IDS_HDR_UNSUPPORTED, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
+        l10n::LoadString(IDS_HDR_UNSUPPORTED, notify_mod.szTip);
         break;
     case hdr::Status::Off:
         notify_mod.hIcon = GetCurrentIconSet().hdr_off;
-        LoadStringW(hInst, IDS_HDR_OFF, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
+        l10n::LoadString(IDS_HDR_OFF, notify_mod.szTip);
         break;
     case hdr::Status::On:
         notify_mod.hIcon = GetCurrentIconSet().hdr_on;
-        LoadStringW(hInst, IDS_HDR_ON, notify_mod.szTip, ARRAYSIZE(notify_mod.szTip));
+        l10n::LoadString(IDS_HDR_ON, notify_mod.szTip);
         break;
     }
     Shell_NotifyIconW(NIM_MODIFY, &notify_mod);

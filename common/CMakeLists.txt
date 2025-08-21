@@ -2,6 +2,8 @@ add_library(common STATIC)
 target_sources(common PRIVATE
                "HDR.h"
                "HDR.cpp"
+               "l10n.h"
+               "l10n.cpp"
                "WinVerCheck.hpp"
                )
 target_compile_definitions(common PRIVATE UNICODE _UNICODE)
