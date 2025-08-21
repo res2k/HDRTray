@@ -134,8 +134,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 static std::unique_ptr<NotifyIcon> notify_icon;
 static UINT msg_TaskbarCreated;
+static unsigned hdr_status_check_count;
 
-enum { TIMER_ID_WAIT_TASKBAR_CREATED = 1 };
+enum { TIMER_ID_WAIT_TASKBAR_CREATED = 1, TIMER_ID_RECHECK_HDR_STATUS = 2 };
 
 static void HandleTimer(HWND hWnd, int id)
 {
@@ -147,6 +148,15 @@ static void HandleTimer(HWND hWnd, int id)
         if (!notify_icon->WasAdded())
             DestroyWindow(hWnd);
         break;
+    case TIMER_ID_RECHECK_HDR_STATUS:
+        if (hdr_status_check_count > 0)
+        {
+            hdr_status_check_count--;
+            if (notify_icon->UpdateHDRStatus())
+                hdr_status_check_count = 0;
+        }
+        else
+            KillTimer(hWnd, TIMER_ID_RECHECK_HDR_STATUS);
     }
 }
 
@@ -196,7 +206,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DISPLAYCHANGE:
         // Position window at (0,0) so it's always on the primary monitor
         SetWindowPos(hWnd, nullptr, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
-        notify_icon->UpdateHDRStatus();
+        if (!notify_icon->UpdateHDRStatus())
+        {
+            /* HDR status doesn't seem to be always immediately up-to-date when receiving
+             * WM_DISPLAYCHANGE, so periodically re-check it over a short duration */
+            hdr_status_check_count = 10;
+            SetTimer(hWnd, TIMER_ID_RECHECK_HDR_STATUS, 500, nullptr);
+        }
         break;
     case WM_SETTINGCHANGE:
         notify_icon->UpdateDarkMode();

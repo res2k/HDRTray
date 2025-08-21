@@ -49,7 +49,7 @@ public:
     bool Add();
     void Remove();
 
-    void UpdateHDRStatus();
+    bool UpdateHDRStatus();
     void UpdateDarkMode();
 
     LRESULT HandleMessage(HWND hWnd, WPARAM wParam, LPARAM lParam);

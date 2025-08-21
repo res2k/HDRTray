@@ -155,10 +155,16 @@ void NotifyIcon::Remove()
     added = false;
 }
 
-void NotifyIcon::UpdateHDRStatus()
+bool NotifyIcon::UpdateHDRStatus()
 {
+    auto prev_hdr_status = hdr_status;
     FetchHDRStatus();
-    UpdateIcon();
+    if (prev_hdr_status != hdr_status)
+    {
+        UpdateIcon();
+        return true;
+    }
+    return false;
 }
 
 void NotifyIcon::UpdateDarkMode()
