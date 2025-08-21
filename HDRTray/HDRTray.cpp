@@ -135,6 +135,21 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 static std::unique_ptr<NotifyIcon> notify_icon;
 static UINT msg_TaskbarCreated;
 
+enum { TIMER_ID_WAIT_TASKBAR_CREATED = 1 };
+
+static void HandleTimer(HWND hWnd, int id)
+{
+    switch(id)
+    {
+    case TIMER_ID_WAIT_TASKBAR_CREATED:
+        KillTimer(hWnd, TIMER_ID_WAIT_TASKBAR_CREATED);
+        // No TaskbarCreated was received, exit
+        if (!notify_icon->WasAdded())
+            DestroyWindow(hWnd);
+        break;
+    }
+}
+
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -155,7 +170,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         if (!notify_icon->Add())
         {
             // Set up a timer, this is the amount of time we wait for TaskbarCreated
-            SetTimer(hWnd, 1, 30000, nullptr);
+            SetTimer(hWnd, TIMER_ID_WAIT_TASKBAR_CREATED, 30000, nullptr);
         }
         break;
     case WM_COMMAND:
@@ -194,10 +209,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case NotifyIcon::MESSAGE:
         return notify_icon->HandleMessage(hWnd, wParam, lParam);
     case WM_TIMER:
-        KillTimer(hWnd, 1);
-        // No TaskbarCreated was received, exit
-        if (!notify_icon->WasAdded())
-            DestroyWindow(hWnd);
+        HandleTimer(hWnd, wParam);
         break;
     default:
         if (message == msg_TaskbarCreated)
