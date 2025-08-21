@@ -18,6 +18,7 @@
 
 #include "NotifyIcon.hpp"
 
+#include "LoginStartupConfig.hpp"
 #include "Resource.h"
 #include "WinVerCheck.hpp"
 
@@ -56,9 +57,6 @@ static void InitDarkModeSupport()
 
     has_dark_mode_support = SetPreferredAppMode && FlushMenuThemes;
 }
-
-static const wchar_t autostart_registry_path[] = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
-static const wchar_t autostart_registry_key[] = L"HDRTray";
 
 // Wraps Shell_NotifyIconW(), prints to debug output in case of a failure
 static BOOL wrap_Shell_NotifyIconW(DWORD message, NOTIFYICONDATAW* data)
@@ -189,67 +187,39 @@ LRESULT NotifyIcon::HandleMessage(HWND hWnd, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// Quote the executable path
-static std::wstring get_autostart_value()
+bool NotifyIcon::HandleCommand(int command)
 {
-    wchar_t* exe_path = nullptr;
-    _get_wpgmptr(&exe_path);
-
-    std::wstring result;
-    result.reserve(wcslen(exe_path) + 2);
-    result.push_back('"');
-    result.append(exe_path);
-    result.push_back('"');
-    return result;
-}
-
-static bool is_autostart_enabled(HKEY key_autostart, const wchar_t* autostart_value)
-{
-    DWORD value_type = 0;
-    DWORD value_size = 0;
-    auto query_value_res = RegQueryValueExW(key_autostart, autostart_registry_key, nullptr, &value_type, nullptr, &value_size);
-    bool has_auto_start = (query_value_res == ERROR_SUCCESS) || (query_value_res == ERROR_MORE_DATA);
-    if(has_auto_start)
-        has_auto_start &= value_type == REG_SZ;
-    if(has_auto_start)
+    switch (command)
     {
-        DWORD value_len = value_size / sizeof(WCHAR);
-        DWORD buf_size = (value_len + 1) * sizeof(WCHAR);
-        auto* buf = reinterpret_cast<WCHAR*>(_alloca(buf_size));
-        if (RegQueryValueExW(key_autostart, autostart_registry_key, nullptr, nullptr, reinterpret_cast<BYTE*>(buf),
-                             &buf_size)
-            == ERROR_SUCCESS) {
-            buf[value_len] = 0;
-            has_auto_start = _wcsicmp(buf, autostart_value) == 0;
-        } else {
-            has_auto_start = false;
-        }
+    case IDM_ENABLE_HDR:
+        ToggleHDR();
+        return true;
+    case IDM_LOGIN_STARTUP:
+        ToggleLoginStartupEnabled();
+        return true;
+    case IDM_CONFIGURATION:
+        LaunchConfiguration();
+        return true;
     }
-
-    return has_auto_start;
+    return false;
 }
 
-void NotifyIcon::ToggleAutostartEnabled()
+void NotifyIcon::ToggleLoginStartupEnabled()
 {
-    HKEY key_autostart = nullptr;
-    if (RegCreateKeyExW(HKEY_CURRENT_USER, autostart_registry_path, 0, nullptr, 0,
-                        KEY_READ | KEY_WRITE | KEY_QUERY_VALUE | KEY_SET_VALUE, nullptr, &key_autostart, nullptr)
-        != ERROR_SUCCESS)
-        return;
+    // Determine flag based on whether menu item was checked or not
+    MENUITEMINFOW mii = { sizeof(MENUITEMINFOW) };
+    mii.fMask = MIIM_STATE;
+    GetMenuItemInfoW(popup_menu, IDM_LOGIN_STARTUP, false, &mii);
 
-    auto autostart_value = get_autostart_value();
-
-    auto has_auto_start = is_autostart_enabled(key_autostart, autostart_value.c_str());
-
-    bool new_auto_start = !has_auto_start;
-    if(new_auto_start) {
-        RegSetValueExW(key_autostart, autostart_registry_key, 0, REG_SZ, reinterpret_cast<const BYTE*>(autostart_value.c_str()),
-                       static_cast<DWORD>((autostart_value.size() + 1) * sizeof(WCHAR)));
-    } else {
-        RegDeleteValueW(key_autostart, autostart_registry_key);
+    bool loginstartup_enabled = mii.fState == MFS_CHECKED;
+    auto toggle_result = LoginStartupConfig::instance().SetEnabled(!loginstartup_enabled);
+    if (!toggle_result)
+    {
+        wchar_t title[ARRAYSIZE(notify_template.szInfoTitle)];
+        LoadStringW(hInst, IDS_STARTUP_TOGGLE_FAIL, title, ARRAYSIZE(title));
+        auto error_message = ErrorString(toggle_result.error());
+        BalloonTip(error_message.get(), title);
     }
-
-    RegCloseKey(key_autostart);
 }
 
 void NotifyIcon::ToggleHDR()
@@ -259,22 +229,58 @@ void NotifyIcon::ToggleHDR()
     POINT mouse_pos;
     bool has_mouse_pos = GetCursorPos(&mouse_pos);
 
-    auto new_status = hdr::ToggleHDRStatus();
+    auto new_status = hdr::ToggleHDRStatus(hdr::GetEnabledDisplays());
 
     if(new_status) {
         hdr_status = *new_status;
         UpdateIcon();
     } else {
         // Pop up error balloon if toggle failed
-        auto notify_balloon_tip = notify_template;
-        notify_balloon_tip.uFlags |= NIF_INFO | NIF_REALTIME;
-        LoadStringW(hInst, IDS_TOGGLE_HDR_ERROR, notify_balloon_tip.szInfo, ARRAYSIZE(notify_balloon_tip.szInfo));
-        notify_balloon_tip.dwInfoFlags = NIIF_ERROR;
-        Shell_NotifyIconW(NIM_MODIFY, &notify_balloon_tip);
+        wchar_t message[ARRAYSIZE(notify_template.szInfo) + 1] = {0};
+        LoadStringW(hInst, IDS_TOGGLE_HDR_ERROR, message, ARRAYSIZE(message));
+        BalloonTip(message);
     }
 
     if(has_mouse_pos)
         SetCursorPos(mouse_pos.x, mouse_pos.y);
+}
+
+void NotifyIcon::LaunchConfiguration()
+{
+    wchar_t* exe_path = nullptr;
+    _get_wpgmptr(&exe_path);
+    auto config_exe = std::filesystem::path(exe_path).parent_path() / "HDRTrayConfig.exe";
+    if (reinterpret_cast<INT_PTR>(ShellExecuteW(NULL, L"open", config_exe.c_str(), NULL, NULL, SW_SHOWNORMAL)) < 32)
+    {
+        DWORD err = GetLastError();
+
+        auto error_str = ErrorString(err);
+        wchar_t msg_template[256];
+        LoadStringW(hInst, IDS_CONFIG_LAUNCH_FAIL, msg_template, ARRAYSIZE(msg_template));
+
+        const wchar_t* error_str_p = error_str.get();
+        auto full_message = std::vformat(msg_template, std::make_wformat_args(error_str_p));
+
+        MSGBOXPARAMSW mbp = { sizeof(mbp) };
+        mbp.hInstance = GetModuleHandle(nullptr);
+        mbp.lpszText = full_message.c_str();
+        mbp.lpszCaption = MAKEINTRESOURCEW(IDS_APP_TITLE);
+        mbp.dwStyle = MB_OK | MB_ICONERROR;
+        MessageBoxIndirectW(&mbp);
+    }
+}
+
+void NotifyIcon::BalloonTip(std::wstring_view info, std::optional<std::wstring_view> title)
+{
+    auto notify_balloon_tip = notify_template;
+    notify_balloon_tip.uFlags |= NIF_INFO | NIF_REALTIME;
+    wcsncpy_s(notify_balloon_tip.szInfo, info.data(), info.size());
+    if (title)
+    {
+        wcsncpy_s(notify_balloon_tip.szInfoTitle, title->data(), title->size());
+    }
+    notify_balloon_tip.dwInfoFlags = NIIF_ERROR;
+    Shell_NotifyIconW(NIM_MODIFY, &notify_balloon_tip);
 }
 
 void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
@@ -282,10 +288,12 @@ void NotifyIcon::PopupIconMenu(HWND hWnd, POINT pos)
     // needed to clicking "outside" the menu works
     SetForegroundWindow(hWnd);
 
+    auto loginstartup_enabled = LoginStartupConfig::instance().IsEnabled();
+
     MENUITEMINFOW mii = { sizeof(MENUITEMINFOW) };
     mii.fMask = MIIM_STATE;
-    mii.fState = IsAutostartEnabled() ? MFS_CHECKED : MFS_UNCHECKED;
-    SetMenuItemInfoW(popup_menu, IDM_AUTOSTART, false, &mii);
+    mii.fState = (loginstartup_enabled && *loginstartup_enabled) ? MFS_CHECKED : MFS_UNCHECKED;
+    SetMenuItemInfoW(popup_menu, IDM_LOGIN_STARTUP, false, &mii);
 
     wchar_t str_hdr_unsupported[256];
     mii = { sizeof(MENUITEMINFOW) };
@@ -313,7 +321,7 @@ const NotifyIcon::Icons& NotifyIcon::GetCurrentIconSet() const
 
 void NotifyIcon::FetchHDRStatus()
 {
-    this->hdr_status = hdr::GetWindowsHDRStatus();
+    this->hdr_status = hdr::GetWindowsHDRStatus(hdr::GetEnabledDisplays());
 }
 
 void NotifyIcon::FetchDarkMode()
@@ -356,17 +364,17 @@ void NotifyIcon::UpdateIcon()
 
 }
 
-bool NotifyIcon::IsAutostartEnabled() const
+wil::unique_hlocal_string NotifyIcon::ErrorString(DWORD err)
 {
-    HKEY key_autostart = nullptr;
-    if (RegOpenKeyExW(HKEY_CURRENT_USER, autostart_registry_path, 0, KEY_READ | KEY_QUERY_VALUE, &key_autostart) != ERROR_SUCCESS)
-        return false;
+    wchar_t* error_str = nullptr;
+    FormatMessageW(
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+        nullptr,
+        err,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPWSTR)&error_str,
+        0,
+        nullptr);
 
-    auto autostart_value = get_autostart_value();
-
-    auto has_auto_start = is_autostart_enabled(key_autostart, autostart_value.c_str());
-
-    RegCloseKey(key_autostart);
-
-    return has_auto_start;
+    return wil::unique_hlocal_string(error_str);
 }

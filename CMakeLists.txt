@@ -11,6 +11,7 @@ set(VERSION_MINOR ${GITVERSIONDETECT_VERSION_MINOR})
 set(VERSION_REVISION ${GITVERSIONDETECT_VERSION_PATCH})
 set(VERSION_BUILD ${GITVERSIONDETECT_VERSION_COMMIT_NUM})
 set(VERSION_FULL ${GITVERSIONDETECT_VERSION})
+set(VERSION_COMMIT ${GITVERSIONDETECT_VERSION_COMMIT_SHA})
 set(COPYRIGHT_STR "Copyright (c) 2022-2025 Frank Richter")
 
 set(CMAKE_CXX_STANDARD 23)
@@ -62,11 +63,29 @@ endif()
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
 
 add_subdirectory(ext)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/ext/winui3_cmake/cmake")
+
+# We need to use the same CppWinRT version for common and HDRTrayConfig,
+# so generate headers from the nuget packages
+include(nuget)
+nuget_install()
+
+set(WINSDK_VERSION 10.0.17763.0)
+
+include(find_platform_winmds)
+include(run_cppwinrt)
+find_platform_winmds(PATHS_VAR PLATFORM_WINMD_PATHS WINSDK_VERSION ${WINSDK_VERSION})
+run_cppwinrt(TARGET platform_cppwinrt
+             OUT "${CMAKE_CURRENT_BINARY_DIR}/generated"
+             IN ${PLATFORM_WINMD_PATHS})
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/generated")
 
 add_subdirectory(common)
+add_dependencies(common platform_cppwinrt)
 
-add_subdirectory(HDRTray)
 add_subdirectory(HDRCmd)
+add_subdirectory(HDRTray)
+add_subdirectory(HDRTrayConfig)
 
 if(MARKO_AVAILABLE)
     set(MD2HTML "${CMAKE_CURRENT_SOURCE_DIR}/build/md2html.py")
@@ -85,8 +104,12 @@ if(MARKO_AVAILABLE)
     add_custom_target(ConvertMD ALL DEPENDS ${GENERATED_HTML_FILES})
 endif()
 
-install(TARGETS HDRTray HDRCmd
+install(TARGETS HDRTray HDRCmd HDRTrayConfig
         RUNTIME
+        DESTINATION ".")
+install(FILES
+            "$<TARGET_FILE_DIR:HDRTrayConfig>/Microsoft.WindowsAppRuntime.Bootstrap.dll"
+            "$<TARGET_FILE_DIR:HDRTrayConfig>/HDRTrayConfig.pri"
         DESTINATION ".")
 if(MARKO_AVAILABLE)
     foreach(md_file LICENSE README)

@@ -24,6 +24,8 @@
 
 #include <shellapi.h>
 
+#include <wil/resource.h>
+
 class NotifyIcon
 {
     bool added = false;
@@ -56,10 +58,12 @@ public:
 
     enum { MESSAGE = WM_USER + 11 };
 
-    void ToggleAutostartEnabled();
-    void ToggleHDR();
+    // Handle (some) context menu commands
+    bool HandleCommand(int command);
 
 protected:
+    // Show a balloon tip
+    void BalloonTip(std::wstring_view info, std::optional<std::wstring_view> title = {});
     void PopupIconMenu(HWND hWnd, POINT pos);
 
     const Icons& GetCurrentIconSet() const;
@@ -67,7 +71,12 @@ protected:
     void FetchDarkMode();
     void UpdateIcon();
 
-    bool IsAutostartEnabled() const;
+    void ToggleLoginStartupEnabled();
+    void ToggleHDR();
+    void LaunchConfiguration();
+
+    // Use FormatString to get error description
+    static wil::unique_hlocal_string ErrorString(DWORD err);
 };
 
 #endif // NOTIFYICON_HPP_

@@ -20,11 +20,15 @@
 
 #include "subcommand/Disable.hpp"
 #include "subcommand/Enable.hpp"
+#include "subcommand/LoginStartup.hpp"
+#include "subcommand/Select.hpp"
 #include "subcommand/Status.hpp"
 #include "version.h"
 #include "WinVerCheck.hpp"
 
 #include <format>
+
+#include <winrt/Windows.Foundation.h>
 
 static std::string failure_message(const CLI::App *app, const CLI::Error &e) {
     return std::format("Invalid command line arguments: {}\n\n{}", e.what(), app->help());
@@ -34,11 +38,15 @@ int wmain(int argc, const wchar_t* const argv[])
 {
     CLI::App app{"HDRCmd " VERSION_FULL " - turn \"Use HDR\" on or off from command line"};
 
-    // if Windows 10 < version 1803 refuse to start
-    if (!IsWindows10_1803OrGreater()) {
-        std::cerr << "Sorry, HDRCmd only works on Windows 10, version 1803 and above" << std::endl;
+    // if Windows 10 < version 1809 refuse to start
+    if (!IsWindows10_1809OrGreater()) {
+        std::cerr << "Sorry, HDRCmd only works on Windows 10, version 1809 and above" << std::endl;
         return -2;
     }
+
+    // Init WinRT. For monitor stable ID.
+    // FIXME: Obtain lazily?
+    winrt::init_apartment();
 
     app.allow_windows_style_options();
     app.ignore_case();
@@ -48,6 +56,8 @@ int wmain(int argc, const wchar_t* const argv[])
     subcommand::Status::add(app);
     subcommand::Enable::add(app);
     subcommand::Disable::add(app);
+    subcommand::Select::add(app);
+    subcommand::LoginStartup::add(app);
 
     CLI11_PARSE(app, argc, argv);
     const auto* subcmd = app.get_subcommands()[0];

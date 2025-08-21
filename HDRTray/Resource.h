@@ -1,6 +1,6 @@
 /*
     HDRTray, a notification icon for the "Use HDR" option
-    Copyright (C) 2022 Frank Richter
+    Copyright (C) 2022-2024 Frank Richter
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,18 +16,21 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#define IDS_APP_TITLE           101
+#include "resource_common.h"
+
 #define IDS_HDR_UNSUPPORTED     102
 #define IDS_HDR_ON              103
 #define IDS_HDR_OFF             104
 #define IDS_WINDOWS_TOO_OLD     105
 #define IDS_TOGGLE_HDR_ERROR    106
+#define IDS_CONFIG_LAUNCH_FAIL  107
+#define IDS_STARTUP_TOGGLE_FAIL 108
 
 #define IDM_EXIT                101
-#define IDM_AUTOSTART           102
+#define IDM_LOGIN_STARTUP       102
 #define IDM_ENABLE_HDR          103
+#define IDM_CONFIGURATION       104
 
-#define IDI_APP                 1
 #define IDI_HDR_OFF_DARKMODE    101
 #define IDI_HDR_OFF_LIGHTMODE   102
 #define IDI_HDR_ON_DARKMODE     103

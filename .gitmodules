@@ -4,3 +4,6 @@
 [submodule "ext/CLI11"]
 	path = ext/CLI11
 	url = https://github.com/CLIUtils/CLI11
+[submodule "ext/winui3_cmake"]
+	path = ext/winui3_cmake
+	url = https://github.com/res2k/winui3_cmake

@@ -1,4 +1,3 @@
-configure_file(version.h.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.h")
 configure_file(version.rc.in "${CMAKE_CURRENT_BINARY_DIR}/generated/version.rc")
 
 add_executable(HDRCmd)
@@ -6,11 +5,21 @@ target_sources(HDRCmd PRIVATE
                "HDRCmd.cpp"
                "HDRCmd.manifest"
                "HDRCmd.rc"
+               "subcommand/display_status.hpp"
+               "subcommand/display_status.cpp"
+               "subcommand/resolve_display.hpp"
+               "subcommand/resolve_display.cpp"
                "subcommand/Base.hpp"
                "subcommand/Disable.hpp"
                "subcommand/Disable.cpp"
+               "subcommand/DisplayUsing.hpp"
+               "subcommand/DisplayUsing.cpp"
                "subcommand/Enable.hpp"
                "subcommand/Enable.cpp"
+               "subcommand/LoginStartup.hpp"
+               "subcommand/LoginStartup.cpp"
+               "subcommand/Select.hpp"
+               "subcommand/Select.cpp"
                "subcommand/Status.hpp"
                "subcommand/Status.cpp"
                )
