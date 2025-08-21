@@ -149,13 +149,11 @@ static void HandleTimer(HWND hWnd, int id)
             DestroyWindow(hWnd);
         break;
     case TIMER_ID_RECHECK_HDR_STATUS:
-        if (hdr_status_check_count > 0)
-        {
+        if (hdr_status_check_count > 0) {
             hdr_status_check_count--;
             if (notify_icon->UpdateHDRStatus())
                 hdr_status_check_count = 0;
-        }
-        else
+        } else
             KillTimer(hWnd, TIMER_ID_RECHECK_HDR_STATUS);
     }
 }
@@ -228,8 +226,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         HandleTimer(hWnd, wParam);
         break;
     default:
-        if (message == msg_TaskbarCreated)
-        {
+        if (message == msg_TaskbarCreated) {
             // Taskbar was created (Explorer restart, DPI change), so re-create notify icon
             notify_icon->Remove();
             if (!notify_icon->Add())
