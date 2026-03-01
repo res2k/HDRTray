@@ -32,6 +32,11 @@ Turns HDR off on all supported displays.
 
 Does not accept any options.
 
+## `toggle` command
+Toggles HDR on all supported displays.
+
+Does not accept any options.
+
 ## `status` command
 Prints the current HDR status to the console. Has a special mode that returns an exit code depending on the status.
 

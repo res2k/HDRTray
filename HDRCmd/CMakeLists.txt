@@ -13,6 +13,8 @@ target_sources(HDRCmd PRIVATE
                "subcommand/Enable.cpp"
                "subcommand/Status.hpp"
                "subcommand/Status.cpp"
+               "subcommand/Toggle.hpp"
+               "subcommand/Toggle.cpp"
                )
 target_compile_definitions(HDRCmd PRIVATE UNICODE _UNICODE)
 target_include_directories(HDRCmd PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
