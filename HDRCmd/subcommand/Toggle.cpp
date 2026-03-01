@@ -27,6 +27,8 @@ Toggle::Toggle(CLI::App* parent) : Base("Toggle HDR on/off", "toggle", parent) {
 int Toggle::run() const
 {
     auto status = hdr::GetWindowsHDRStatus();
+    if (status == hdr::Status::Unsupported)
+        return -1;
     auto result = hdr::SetWindowsHDRStatus(status != hdr::Status::On);
     if (!result)
         return -1;
