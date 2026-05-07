@@ -16,10 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "DisplayConfigWatcher.hpp"
 #include "framework.h"
 #include "HDRTray.h"
 #include "HDR.h"
 #include "l10n.h"
+#include "LoginStartupConfig.hpp"
 #include "NotifyIcon.hpp"
 #include "WinVerCheck.hpp"
 
@@ -54,8 +56,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Initialize global strings
     l10n::LoadString(IDS_APP_TITLE, szTitle);
 
-    // if Windows 10 < version 1803 refuse to start
-    if (!IsWindows10_1803OrGreater()) {
+    // if Windows 10 < version 1809 refuse to start
+    if (!IsWindows10_1809OrGreater()) {
         auto message = std::wstring(l10n::LoadString(IDS_WINDOWS_TOO_OLD));
         MessageBoxW(nullptr, message.c_str(), szTitle, MB_OK | MB_ICONERROR);
         return 1;
@@ -132,6 +134,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 }
 
 static std::unique_ptr<NotifyIcon> notify_icon;
+static std::unique_ptr<DisplayConfigWatcher> display_config_watcher;
 static UINT msg_TaskbarCreated;
 static unsigned hdr_status_check_count;
 
@@ -157,6 +160,8 @@ static void HandleTimer(HWND hWnd, int id)
     }
 }
 
+#define WM_HDRTRAY_UPDATE_STATUS    WM_USER + 1
+
 //
 //  FUNCTION: WndProc(HWND, UINT, WPARAM, LPARAM)
 //
@@ -179,25 +184,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             // Set up a timer, this is the amount of time we wait for TaskbarCreated
             SetTimer(hWnd, TIMER_ID_WAIT_TASKBAR_CREATED, 30000, nullptr);
         }
+        display_config_watcher.reset(
+            new DisplayConfigWatcher([=]() { PostMessage(hWnd, WM_HDRTRAY_UPDATE_STATUS, 0, 0); }));
         break;
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
             // Parse the menu selections:
+            if (notify_icon->HandleCommand(wmId))
+                break;
             switch (wmId)
             {
-            case IDM_ENABLE_HDR:
-                notify_icon->ToggleHDR();
-                break;
-            case IDM_AUTOSTART:
-                notify_icon->ToggleAutostartEnabled();
-                break;
-            case IDM_SDRWL_80: // Lowest / sRGB
-                notify_icon->SetSDRWhiteLevel(80);
-                break;
-            case IDM_SDRWL_203: // ITU-R BT.2408
-                notify_icon->SetSDRWhiteLevel(203);
-                break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
@@ -223,10 +220,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         notify_icon->Remove();
         notify_icon.reset();
+        display_config_watcher.reset();
         PostQuitMessage(0);
         break;
     case NotifyIcon::MESSAGE:
         return notify_icon->HandleMessage(hWnd, wParam, lParam);
+    case WM_HDRTRAY_UPDATE_STATUS:
+        notify_icon->UpdateHDRStatus();
+        break;
     case WM_TIMER:
         HandleTimer(hWnd, wParam);
         break;

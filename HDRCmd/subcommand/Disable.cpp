@@ -22,11 +22,14 @@
 
 namespace subcommand {
 
-Disable::Disable(CLI::App* parent) : Base("Turn HDR off", "off", parent) { }
+Disable::Disable(CLI::App* parent) : DisplayUsing("Turn HDR off", "off", parent)
+{
+    add_displays_option(this, default_displays_option_name, "Displays to consider");
+}
 
 int Disable::run() const
 {
-    auto result = hdr::SetWindowsHDRStatus(false);
+    auto result = hdr::SetWindowsHDRStatus(GetSelectedDisplays(), false);
     if (!result)
         return -1;
     return *result == hdr::Status::Off ? 0 : 1;

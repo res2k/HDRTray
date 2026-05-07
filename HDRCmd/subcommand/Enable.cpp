@@ -22,11 +22,14 @@
 
 namespace subcommand {
 
-Enable::Enable(CLI::App* parent) : Base("Turn HDR on", "on", parent) { }
+Enable::Enable(CLI::App* parent) : DisplayUsing("Turn HDR on", "on", parent) 
+{
+    add_displays_option(this, default_displays_option_name, "Displays to consider");
+}
 
 int Enable::run() const
 {
-    auto result = hdr::SetWindowsHDRStatus(true);
+    auto result = hdr::SetWindowsHDRStatus(GetSelectedDisplays(), true);
     if (!result)
         return -1;
     return *result == hdr::Status::On ? 0 : 1;

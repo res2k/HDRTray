@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    HDRTrayConfig - graphical configuration for HDRTray
+    Copyright (C) 2024 Frank Richter
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<Page
+    x:Class="HDRTrayConfig.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:HDRTrayConfig"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer>
+        <StackPanel
+            Orientation="Vertical"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"
+            Spacing="{StaticResource SettingsGroupsSpacing}"
+            Padding="16"
+            >
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top" Spacing="{StaticResource SettingsPanelSpacing}">
+                <StackPanel Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                      BorderThickness="1"
+                      CornerRadius="{ThemeResource ControlCornerRadius}"
+                      Padding="16,8"
+                      >
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Top" Padding="12,0,0,0">
+                        <TextBlock Text="HDRTray" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                        <TextBlock Text="{x:Bind VersionString}" Style="{StaticResource CaptionTextBlockStyle}"/>
+                        <TextBlock Text="(C) 2022-2025 Frank Richter" Style="{StaticResource CaptionTextBlockStyle}"/>
+                    </StackPanel>
+                    <HyperlinkButton Content="Open README" Tag="README" Click="OnDocLinkClick" />
+                    <HyperlinkButton Content="Licensed under the terms of the GNU General Public License, Version 3" Tag="LICENSE" Click="OnDocLinkClick" />
+                    <HyperlinkButton Content="Get latest release on GitHub" NavigateUri="https://github.com/res2k/HDRTray/releases" />
+                </StackPanel>
+
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

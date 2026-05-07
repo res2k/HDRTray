@@ -44,9 +44,9 @@ static bool IsWindows10_1709OrGreater ()
     return IsWindows10BuildOrGreater(16299);
 }
 
-static bool IsWindows10_1803OrGreater ()
+static bool IsWindows10_1809OrGreater ()
 {
-    return IsWindows10BuildOrGreater(17134);
+    return IsWindows10BuildOrGreater(17763);
 }
 
 static bool IsWindows10_1903OrGreater ()

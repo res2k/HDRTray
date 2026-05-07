@@ -16,9 +16,23 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef VERSION_H_
-#define VERSION_H_
+#ifndef SUBCOMMAND_DISPLAYNAME_HPP_
+#define SUBCOMMAND_DISPLAYNAME_HPP_
 
-#define VERSION_FULL    "@VERSION_FULL@"
+#include "HDR.h"
 
-#endif // VERSION_H_
+#include "CLI/CLI.hpp"
+
+#include <format>
+
+namespace subcommand {
+/// Return display name suitable for feedback to std streams
+static inline std::string display_name(const hdr::DisplayInfo& disp)
+{
+    auto name_result = disp.GetName();
+    return name_result ? CLI::narrow(*name_result) : std::format("display {}", disp.GetIndex());
+}
+
+} // namespace subcommand
+
+#endif // SUBCOMMAND_DISPLAYNAME_HPP_
