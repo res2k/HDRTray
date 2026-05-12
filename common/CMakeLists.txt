@@ -8,3 +8,4 @@ target_sources(common PRIVATE
                )
 target_compile_definitions(common PRIVATE UNICODE _UNICODE)
 target_include_directories(common PUBLIC .)
+target_link_libraries(common PUBLIC Mscms)

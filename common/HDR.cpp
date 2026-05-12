@@ -20,6 +20,11 @@
 #error Windows SDK too old: Version >= 10.0.26100 required
 #endif
 
+extern "C" {
+// From msmcs; undocumented, but exported by name
+BOOL WINAPI InternalRefreshCalibration(LPCWSTR /* display name?  */, uintptr_t /* ??? */, const GUID* /* ??? */, const GUID* /* ??? */);
+}
+
 namespace hdr {
 
 static const bool use_win11_24h2_color_functions = IsWindows11_24H2OrGreater();
@@ -142,6 +147,9 @@ std::optional<Status> SetWindowsHDRStatus(bool enable)
         else
             status = static_cast<Status>(std::max(static_cast<int>(*status), static_cast<int>(*new_status)));
     });
+
+    if (status)
+        InternalRefreshCalibration(nullptr, 0, nullptr, nullptr);
 
     return status;
 }
